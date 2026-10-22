@@ -180,6 +180,7 @@ input.title{font-size:17px;font-weight:600;font-family:var(--f-display)}
 .dlg h4{margin:0;font-family:var(--f-display);font-size:16px}
 .toast{position:fixed;bottom:calc(20px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);background:var(--fg);color:var(--bg);padding:10px 18px;border-radius:8px;z-index:80;font-size:13.5px;max-width:calc(100% - 32px);box-shadow:var(--shadow)}
 .toast.err{background:var(--bad);color:#fff}
+.hit:hover{border-color:var(--accent)!important}
 .depchips{display:flex;gap:6px;flex-wrap:wrap}
 .depchips .chip{display:inline-flex;gap:6px;align-items:center;font-size:13px;padding:4px 10px}
 .depchips button{border:0;background:none;cursor:pointer;color:var(--bad);padding:0;font-size:14px;line-height:1}
@@ -224,9 +225,10 @@ const STATUSES=[{k:"todo",l:"جديدة",c:"var(--muted)"},{k:"progress",l:"قي
 const ST=Object.fromEntries(STATUSES.map(s=>[s.k,s]));
 const PRI={urgent:{l:"عاجلة",c:"bad",o:0},high:{l:"عالية",c:"warn",o:1},normal:{l:"عادية",c:"info",o:2},low:{l:"منخفضة",c:"",o:3}};
 const SHIFTS={"":"بدون","morning":"صباحي","evening":"مسائي","night":"ليلي"};
-const ROLES={admin:"مدير النظام",manager:"مشرف",staff:"موظف"};
-const ACT={create:"أنشأ المهمة",edit:"عدّل",move:"غيّر الحالة",approve:"اعتمد المهمة",reject:"رفض المهمة",assign:"غيّر"};
+const ROLES={admin:"مدير النظام",staff:"موظف"};
+const ACT={create:"أنشأ المهمة",edit:"عدّل",move:"غيّر الحالة",approve:"اعتمد المهمة",reject:"رفض المهمة",assign:"غيّر",delegate:"وزّع مهمة فرعية"};
 const ERR={not_allowed:"لا تملك صلاحية هذا الإجراء.",reason_required:"لازم تكتب سبب الرفض.",staff_assign_self_only:"الموظف يقدر يسند المهمة لنفسه بس.",
+  assign_not_allowed:"تقدر تسند المهام لنفسك أو للموظفين اللي تحتك بس.",hierarchy_cycle:"مينفعش الموظف يبقى مدير لمديره.",
   bad_assignee:"الموظف المختار غير مفعّل.",cannot_change_self:"مينفعش تغيّر دورك أو توقف حسابك بنفسك.",not_found:"المهمة غير موجودة أو مش متاحة لك.",same_status:"المهمة في الحالة دي بالفعل."};
 
 document.title=CFG.HOTEL_NAME||document.title; $("#hotelName").textContent=CFG.HOTEL_NAME||"لوحة عمليات الفندق";
@@ -257,9 +259,13 @@ function errText(e){ const m=(e&&(e.message||e.error_description))||""; for(cons
 async function call(p,okMsg){ try{ const r=await p; if(r&&r.error) throw r.error; if(okMsg) toast(okMsg); return r; }catch(e){ toast(errText(e),true); throw e; } }
 
 /* ---------- roles ---------- */
-const myRole=()=>S.me&&S.me.active&&S.me.role!=="pending"?S.me.role:null;
+const myRole=()=>S.me&&S.me.active&&S.me.role!=="pending"?(S.me.role==="admin"?"admin":"staff"):null;
 const isAdmin=()=>myRole()==="admin";
-const isMgr=()=>myRole()==="admin"||myRole()==="manager";
+function isAbove(boss,emp){ if(!boss||!emp) return false; let cur=S.profiles[emp], n=0; while(cur&&cur.reports_to&&n<25){ if(cur.reports_to===boss) return true; cur=S.profiles[cur.reports_to]; n++; } return false; }
+const subordinates=()=>Object.keys(S.profiles).filter(id=>isAbove(S.uid,id)&&S.profiles[id].active&&S.profiles[id].role!=="pending");
+const canAssignTo=id=>isAdmin()||id===S.uid||isAbove(S.uid,id);
+const canApprove=t=>isAdmin()||isAbove(S.uid,t.assignee)||(t.reporter===S.uid&&!!t.assignee&&t.assignee!==S.uid);
+const isMgr=()=>isAdmin()||subordinates().length>0;
 const isMember=()=>!!myRole();
 const myDept=()=>(S.me&&S.me.dept)||"";
 const nameOf=id=>!id?"غير مُسند":(S.profiles[id]&&S.profiles[id].full_name)||"موظف";
@@ -272,7 +278,7 @@ function normTask(r){ return {id:r.id,num:r.id,title:r.title,desc:r.descr,dept:r
   priority:r.priority,status:r.status,due:ms(r.due),shift:r.shift,estimate:r.estimate,needsApproval:r.needs_approval,rejections:r.rejections,
   lastReject:r.last_reject_at?{by:r.last_reject_by,at:ms(r.last_reject_at),note:r.last_reject_note}:null,
   approval:r.approval_at?{by:r.approval_by,at:ms(r.approval_at),note:r.approval_note}:null,
-  createdAt:ms(r.created_at),updatedAt:ms(r.updated_at),statusAt:ms(r.status_at),startedAt:ms(r.started_at),submittedAt:ms(r.submitted_at),completedAt:ms(r.completed_at)}; }
+  parentId:r.parent_id||null,createdAt:ms(r.created_at),updatedAt:ms(r.updated_at),statusAt:ms(r.status_at),startedAt:ms(r.started_at),submittedAt:ms(r.submitted_at),completedAt:ms(r.completed_at)}; }
 async function loadProfiles(){ const {data,error}=await S.sb.from("profiles").select("*"); if(error) throw error; const m={}; data.forEach(p=>m[p.id]=p); S.profiles=m; S.me=m[S.uid]||null; }
 async function loadMeta(){ const [d,s]=await Promise.all([S.sb.from("departments").select("name,sort").order("sort").order("name"),S.sb.from("settings").select("*").eq("id",1).maybeSingle()]);
   if(!d.error) S.depts=d.data.map(x=>x.name); if(!s.error&&s.data) S.settings=s.data; }
@@ -298,14 +304,15 @@ const isLate=t=>t.due&&(t.status==="done"?(t.completedAt||0)>t.due:Date.now()>t.
 const workTime=t=>t.startedAt?((t.completedAt||(t.status==="review"&&t.submittedAt)||Date.now())-t.startedAt):null;
 const keyOf=t=>(S.settings.prefix||"HTL")+"-"+String(t.num||0).padStart(3,"0");
 function allowed(t,to){ if(!t||t.status===to) return false; const from=t.status;
-  if(isMgr()) return to==="rejected"?from==="review":true;
+  if(canApprove(t)&&(to!=="rejected"||from==="review")) return true;
   if(t.assignee!==S.uid) return false; const na=t.needsApproval!==false;
   return (from==="todo"&&to==="progress")||(from==="rejected"&&to==="progress")||(from==="progress"&&to==="review"&&na)||(from==="progress"&&to==="done"&&!na)||(from==="review"&&to==="progress"); }
 function actLabel(t,to){ const f=t.status;
   if(to==="progress") return f==="todo"?"بدء العمل":f==="rejected"?"إعادة العمل":f==="review"?"سحب من المراجعة":"إعادة فتح";
   if(to==="review") return "تسليم للموافقة"; if(to==="done") return f==="review"?"اعتماد":"إنهاء واعتماد";
   if(to==="rejected") return "رفض مع السبب"; return "إرجاع إلى جديدة"; }
-const canEditFields=t=>!t||isMgr()||(t.reporter===S.uid&&t.status==="todo");
+const canEditFields=t=>!t||isAdmin()||t.reporter===S.uid;
+const childrenOf=id=>S.tasks.filter(x=>x.parentId===id);
 
 async function transition(t,to,note){
   await call(S.sb.rpc("transition_task",{p_id:t.id,p_to:to,p_note:note||null}),
@@ -314,7 +321,7 @@ async function transition(t,to,note){
 function requestTransition(t,to){
   if(!t) return;
   if(to==="rejected") return ask({title:"سبب الرفض",label:"اكتب المطلوب تعديله عشان الموظف يعرف يعيد الشغل",required:true,okText:"رفض المهمة",danger:true}).then(n=>n!=null&&transition(t,to,n).catch(()=>{}));
-  if(to==="done"&&isMgr()) return ask({title:"اعتماد المهمة",label:"ملاحظة على الاعتماد (اختياري)",okText:"اعتماد"}).then(n=>n!=null&&transition(t,to,n).catch(()=>{}));
+  if(to==="done"&&canApprove(t)) return ask({title:"اعتماد المهمة",label:"ملاحظة على الاعتماد (اختياري)",okText:"اعتماد"}).then(n=>n!=null&&transition(t,to,n).catch(()=>{}));
   return transition(t,to).catch(()=>{}); }
 
 /* ---------- dialog ---------- */
@@ -356,7 +363,7 @@ function render(){
   if(S.builtView==="gate") S.builtView=null;
   $("#tabs").hidden=false; $("#newBtn").hidden=false; $("#teamTab").hidden=!isAdmin();
   $("#meBox").innerHTML=`${av(S.uid)}<span class="nm">${esc(nameOf(S.uid))}</span><span class="rolepill">${esc(ROLES[myRole()])}</span>`;
-  const rev=S.tasks.filter(t=>t.status==="review"&&(isMgr()||t.assignee===S.uid)).length;
+  const rev=S.tasks.filter(t=>t.status==="review"&&canApprove(t)).length;
   $("#apBadge").hidden=!rev; $("#apBadge").textContent=rev;
   const rq=Object.values(S.profiles).filter(p=>p.role==="pending"&&p.active).length;
   $("#rqBadge").hidden=!rq||!isAdmin(); $("#rqBadge").textContent=rq;
@@ -366,7 +373,7 @@ function render(){
   fillFilters(); renderMain(); renderSheetSide(); }
 function renderMain(){ if(!isMember()) return; const v=S.view,m=$("#main");
   if(v==="board"){m.innerHTML=boardHTML();bindBoard();} else if(v==="list"){m.innerHTML=listHTML();bindList();}
-  else if(v==="approvals"){m.innerHTML=approvalsHTML();bindApprovals();} else if(v==="reports"){m.innerHTML=reportsHTML();bindReports();}
+  else if(v==="approvals"){m.innerHTML=approvalsHTML();bindApprovals();} else if(v==="reports") renderReports();
   else if(v==="team") renderTeam(); }
 
 /* ---------- auth ---------- */
@@ -408,10 +415,15 @@ function renderGate(){ const m=$("#main"); const me=S.me;
   $("#pf").onsubmit=e=>{ e.preventDefault(); call(S.sb.rpc("update_my_profile",{p_name:$("#pName").value,p_title:$("#pTitle").value}),"تم الحفظ").catch(()=>{}); }; }
 
 /* ---------- board ---------- */
+function subBadge(t){ const kids=childrenOf(t.id); const par=t.parentId?T(t.parentId):null; const out=[];
+  if(kids.length){ const d=kids.filter(k=>k.status==="done").length; out.push(`<span class="chip info">موزّعة: ${d}/${kids.length} خلصت</span>`); }
+  if(t.parentId) out.push(`<span class="chip">فرعية من ${par?esc(keyOf(par)):"#"+t.parentId}</span>`);
+  return out.length?`<div class="row">${out.join("")}</div>`:""; }
 function cardHTML(t){ const p=PRI[t.priority]||PRI.normal; const late=isLate(t)&&t.status!=="done"; const dragOk=STATUSES.some(s=>allowed(t,s.k));
   return `<article class="card" data-id="${t.id}" data-pri="${esc(t.priority)}" draggable="${dragOk}" tabindex="0">
    <div class="row"><span class="mono meta">${esc(keyOf(t))}</span><span class="chip ${p.c}">${p.l}</span>${t.rejections?`<span class="chip bad">رُفضت ${t.rejections}×</span>`:""}</div>
    <div class="t">${esc(t.title)}</div>
+   ${subBadge(t)}
    <div class="row meta">${t.location?`<span class="chip acc">${esc(t.location)}</span>`:""}<span>${esc(t.dept||"")}</span>${t.shift?`<span>· ${esc(SHIFTS[t.shift])}</span>`:""}</div>
    <div class="row" style="justify-content:space-between">${who(t.assignee)}
     <span class="meta num">${t.status==="done"?"أُنجزت "+df.format(new Date(t.completedAt||t.updatedAt)):t.due?`<span class="${late?"chip bad":""}">${late?"متأخرة · ":"موعد "}${esc(fmt(t.due))}</span>`:"منذ "+dur(Date.now()-(t.statusAt||t.createdAt))}</span></div></article>`; }
@@ -444,18 +456,20 @@ function bindList(){ const m=$("#main"); m.querySelectorAll("tr.click").forEach(
   m.querySelectorAll("th.sort").forEach(h=>h.onclick=()=>{ if(S.sort.k===h.dataset.k) S.sort.d*=-1; else S.sort={k:h.dataset.k,d:-1}; renderMain(); }); }
 
 /* ---------- approvals ---------- */
-function approvalsHTML(){ const mine=!isMgr(); const f=t=>!mine||t.assignee===S.uid;
-  const rev=S.tasks.filter(t=>t.status==="review"&&f(t)).sort((a,b)=>(a.submittedAt||0)-(b.submittedAt||0));
-  const rej=S.tasks.filter(t=>t.status==="rejected"&&f(t));
-  const recent=S.tasks.filter(t=>t.status==="done"&&t.approval&&f(t)).sort((a,b)=>(b.completedAt||0)-(a.completedAt||0)).slice(0,8);
+function approvalsHTML(){
+  const rev=S.tasks.filter(t=>t.status==="review"&&canApprove(t)).sort((a,b)=>(a.submittedAt||0)-(b.submittedAt||0));
+  const myRev=S.tasks.filter(t=>t.status==="review"&&t.assignee===S.uid&&!canApprove(t));
+  const rej=S.tasks.filter(t=>t.status==="rejected"&&(t.assignee===S.uid||canApprove(t)));
+  const recent=S.tasks.filter(t=>t.status==="done"&&t.approval&&(t.assignee===S.uid||canApprove(t))).sort((a,b)=>(b.completedAt||0)-(a.completedAt||0)).slice(0,8);
   const item=(t,btns)=>{const p=PRI[t.priority]||PRI.normal; return `<div class="apcard"><div style="display:grid;gap:6px;min-width:0"><div class="row"><span class="mono meta">${esc(keyOf(t))}</span><span class="chip ${p.c}">${p.l}</span><span class="meta">${esc(t.dept)}${t.location?" · "+esc(t.location):""}</span></div>
     <div class="t" data-open="${t.id}">${esc(t.title)}</div>
     <div class="row meta">${who(t.assignee)}<span>· زمن العمل <b class="num" style="color:var(--fg)">${dur(workTime(t))}</b></span>${t.status==="review"?`<span>· سُلّمت ${esc(fmt(t.submittedAt))}</span>`:""}${t.due?`<span>· الموعد ${esc(fmt(t.due))}</span>`:""}${isLate(t)?`<span class="chip bad">تجاوزت الموعد</span>`:""}</div>
     ${t.status==="rejected"&&t.lastReject?`<div class="note bad">سبب الرفض: ${esc(t.lastReject.note)}</div>`:""}
     ${t.status==="done"&&t.approval?`<div class="meta">اعتمدها ${esc(nameOf(t.approval.by))} · ${esc(fmt(t.approval.at))}${t.approval.note?" · "+esc(t.approval.note):""}</div>`:""}</div><div class="actions">${btns}</div></div>`;};
-  return `<h2 class="h2">${mine?"مهامي المسلّمة للموافقة":"بانتظار موافقتك"} <span class="meta num">(${rev.length})</span></h2>
-  <p class="sub">${mine?"بعد ما تسلّم المهمة، المشرف بيراجعها ويعتمدها أو يرجّعها لك مع السبب.":"راجع كل مهمة، واعتمدها عشان تتقفل، أو ارفضها مع سبب واضح عشان ترجع للموظف."}</p>
-  <div class="appr">${rev.map(t=>item(t,isMgr()?`<button class="btn ok sm" data-ap="${t.id}">اعتماد</button><button class="btn bad sm" data-rj="${t.id}">رفض</button>`:`<button class="btn sm" data-wd="${t.id}">سحب للتعديل</button>`)).join("")||`<div class="empty-col">لا توجد مهام بانتظار الموافقة</div>`}</div>
+  return `<h2 class="h2">بانتظار موافقتك <span class="meta num">(${rev.length})</span></h2>
+  <p class="sub">مهام الناس اللي تحتك، أو اللي انت كلّفتهم بيها. اعتمدها عشان تتقفل، أو ارفضها مع سبب واضح عشان ترجع للموظف.</p>
+  <div class="appr">${rev.map(t=>item(t,`<button class="btn ok sm" data-ap="${t.id}">اعتماد</button><button class="btn bad sm" data-rj="${t.id}">رفض</button>`)).join("")||`<div class="empty-col">لا توجد مهام بانتظار موافقتك</div>`}</div>
+  ${myRev.length?`<h2 class="h2">مهامي المسلّمة ومستنية الموافقة <span class="meta num">(${myRev.length})</span></h2><div class="appr">${myRev.map(t=>item(t,`<button class="btn sm" data-wd="${t.id}">سحب للتعديل</button>`)).join("")}</div>`:""}
   <h2 class="h2">مرفوضة وتحتاج إعادة عمل <span class="meta num">(${rej.length})</span></h2>
   <div class="appr">${rej.map(t=>item(t,allowed(t,"progress")?`<button class="btn sm" data-wd="${t.id}">إعادة العمل</button>`:"")).join("")||`<div class="empty-col">لا توجد مهام مرفوضة</div>`}</div>
   <h2 class="h2">آخر ما تم اعتماده</h2><div class="appr">${recent.map(t=>item(t,"")).join("")||`<div class="empty-col">لم تُعتمد مهام بعد</div>`}</div>`; }
@@ -465,96 +479,106 @@ function bindApprovals(){ const m=$("#main");
   m.querySelectorAll("[data-rj]").forEach(b=>b.onclick=()=>requestTransition(T(b.dataset.rj),"rejected"));
   m.querySelectorAll("[data-wd]").forEach(b=>b.onclick=()=>requestTransition(T(b.dataset.wd),"progress")); }
 
-/* ---------- reports ---------- */
-function reportsHTML(){ const since=S.range==="all"?0:Date.now()-Number(S.range)*864e5;
-  const ts=S.tasks.filter(t=>(t.createdAt||0)>=since||(t.completedAt||0)>=since||t.status!=="done");
-  const open=ts.filter(t=>t.status!=="done"), done=ts.filter(t=>t.status==="done"&&(t.completedAt||0)>=since);
-  const late=open.filter(isLate).length, wait=open.filter(t=>t.status==="review").length;
-  const withDue=done.filter(t=>t.due), onTime=withDue.filter(t=>t.completedAt<=t.due).length;
-  const avg=a=>a.length?a.reduce((s,x)=>s+x,0)/a.length:null;
-  const avgWork=avg(done.filter(t=>t.startedAt).map(t=>t.completedAt-t.startedAt)), avgResp=avg(ts.filter(t=>t.startedAt).map(t=>t.startedAt-t.createdAt));
-  const people={}; ts.forEach(t=>{ const k=t.assignee||"__none"; const p=people[k]||(people[k]={open:0,done:0,late:0,rej:0,work:[],due:0,ontime:0});
-    if(t.status==="done"&&(t.completedAt||0)>=since){p.done++; if(t.startedAt) p.work.push(t.completedAt-t.startedAt); if(t.due){p.due++; if(t.completedAt<=t.due)p.ontime++;}}
-    else if(t.status!=="done"){p.open++; if(isLate(t))p.late++;} p.rej+=t.rejections||0; });
-  let rows=Object.entries(people); if(!isMgr()) rows=rows.filter(([k])=>k===S.uid); rows.sort((a,b)=>(b[1].done+b[1].open)-(a[1].done+a[1].open));
-  const depts={}; ts.forEach(t=>{const d=t.dept||"بدون قسم"; const x=depts[d]||(depts[d]={open:0,done:0,late:0}); if(t.status==="done")x.done++; else {x.open++; if(isLate(t))x.late++;}});
-  const dmax=Math.max(1,...Object.values(depts).map(x=>x.open+x.done));
+/* ---------- reports (counts & time only, for everyone) ---------- */
+let statsSeq=0;
+function renderReports(){ const m=$("#main"); const seq=++statsSeq;
   const rb=(v,l)=>`<button class="btn sm ${S.range===v?"primary":""}" data-rg="${v}">${l}</button>`;
-  return `<div class="row" style="margin-top:16px;justify-content:space-between"><h2 class="h2" style="margin:0">${isMgr()?"أداء الفريق":"أدائي"}</h2><div class="actions">${rb("1","اليوم")}${rb("7","7 أيام")}${rb("30","30 يومًا")}${rb("all","الكل")}</div></div>
-  <div class="kpis"><div class="kpi"><b>${open.length}</b><span>مهام مفتوحة</span></div><div class="kpi wait"><b>${wait}</b><span>بانتظار الموافقة</span></div><div class="kpi alert"><b>${late}</b><span>متأخرة عن الموعد</span></div>
-   <div class="kpi"><b>${done.length}</b><span>أُنجزت واعتُمدت</span></div><div class="kpi"><b>${withDue.length?Math.round(onTime/withDue.length*100)+"%":"—"}</b><span>الالتزام بالمواعيد</span></div>
-   <div class="kpi"><b style="font-size:19px">${dur(avgWork)}</b><span>متوسط زمن الإنجاز</span></div><div class="kpi"><b style="font-size:19px">${dur(avgResp)}</b><span>متوسط زمن البدء بعد الإنشاء</span></div></div>
-  <div class="grid2"><div><h3 class="h2" style="font-size:16px">حسب الموظف</h3><div class="panel tablewrap"><table><thead><tr><th>الموظف</th><th>مفتوحة</th><th>منجزة</th><th>متأخرة</th><th>في الموعد</th><th>متوسط الإنجاز</th><th>مرات الرفض</th></tr></thead><tbody>
-  ${rows.map(([k,p])=>`<tr><td>${k==="__none"?`<span class="meta">غير مُسند</span>`:who(k)}${S.profiles[k]?`<div class="meta">${esc(S.profiles[k].dept)}</div>`:""}</td><td class="num">${p.open}</td><td class="num">${p.done}</td><td class="num" style="${p.late?"color:var(--bad);font-weight:600":""}">${p.late}</td>
-   <td class="num">${p.due?Math.round(p.ontime/p.due*100)+"%":"—"}</td><td class="num">${dur(avg(p.work))}</td><td class="num">${p.rej}</td></tr>`).join("")||`<tr><td colspan="7" class="meta" style="text-align:center;padding:24px">لا توجد بيانات في الفترة دي</td></tr>`}</tbody></table></div></div>
+  const head=`<div class="row" style="margin-top:16px;justify-content:space-between"><h2 class="h2" style="margin:0">أداء الفريق</h2><div class="actions">${rb("1","اليوم")}${rb("7","7 أيام")}${rb("30","30 يومًا")}${rb("all","الكل")}</div></div>
+  <p class="sub" style="margin-top:6px">الكل يشوف هنا عدد المهام والوقت لكل موظف بس. تفاصيل المهام نفسها بتظهر للموظف ومديره ولمدير النظام فقط.</p>`;
+  if(S.builtView!=="reports"||!S.statsCache){ m.innerHTML=head+`<div class="loading">جارٍ حساب الإحصائيات…</div>`; S.builtView="reports"; }
+  bindReports();
+  const since=S.range==="all"?null:new Date(Date.now()-Number(S.range)*864e5).toISOString();
+  S.sb.rpc("team_stats",{p_since:since}).then(({data,error})=>{ if(seq!==statsSeq||S.view!=="reports") return;
+    if(error){ m.innerHTML=head+`<div class="note bad">${esc(errText(error))}</div>`; bindReports(); return; }
+    S.statsCache=data; m.innerHTML=head+statsHTML(data); bindReports(); }); }
+function statsHTML(rows){
+  const by={}; (rows||[]).forEach(r=>by[r.user_id]=r);
+  const ids=activeMembers(); Object.keys(by).forEach(id=>{ if(!ids.includes(id)) ids.push(id); });
+  const z={open_count:0,review_count:0,done_count:0,late_count:0,rejections:0,with_due:0,on_time:0,avg_work_sec:null,avg_start_sec:null};
+  const R=ids.map(id=>Object.assign({id},z,by[id]||{}));
+  const sum=k=>R.reduce((a,r)=>a+(Number(r[k])||0),0);
+  const wavg=(k,wk)=>{ let n=0,t=0; R.forEach(r=>{ if(r[k]!=null){ const w=Math.max(1,Number(r[wk])||1); t+=Number(r[k])*w; n+=w; } }); return n?t/n*1000:null; };
+  const wd=sum("with_due"), ot=sum("on_time");
+  R.sort((a,b)=>(b.done_count+b.open_count)-(a.done_count+a.open_count)||nameOf(a.id).localeCompare(nameOf(b.id),"ar"));
+  const depts={}; R.forEach(r=>{ const d=(S.profiles[r.id]&&S.profiles[r.id].dept)||"بدون قسم"; const x=depts[d]||(depts[d]={open:0,done:0,late:0}); x.open+=r.open_count; x.done+=r.done_count; x.late+=r.late_count; });
+  const dmax=Math.max(1,...Object.values(depts).map(x=>x.open+x.done));
+  return `<div class="kpis"><div class="kpi"><b>${sum("open_count")}</b><span>مهام مفتوحة</span></div><div class="kpi wait"><b>${sum("review_count")}</b><span>بانتظار الموافقة</span></div><div class="kpi alert"><b>${sum("late_count")}</b><span>متأخرة عن الموعد</span></div>
+   <div class="kpi"><b>${sum("done_count")}</b><span>أُنجزت واعتُمدت</span></div><div class="kpi"><b>${wd?Math.round(ot/wd*100)+"%":"—"}</b><span>الالتزام بالمواعيد</span></div>
+   <div class="kpi"><b style="font-size:19px">${dur(wavg("avg_work_sec","done_count"))}</b><span>متوسط زمن الإنجاز</span></div></div>
+  <div class="grid2"><div><h3 class="h2" style="font-size:16px">حسب الموظف</h3><div class="panel tablewrap"><table><thead><tr><th>الموظف</th><th>مفتوحة</th><th>منجزة</th><th>متأخرة</th><th>في الموعد</th><th>متوسط الإنجاز</th><th>متوسط وقت البدء</th><th>مرات الرفض</th></tr></thead><tbody>
+  ${R.map(r=>`<tr style="${r.id===S.uid?"background:var(--accent-soft)":""}"><td>${who(r.id)}${S.profiles[r.id]?`<div class="meta">${esc(S.profiles[r.id].dept)}${S.profiles[r.id].reports_to?" · تبع "+esc(nameOf(S.profiles[r.id].reports_to)):""}</div>`:""}</td>
+   <td class="num">${r.open_count}</td><td class="num">${r.done_count}</td><td class="num" style="${r.late_count?"color:var(--bad);font-weight:600":""}">${r.late_count}</td>
+   <td class="num">${r.with_due?Math.round(r.on_time/r.with_due*100)+"%":"—"}</td><td class="num">${r.avg_work_sec!=null?dur(r.avg_work_sec*1000):"—"}</td><td class="num">${r.avg_start_sec!=null?dur(r.avg_start_sec*1000):"—"}</td><td class="num">${r.rejections}</td></tr>`).join("")||`<tr><td colspan="8" class="meta" style="text-align:center;padding:24px">لا توجد بيانات</td></tr>`}</tbody></table></div></div>
   <div><h3 class="h2" style="font-size:16px">حسب القسم</h3><div class="panel" style="padding:14px;display:grid;gap:12px">
-  ${Object.entries(depts).sort((a,b)=>(b[1].open+b[1].done)-(a[1].open+a[1].done)).map(([d,x])=>{const n=x.open+x.done||1; return `<div style="display:grid;gap:4px"><div class="row" style="justify-content:space-between"><b style="font-weight:600">${esc(d)}</b><span class="meta num">${x.done} منجزة · ${x.open} مفتوحة${x.late?` · <span style="color:var(--bad)">${x.late} متأخرة</span>`:""}</span></div>
+  ${Object.entries(depts).filter(([,x])=>x.open+x.done).sort((a,b)=>(b[1].open+b[1].done)-(a[1].open+a[1].done)).map(([d,x])=>{const n=x.open+x.done||1; return `<div style="display:grid;gap:4px"><div class="row" style="justify-content:space-between"><b style="font-weight:600">${esc(d)}</b><span class="meta num">${x.done} منجزة · ${x.open} مفتوحة${x.late?` · <span style="color:var(--bad)">${x.late} متأخرة</span>`:""}</span></div>
    <div class="meter" style="width:${Math.max(8,(x.open+x.done)/dmax*100)}%"><i style="width:${x.done/n*100}%;background:var(--ok)"></i><i style="width:${(x.open-x.late)/n*100}%;background:var(--info)"></i><i style="width:${x.late/n*100}%;background:var(--bad)"></i></div></div>`;}).join("")||`<div class="meta">لا توجد بيانات</div>`}
   <div class="row meta" style="gap:14px"><span class="row"><i style="width:10px;height:10px;border-radius:2px;background:var(--ok)"></i>منجزة</span><span class="row"><i style="width:10px;height:10px;border-radius:2px;background:var(--info)"></i>مفتوحة</span><span class="row"><i style="width:10px;height:10px;border-radius:2px;background:var(--bad)"></i>متأخرة</span></div></div></div></div>`; }
-function bindReports(){ $("#main").querySelectorAll("[data-rg]").forEach(b=>b.onclick=()=>{S.range=b.dataset.rg;renderMain();}); }
+function bindReports(){ $("#main").querySelectorAll("[data-rg]").forEach(b=>b.onclick=()=>{S.range=b.dataset.rg;S.statsCache=null;S.builtView=null;renderReports();}); }
 
 /* ---------- team ---------- */
 function renderTeam(){ const m=$("#main");
   if(S.builtView!=="team"){ S.builtView="team";
     m.innerHTML=`<h2 class="h2">طلبات الانضمام</h2><p class="sub">أي موظف يعمل حساب من صفحة الدخول بيظهر هنا. حدد دوره وقسمه ووافق عليه.</p><div id="tRq"></div>
-    <h2 class="h2">أعضاء الفريق</h2><p class="sub"><b>مدير النظام</b> يدير كل حاجة والصلاحيات · <b>المشرف</b> ينشئ ويسند ويعتمد ويرفض ويحذف · <b>الموظف</b> يشوف مهام قسمه ويبدأ ويسلّم مهامه ويبلّغ عن مشاكل.</p>
+    <h2 class="h2">أعضاء الفريق</h2><p class="sub">حدد لكل موظف <b>مديره المباشر</b>. المدير يقدر يكلّف الناس اللي تحته بمهام، ويوزّع عليهم مهامه كمهام فرعية، ويشوف تفاصيل شغلهم ويعتمده أو يرفضه. باقي الموظفين يشوفوا عدد المهام والوقت بس في التقارير. <b>مدير النظام</b> يشوف كل حاجة ويدير الصلاحيات.</p>
     <div class="panel tablewrap" id="tMembers"></div>
     <h2 class="h2">الإعدادات</h2><div class="panel" style="padding:16px;display:grid;gap:14px">
       <div style="display:grid;gap:8px"><b>الأقسام</b><div class="depchips" id="tDeps"></div><div class="row"><input class="field" id="tDepIn" placeholder="اسم قسم جديد" style="flex:1 1 180px;width:auto"><button class="btn" id="tDepAdd">إضافة قسم</button></div></div>
-      <label class="chk"><input type="checkbox" id="tSeeAll"> الموظفين يشوفوا كل مهام الفندق (مش بس قسمهم ومهامهم)</label>
       <div class="row"><label class="lb" style="flex:0 1 200px">بادئة رقم المهمة<input class="field mono" id="tPrefix" maxlength="6" dir="ltr"></label><button class="btn" id="tPrefixSave" style="align-self:end">حفظ</button></div></div>`;
     $("#tDepAdd").onclick=async()=>{ const v=$("#tDepIn").value.trim(); if(!v||S.depts.includes(v)) return; await call(S.sb.from("departments").insert({name:v,sort:100}),"تمت إضافة القسم").catch(()=>{}); $("#tDepIn").value=""; await loadMeta(); renderTeam(); };
-    $("#tSeeAll").onchange=async e=>{ await call(S.sb.from("settings").update({staff_see_all:e.target.checked}).eq("id",1),"تم الحفظ").catch(()=>{}); await loadMeta(); };
     $("#tPrefixSave").onclick=async()=>{ const v=$("#tPrefix").value.trim().toUpperCase().replace(/[^A-Z0-9]/g,""); if(!v) return; await call(S.sb.from("settings").update({prefix:v}).eq("id",1),"تم الحفظ").catch(()=>{}); await loadMeta(); render(); };
     $("#tPrefix").value=S.settings.prefix||"HTL"; }
   const dsel=(cur,attr)=>`<select class="field" ${attr}>${S.depts.concat(cur&&!S.depts.includes(cur)?[cur]:[]).map(d=>`<option${d===cur?" selected":""}>${esc(d)}</option>`).join("")}</select>`;
   const rsel=(cur,attr,dis)=>`<select class="field" ${attr}${dis?" disabled":""}>${Object.entries(ROLES).map(([k,l])=>`<option value="${k}"${k===cur?" selected":""}>${l}</option>`).join("")}</select>`;
   const P=Object.values(S.profiles); const rqs=P.filter(p=>p.role==="pending"&&p.active);
   $("#tRq").innerHTML=rqs.length?`<div class="appr">${rqs.map(p=>`<div class="apcard"><div style="display:grid;gap:4px">${who(p.id,true)}<div class="meta">${esc(p.title)}${p.requested_dept?" · يطلب قسم "+esc(p.requested_dept):""} · ${esc(fmt(ms(p.created_at)))}</div></div>
-     <div class="actions">${rsel("staff",`data-rqrole="${p.id}"`)}${dsel(p.requested_dept||S.depts[0],`data-rqdept="${p.id}"`)}<button class="btn ok sm" data-rqok="${p.id}">موافقة</button><button class="btn bad sm" data-rqno="${p.id}">رفض</button></div></div>`).join("")}</div>`:`<div class="empty-col">لا توجد طلبات جديدة</div>`;
+     <div class="actions">${rsel("staff",`data-rqrole="${p.id}"`)}${dsel(p.requested_dept||S.depts[0],`data-rqdept="${p.id}"`)}<select class="field" data-rqboss="${p.id}"><option value="">المدير المباشر…</option>${activeMembers().map(id=>`<option value="${id}">${esc(nameOf(id))}</option>`).join("")}</select><button class="btn ok sm" data-rqok="${p.id}">موافقة</button><button class="btn bad sm" data-rqno="${p.id}">رفض</button></div></div>`).join("")}</div>`:`<div class="empty-col">لا توجد طلبات جديدة</div>`;
   const ord={admin:0,manager:1,staff:2,pending:3};
+  const msel=(p)=>{ const opts=activeMembers().filter(id=>id!==p.id&&!isAbove(p.id,id)); return `<select class="field" data-mboss="${p.id}"><option value="">— بدون —</option>${opts.map(id=>`<option value="${id}"${id===p.reports_to?" selected":""}>${esc(nameOf(id))}</option>`).join("")}</select>`; };
   const mem=P.filter(p=>p.role!=="pending"||!p.active).sort((a,b)=>(ord[a.role]-ord[b.role])||nameOf(a.id).localeCompare(nameOf(b.id),"ar"));
-  $("#tMembers").innerHTML=`<table><thead><tr><th>الموظف</th><th>المسمى الوظيفي</th><th>القسم</th><th>الدور</th><th>مهام مفتوحة</th><th>الوصول</th></tr></thead><tbody>
+  $("#tMembers").innerHTML=`<table><thead><tr><th>الموظف</th><th>المسمى الوظيفي</th><th>القسم</th><th>المدير المباشر</th><th>تحته</th><th>الدور</th><th>مهام مفتوحة</th><th>الوصول</th></tr></thead><tbody>
    ${mem.map(p=>{const self=p.id===S.uid; const openN=S.tasks.filter(t=>t.assignee===p.id&&t.status!=="done").length;
      return `<tr style="${p.active?"":"opacity:.55"}"><td>${who(p.id)}</td><td><input class="field" style="width:150px" data-mtitle="${p.id}" value="${esc(p.title)}" placeholder="مثال: فني كهرباء"></td>
-     <td>${dsel(p.dept,`data-mdept="${p.id}"`)}</td><td>${p.role==="pending"?`<span class="chip">طلب مرفوض</span>`:rsel(p.role,`data-mrole="${p.id}"`,self)}</td><td class="num">${openN}</td>
+     <td>${dsel(p.dept,`data-mdept="${p.id}"`)}</td><td>${p.role==="pending"?"—":msel(p)}</td><td class="num">${Object.values(S.profiles).filter(x=>x.reports_to===p.id&&x.active).length||"—"}</td><td>${p.role==="pending"?`<span class="chip">طلب مرفوض</span>`:rsel(p.role==="admin"?"admin":"staff",`data-mrole="${p.id}"`,self)}</td><td class="num">${openN}</td>
      <td>${self?`<span class="chip ok">أنت</span>`:`<button class="btn sm ${p.active?"bad":""}" data-mact="${p.id}">${p.active?"إيقاف الوصول":"إعادة التفعيل"}</button>`}</td></tr>`;}).join("")}</tbody></table>`;
   $("#tDeps").innerHTML=S.depts.map(d=>`<span class="chip">${esc(d)}<button aria-label="حذف ${esc(d)}" data-dep="${esc(d)}">×</button></span>`).join("");
-  $("#tSeeAll").checked=!!S.settings.staff_see_all;
-  const setM=async(id,patch,msg)=>{ const p=Object.assign({},S.profiles[id],patch); await call(S.sb.rpc("admin_set_member",{p_id:id,p_role:p.role,p_dept:p.dept,p_title:p.title,p_active:p.active}),msg||"تم الحفظ").catch(()=>{}); await loadProfiles(); render(); };
+  const setM=async(id,patch,msg)=>{ const p=Object.assign({},S.profiles[id],patch); await call(S.sb.rpc("admin_set_member",{p_id:id,p_role:p.role,p_dept:p.dept,p_title:p.title,p_active:p.active,p_reports_to:p.reports_to||null}),msg||"تم الحفظ").catch(()=>{}); await loadProfiles(); render(); };
   m.querySelectorAll("[data-mrole]").forEach(s=>s.onchange=()=>setM(s.dataset.mrole,{role:s.value}));
   m.querySelectorAll("[data-mdept]").forEach(s=>s.onchange=()=>setM(s.dataset.mdept,{dept:s.value}));
+  m.querySelectorAll("[data-mboss]").forEach(s=>s.onchange=()=>setM(s.dataset.mboss,{reports_to:s.value||null},"تم تحديد المدير المباشر"));
   m.querySelectorAll("[data-mtitle]").forEach(s=>s.onchange=()=>setM(s.dataset.mtitle,{title:s.value.trim()}));
   m.querySelectorAll("[data-mact]").forEach(b=>b.onclick=async()=>{ const id=b.dataset.mact, p=S.profiles[id];
     if(p.active){ const ok=await ask({title:"إيقاف وصول "+nameOf(id)+"؟",text:"مش هيقدر يفتح اللوحة، ومهامه السابقة هتفضل في السجل.",noInput:true,okText:"إيقاف",danger:true}); if(ok==null) return; }
     setM(id,{active:!p.active},p.active?"تم إيقاف الوصول":"تم التفعيل"); });
-  m.querySelectorAll("[data-rqok]").forEach(b=>b.onclick=()=>{ const id=b.dataset.rqok; setM(id,{role:m.querySelector(`[data-rqrole="${id}"]`).value,dept:m.querySelector(`[data-rqdept="${id}"]`).value,active:true},"تمت الموافقة على "+nameOf(id)); });
+  m.querySelectorAll("[data-rqok]").forEach(b=>b.onclick=()=>{ const id=b.dataset.rqok; setM(id,{role:m.querySelector(`[data-rqrole="${id}"]`).value,dept:m.querySelector(`[data-rqdept="${id}"]`).value,reports_to:m.querySelector(`[data-rqboss="${id}"]`).value||null,active:true},"تمت الموافقة على "+nameOf(id)); });
   m.querySelectorAll("[data-rqno]").forEach(b=>b.onclick=()=>setM(b.dataset.rqno,{active:false},"تم رفض الطلب"));
   m.querySelectorAll("[data-dep]").forEach(b=>b.onclick=async()=>{ const ok=await ask({title:"حذف قسم "+b.dataset.dep+"؟",text:"المهام والموظفين الحاليين هيفضلوا باسم القسم ده.",noInput:true,okText:"حذف",danger:true}); if(ok==null) return;
     await call(S.sb.from("departments").delete().eq("name",b.dataset.dep),"تم حذف القسم").catch(()=>{}); await loadMeta(); renderTeam(); }); }
 
 /* ---------- task sheet ---------- */
-function openTask(id){ const t=id?T(id):null; if(id&&!t) return; closeSheet(); S.openId=t?t.id:null; S.thread={comments:[],events:[]};
+function openTask(id,parentId){ const t=id?T(id):null; if(id&&!t) return; closeSheet(); S.openId=t?t.id:null; S.newParent=t?null:(parentId||null); S.thread={comments:[],events:[]};
+  const par=t?(t.parentId?T(t.parentId):null):(parentId?T(parentId):null);
   const ov=document.createElement("div"); ov.className="overlay"; ov.id="ov";
   const ed=canEditFields(t), dis=ed?"":" disabled";
-  const asList=activeMembers().filter(mid=>isMgr()||mid===S.uid); const cur=t?t.assignee||"":""; if(cur&&!asList.includes(cur)) asList.push(cur);
+  const asList=activeMembers().filter(canAssignTo).filter(mid=>!(par&&!t&&mid===S.uid&&par.assignee===S.uid&&subordinates().length)); const cur=t?t.assignee||"":((isAdmin()||subordinates().length)?"":S.uid); if(cur&&!asList.includes(cur)) asList.push(cur);
   const opt=(v,l,sel)=>`<option value="${esc(v)}"${v===sel?" selected":""}>${esc(l)}</option>`;
   const depts=S.depts.concat(t&&t.dept&&!S.depts.includes(t.dept)?[t.dept]:[]);
   ov.innerHTML=`<div class="sheet" role="dialog" aria-modal="true" aria-label="تفاصيل المهمة">
-   <div class="sheethead wrap"><span class="mono meta">${t?esc(keyOf(t)):"جديدة"}</span><h3>${t?"تفاصيل المهمة":"مهمة جديدة"}</h3>${t&&isMgr()?`<button class="btn ghost sm" id="delT" style="color:var(--bad)">حذف</button>`:""}<button class="btn" id="closeT">إغلاق</button></div>
+   <div class="sheethead wrap"><span class="mono meta">${t?esc(keyOf(t)):"جديدة"}</span><h3>${t?"تفاصيل المهمة":par?"توزيع مهمة فرعية":"مهمة جديدة"}</h3>${t&&(isAdmin()||t.reporter===S.uid)?`<button class="btn ghost sm" id="delT" style="color:var(--bad)">حذف</button>`:""}<button class="btn" id="closeT">إغلاق</button></div>
    <div class="sheetbody wrap"><form class="form" id="tf">
+     ${par?`<div class="note info">جزء من المهمة <b class="mono">${esc(keyOf(par))}</b>: ${esc(par.title)} <button type="button" class="link" id="openPar">فتح</button></div>`:""}
      <input class="field title" id="fTitle" placeholder="عنوان المهمة، مثال: تسريب مياه في حمام غرفة 214" value="${esc(t?t.title:"")}" maxlength="140" required${dis}>
      <textarea class="field" id="fDesc" placeholder="التفاصيل، الخطوات المطلوبة، ملاحظات الضيف…"${dis}>${esc(t?t.desc:"")}</textarea>
      <div class="two">
-      <label class="lb">القسم<select class="field" id="fD"${dis}>${depts.map(d=>opt(d,d,t?t.dept:(myDept()||depts[0]))).join("")}</select></label>
+      <label class="lb">القسم<select class="field" id="fD"${dis}>${depts.map(d=>opt(d,d,t?t.dept:(par?par.dept:(myDept()||depts[0])))).join("")}</select></label>
       <label class="lb">الموقع / رقم الغرفة<input class="field" id="fLoc" placeholder="غرفة 214 · اللوبي · المطبخ" value="${esc(t?t.location:"")}" maxlength="60"${dis}></label>
       <label class="lb">المسؤول عن التنفيذ<select class="field" id="fA"${dis}>${opt("","غير مُسند",cur)}${asList.map(mid=>opt(mid,nameOf(mid)+(S.profiles[mid]&&S.profiles[mid].dept?" — "+S.profiles[mid].dept:""),cur)).join("")}</select></label>
       <label class="lb">الأولوية<select class="field" id="fP"${dis}>${Object.entries(PRI).map(([k,v])=>opt(k,v.l,t?t.priority:"normal")).join("")}</select></label>
       <label class="lb">موعد التسليم<input class="field" type="datetime-local" id="fDue" value="${toLocal(t&&t.due)}"${dis}></label>
       <label class="lb">الوردية<select class="field" id="fSh"${dis}>${Object.entries(SHIFTS).map(([k,v])=>opt(k,v,t?t.shift:"")).join("")}</select></label>
       <label class="lb">الوقت المقدّر (ساعات)<input class="field num" type="number" min="0" step="0.25" id="fEst" value="${t&&t.estimate!=null?t.estimate:""}"${dis}></label>
-      <label class="chk" style="align-self:end;padding-bottom:8px"><input type="checkbox" id="fNA"${(!t||t.needsApproval!==false)?" checked":""}${isMgr()&&ed?"":" disabled"}> تحتاج موافقة المشرف قبل الإغلاق</label></div>
-     ${ed?`<div class="actions"><button class="btn primary" type="submit" id="saveT">${t?"حفظ التعديلات":"إنشاء المهمة"}</button>${t?"":`<button class="btn" type="button" id="cancelT">إلغاء</button>`}</div>`:`<p class="meta" style="margin:0">تعديل التفاصيل متاح للمشرفين فقط.</p>`}
+      <label class="chk" style="align-self:end;padding-bottom:8px"><input type="checkbox" id="fNA"${(!t||t.needsApproval!==false)?" checked":""}${ed?"":" disabled"}> تحتاج موافقة اللي كلّف بيها قبل الإغلاق</label></div>
+     ${ed?`<div class="actions"><button class="btn primary" type="submit" id="saveT">${t?"حفظ التعديلات":"إنشاء المهمة"}</button>${t?"":`<button class="btn" type="button" id="cancelT">إلغاء</button>`}</div>`:`<p class="meta" style="margin:0">تعديل التفاصيل متاح للي كلّف بالمهمة ولمدير النظام.</p>`}
+     ${t?subtasksBox(t):""}
      ${t?`<div class="box"><h4>التعليقات</h4><div class="comments" id="cmList"><div class="meta">جارٍ التحميل…</div></div>
        <div style="display:grid;gap:6px"><textarea class="field" id="cmIn" rows="2" placeholder="اكتب تحديث أو ملاحظة للفريق…" style="min-height:60px" maxlength="2000"></textarea><div><button class="btn sm" type="button" id="cmSend">إضافة تعليق</button></div></div></div>`:""}
     </form><aside class="side" id="sideP"></aside></div></div>`;
@@ -565,14 +589,23 @@ function openTask(id){ const t=id?T(id):null; if(id&&!t) return; closeSheet(); S
   const dl=$("#delT"); if(dl) dl.onclick=async()=>{ const ok=await ask({title:"حذف المهمة "+keyOf(t)+"؟",text:"المهمة وسجلها وتعليقاتها هيتحذفوا نهائيًا.",noInput:true,okText:"حذف نهائي",danger:true}); if(ok==null) return;
     const r=await call(S.sb.from("tasks").delete().eq("id",t.id).select("id")).catch(()=>null); if(r&&r.data&&r.data.length){ toast("تم حذف المهمة"); closeSheet(); await loadTasks(); render(); } else if(r) toast(ERR.not_allowed,true); };
   $("#tf").addEventListener("submit",saveTask); const cs=$("#cmSend"); if(cs) cs.onclick=addComment;
+  const op=$("#openPar"); if(op) op.onclick=()=>openTask(par.id);
+  const dg=$("#delegateBtn"); if(dg) dg.onclick=()=>openTask(null,t.id);
+  ov.querySelectorAll("[data-sub]").forEach(b=>b.onclick=()=>openTask(b.dataset.sub));
   renderSheetSide(); if(t) loadThread(t.id); else setTimeout(()=>{ const f=$("#fTitle"); if(f) f.focus(); },30); }
+function subtasksBox(t){ const kids=childrenOf(t.id); const canDel=(t.assignee===S.uid||t.reporter===S.uid||isAdmin())&&(isAdmin()||subordinates().length>0)&&t.status!=="done";
+  if(!kids.length&&!canDel) return "";
+  const d=kids.filter(k=>k.status==="done").length;
+  return `<div class="box"><div class="row" style="justify-content:space-between"><h4>المهام الفرعية ${kids.length?`<span class="num">(${d}/${kids.length} خلصت)</span>`:""}</h4>${canDel?`<button type="button" class="btn sm primary" id="delegateBtn">+ وزّع جزء على فريقك</button>`:""}</div>
+   ${kids.length?`<div class="meter" style="width:100%"><i style="width:${d/kids.length*100}%;background:var(--ok)"></i></div><div style="display:grid;gap:6px">${kids.map(k=>`<button type="button" class="hit" data-sub="${k.id}" style="border:1px solid var(--line);border-radius:8px;padding:8px 10px;display:flex;gap:8px;align-items:center;background:var(--surface);cursor:pointer;width:100%;text-align:right"><span class="mono meta">${esc(keyOf(k))}</span><span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500">${esc(k.title)}</span>${who(k.assignee)}<span class="chip" style="color:${ST[k.status].c}">${ST[k.status].l}</span></button>`).join("")}</div>`:`<div class="meta">قسّم المهمة على الناس اللي تحتك، وكل واحد هيظهرله الجزء بتاعه وتتابعه من هنا.</div>`}</div>`; }
 function closeSheet(){ const o=$("#ov"); if(o) o.remove(); document.body.style.overflow=""; S.openId=null; }
 async function saveTask(e){ e.preventDefault(); const t=S.openId?T(S.openId):null; const title=$("#fTitle").value.trim(); if(!title){$("#fTitle").focus();return;}
   const dueV=$("#fDue").value, est=$("#fEst").value;
   const p={title,descr:$("#fDesc").value.trim(),dept:$("#fD").value,location:$("#fLoc").value.trim(),assignee:$("#fA").value||"",priority:$("#fP").value,
     due:dueV?new Date(dueV).toISOString():"",shift:$("#fSh").value,estimate:est===""?"":String(Number(est)),needs_approval:$("#fNA").checked};
+  if(!t&&S.newParent) p.parent_id=String(S.newParent);
   const btn=$("#saveT"); if(btn) btn.disabled=true;
-  try{ if(!t){ const r=await call(S.sb.rpc("create_task",{p})); toast("تم إنشاء المهمة "+(S.settings.prefix||"HTL")+"-"+String(r.data).padStart(3,"0")); closeSheet(); }
+  try{ if(!t){ const parId=S.newParent; const r=await call(S.sb.rpc("create_task",{p})); toast((parId?"تم توزيع المهمة الفرعية ":"تم إنشاء المهمة ")+(S.settings.prefix||"HTL")+"-"+String(r.data).padStart(3,"0")); closeSheet(); if(parId){ await loadTasks(); render(); openTask(parId); return; } }
     else { await call(S.sb.rpc("update_task",{p_id:t.id,p}),"تم حفظ التعديلات"); loadThread(t.id); }
     await loadTasks(); render(); }catch(err){} finally{ if(btn) btn.disabled=false; } }
 async function addComment(){ const id=S.openId; const inp=$("#cmIn"); const body=inp.value.trim(); if(!id||!body) return; inp.value="";
@@ -582,7 +615,7 @@ function renderSheetSide(){ const side=$("#sideP"); if(!side) return; const t=S.
     side.innerHTML=`<div class="box"><h4>مسار المهمة</h4><div class="meta" style="line-height:1.9">جديدة ← قيد التنفيذ ← بانتظار الموافقة ← مكتملة ومعتمدة.<br>لو المشرف رفضها، بترجع للموظف مع السبب عشان يعيد الشغل.<br>وقت البدء والتسليم والاعتماد بيتسجل تلقائيًا من السيرفر.</div></div>`; return; }
   const st=ST[t.status]; const acts=STATUSES.filter(s=>allowed(t,s.k)); const now=Date.now(); const late=isLate(t);
   side.innerHTML=`<div class="box"><h4>الحالة</h4><div class="statusline"><span style="width:10px;height:10px;border-radius:50%;background:${st.c}"></span>${st.l}<span class="meta" style="font-weight:400;font-size:12.5px">منذ ${dur(now-(t.statusAt||t.createdAt))}</span></div>
-    ${acts.length?`<div class="actions">${acts.map(s=>`<button class="btn sm ${s.k==="done"?"ok":s.k==="rejected"?"bad":s.k==="review"?"primary":""}" data-to="${s.k}">${esc(actLabel(t,s.k))}</button>`).join("")}</div>`:`<div class="meta">${t.assignee===S.uid||isMgr()?"لا توجد إجراءات متاحة في المرحلة دي":"المهمة مسندة لـ "+esc(nameOf(t.assignee))}</div>`}
+    ${acts.length?`<div class="actions">${acts.map(s=>`<button class="btn sm ${s.k==="done"?"ok":s.k==="rejected"?"bad":s.k==="review"?"primary":""}" data-to="${s.k}">${esc(actLabel(t,s.k))}</button>`).join("")}</div>`:`<div class="meta">${t.assignee===S.uid||canApprove(t)?"لا توجد إجراءات متاحة في المرحلة دي":"المهمة مسندة لـ "+esc(nameOf(t.assignee))}</div>`}
     ${t.status==="rejected"&&t.lastReject?`<div class="note bad"><b>سبب الرفض:</b> ${esc(t.lastReject.note)}<div class="meta" style="margin-top:4px">${esc(nameOf(t.lastReject.by))} · ${esc(fmt(t.lastReject.at))}</div></div>`:""}
     ${t.status==="done"&&t.approval?`<div class="note ok">اعتمدها ${esc(nameOf(t.approval.by))} · ${esc(fmt(t.approval.at))}${t.approval.note?`<div style="margin-top:4px">${esc(t.approval.note)}</div>`:""}</div>`:""}
     ${late&&t.status!=="done"?`<div class="note bad">متأخرة عن الموعد بـ ${dur(now-t.due)}</div>`:""}</div>
