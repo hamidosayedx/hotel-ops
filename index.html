@@ -225,10 +225,10 @@ const STATUSES=[{k:"todo",l:"جديدة",c:"var(--muted)"},{k:"progress",l:"قي
 const ST=Object.fromEntries(STATUSES.map(s=>[s.k,s]));
 const PRI={urgent:{l:"عاجلة",c:"bad",o:0},high:{l:"عالية",c:"warn",o:1},normal:{l:"عادية",c:"info",o:2},low:{l:"منخفضة",c:"",o:3}};
 const SHIFTS={"":"بدون","morning":"صباحي","evening":"مسائي","night":"ليلي"};
-const ROLES={admin:"مدير النظام",staff:"موظف"};
+const ROLES={admin:"مدير النظام",manager:"مدير قسم",staff:"موظف"};
 const ACT={create:"أنشأ المهمة",edit:"عدّل",move:"غيّر الحالة",approve:"اعتمد المهمة",reject:"رفض المهمة",assign:"غيّر",delegate:"وزّع مهمة فرعية"};
 const ERR={not_allowed:"لا تملك صلاحية هذا الإجراء.",reason_required:"لازم تكتب سبب الرفض.",staff_assign_self_only:"الموظف يقدر يسند المهمة لنفسه بس.",
-  assign_not_allowed:"تقدر تسند المهام لنفسك أو للموظفين اللي تحتك بس.",hierarchy_cycle:"مينفعش الموظف يبقى مدير لمديره.",
+  assign_not_allowed:"تقدر تسند المهام لنفسك بس. التوزيع على الموظفين لمدير القسم ولمدير النظام.",boss_not_manager:"المدير المباشر لازم يكون «مدير قسم». غيّر دوره الأول.",hierarchy_cycle:"مينفعش الموظف يبقى مدير لمديره.",
   bad_assignee:"الموظف المختار غير مفعّل.",cannot_change_self:"مينفعش تغيّر دورك أو توقف حسابك بنفسك.",not_found:"المهمة غير موجودة أو مش متاحة لك.",same_status:"المهمة في الحالة دي بالفعل."};
 
 document.title=CFG.HOTEL_NAME||document.title; $("#hotelName").textContent=CFG.HOTEL_NAME||"لوحة عمليات الفندق";
@@ -259,13 +259,14 @@ function errText(e){ const m=(e&&(e.message||e.error_description))||""; for(cons
 async function call(p,okMsg){ try{ const r=await p; if(r&&r.error) throw r.error; if(okMsg) toast(okMsg); return r; }catch(e){ toast(errText(e),true); throw e; } }
 
 /* ---------- roles ---------- */
-const myRole=()=>S.me&&S.me.active&&S.me.role!=="pending"?(S.me.role==="admin"?"admin":"staff"):null;
+const myRole=()=>S.me&&S.me.active&&S.me.role!=="pending"?S.me.role:null;
+const isManager=()=>myRole()==="manager";
 const isAdmin=()=>myRole()==="admin";
 function isAbove(boss,emp){ if(!boss||!emp) return false; let cur=S.profiles[emp], n=0; while(cur&&cur.reports_to&&n<25){ if(cur.reports_to===boss) return true; cur=S.profiles[cur.reports_to]; n++; } return false; }
-const subordinates=()=>Object.keys(S.profiles).filter(id=>isAbove(S.uid,id)&&S.profiles[id].active&&S.profiles[id].role!=="pending");
-const canAssignTo=id=>isAdmin()||id===S.uid||isAbove(S.uid,id);
+const subordinates=()=>isManager()||isAdmin()?Object.keys(S.profiles).filter(id=>isAbove(S.uid,id)&&S.profiles[id].active&&S.profiles[id].role!=="pending"):[];
+const canAssignTo=id=>isAdmin()||id===S.uid||(isManager()&&isAbove(S.uid,id));
 const canApprove=t=>isAdmin()||isAbove(S.uid,t.assignee)||(t.reporter===S.uid&&!!t.assignee&&t.assignee!==S.uid);
-const isMgr=()=>isAdmin()||subordinates().length>0;
+
 const isMember=()=>!!myRole();
 const myDept=()=>(S.me&&S.me.dept)||"";
 const nameOf=id=>!id?"غير مُسند":(S.profiles[id]&&S.profiles[id].full_name)||"موظف";
@@ -484,7 +485,7 @@ let statsSeq=0;
 function renderReports(){ const m=$("#main"); const seq=++statsSeq;
   const rb=(v,l)=>`<button class="btn sm ${S.range===v?"primary":""}" data-rg="${v}">${l}</button>`;
   const head=`<div class="row" style="margin-top:16px;justify-content:space-between"><h2 class="h2" style="margin:0">أداء الفريق</h2><div class="actions">${rb("1","اليوم")}${rb("7","7 أيام")}${rb("30","30 يومًا")}${rb("all","الكل")}</div></div>
-  <p class="sub" style="margin-top:6px">الكل يشوف هنا عدد المهام والوقت لكل موظف بس. تفاصيل المهام نفسها بتظهر للموظف ومديره ولمدير النظام فقط.</p>`;
+  <p class="sub" style="margin-top:6px">${isAdmin()?"كل أقسام الفندق.":"قسمك بس."} الأرقام هنا عدد المهام والوقت بس. تفاصيل المهام بتظهر للموظف ومديره ولمدير النظام فقط.</p>`;
   if(S.builtView!=="reports"||!S.statsCache){ m.innerHTML=head+`<div class="loading">جارٍ حساب الإحصائيات…</div>`; S.builtView="reports"; }
   bindReports();
   const since=S.range==="all"?null:new Date(Date.now()-Number(S.range)*864e5).toISOString();
@@ -518,8 +519,8 @@ function bindReports(){ $("#main").querySelectorAll("[data-rg]").forEach(b=>b.on
 /* ---------- team ---------- */
 function renderTeam(){ const m=$("#main");
   if(S.builtView!=="team"){ S.builtView="team";
-    m.innerHTML=`<h2 class="h2">طلبات الانضمام</h2><p class="sub">أي موظف يعمل حساب من صفحة الدخول بيظهر هنا. حدد دوره وقسمه ووافق عليه.</p><div id="tRq"></div>
-    <h2 class="h2">أعضاء الفريق</h2><p class="sub">حدد لكل موظف <b>مديره المباشر</b>. المدير يقدر يكلّف الناس اللي تحته بمهام، ويوزّع عليهم مهامه كمهام فرعية، ويشوف تفاصيل شغلهم ويعتمده أو يرفضه. باقي الموظفين يشوفوا عدد المهام والوقت بس في التقارير. <b>مدير النظام</b> يشوف كل حاجة ويدير الصلاحيات.</p>
+    m.innerHTML=`<h2 class="h2">طلبات الانضمام</h2><p class="sub">أي حد يعمل حساب بيفضل مقفول عليه ومايشوفش أي حاجة لحد ما توافق عليه هنا. حدد دوره وقسمه ومديره المباشر، وبعدين وافق. لو مش عارفه، دوس رفض.</p><div id="tRq"></div>
+    <h2 class="h2">أعضاء الفريق</h2><p class="sub"><b>مدير النظام</b> (انت) يشوف كل حاجة ويوافق على الحسابات ويحدد الأدوار. <b>مدير القسم</b> يوزّع الشغل على الموظفين اللي مديرهم المباشر هو، ويشوف تفاصيل شغلهم ويعتمده أو يرفضه. <b>الموظف</b> ينفّذ مهامه بس. كل واحد يشوف زمايل قسمه بس، والأرقام في التقارير لقسمه بس.</p>
     <div class="panel tablewrap" id="tMembers"></div>
     <h2 class="h2">الإعدادات</h2><div class="panel" style="padding:16px;display:grid;gap:14px">
       <div style="display:grid;gap:8px"><b>الأقسام</b><div class="depchips" id="tDeps"></div><div class="row"><input class="field" id="tDepIn" placeholder="اسم قسم جديد" style="flex:1 1 180px;width:auto"><button class="btn" id="tDepAdd">إضافة قسم</button></div></div>
@@ -531,14 +532,14 @@ function renderTeam(){ const m=$("#main");
   const rsel=(cur,attr,dis)=>`<select class="field" ${attr}${dis?" disabled":""}>${Object.entries(ROLES).map(([k,l])=>`<option value="${k}"${k===cur?" selected":""}>${l}</option>`).join("")}</select>`;
   const P=Object.values(S.profiles); const rqs=P.filter(p=>p.role==="pending"&&p.active);
   $("#tRq").innerHTML=rqs.length?`<div class="appr">${rqs.map(p=>`<div class="apcard"><div style="display:grid;gap:4px">${who(p.id,true)}<div class="meta">${esc(p.title)}${p.requested_dept?" · يطلب قسم "+esc(p.requested_dept):""} · ${esc(fmt(ms(p.created_at)))}</div></div>
-     <div class="actions">${rsel("staff",`data-rqrole="${p.id}"`)}${dsel(p.requested_dept||S.depts[0],`data-rqdept="${p.id}"`)}<select class="field" data-rqboss="${p.id}"><option value="">المدير المباشر…</option>${activeMembers().map(id=>`<option value="${id}">${esc(nameOf(id))}</option>`).join("")}</select><button class="btn ok sm" data-rqok="${p.id}">موافقة</button><button class="btn bad sm" data-rqno="${p.id}">رفض</button></div></div>`).join("")}</div>`:`<div class="empty-col">لا توجد طلبات جديدة</div>`;
+     <div class="actions">${rsel("staff",`data-rqrole="${p.id}"`)}${dsel(p.requested_dept||S.depts[0],`data-rqdept="${p.id}"`)}<select class="field" data-rqboss="${p.id}"><option value="">المدير المباشر…</option>${activeMembers().filter(id=>["manager","admin"].includes(S.profiles[id].role)).map(id=>`<option value="${id}">${esc(nameOf(id))} — ${esc(S.profiles[id].dept||"")}</option>`).join("")}</select><button class="btn ok sm" data-rqok="${p.id}">موافقة</button><button class="btn bad sm" data-rqno="${p.id}">رفض</button></div></div>`).join("")}</div>`:`<div class="empty-col">لا توجد طلبات جديدة</div>`;
   const ord={admin:0,manager:1,staff:2,pending:3};
-  const msel=(p)=>{ const opts=activeMembers().filter(id=>id!==p.id&&!isAbove(p.id,id)); return `<select class="field" data-mboss="${p.id}"><option value="">— بدون —</option>${opts.map(id=>`<option value="${id}"${id===p.reports_to?" selected":""}>${esc(nameOf(id))}</option>`).join("")}</select>`; };
+  const msel=(p)=>{ const opts=activeMembers().filter(id=>id!==p.id&&!isAbove(p.id,id)&&["manager","admin"].includes(S.profiles[id].role)); return `<select class="field" data-mboss="${p.id}"><option value="">— بدون —</option>${opts.map(id=>`<option value="${id}"${id===p.reports_to?" selected":""}>${esc(nameOf(id))}</option>`).join("")}</select>`; };
   const mem=P.filter(p=>p.role!=="pending"||!p.active).sort((a,b)=>(ord[a.role]-ord[b.role])||nameOf(a.id).localeCompare(nameOf(b.id),"ar"));
   $("#tMembers").innerHTML=`<table><thead><tr><th>الموظف</th><th>المسمى الوظيفي</th><th>القسم</th><th>المدير المباشر</th><th>تحته</th><th>الدور</th><th>مهام مفتوحة</th><th>الوصول</th></tr></thead><tbody>
    ${mem.map(p=>{const self=p.id===S.uid; const openN=S.tasks.filter(t=>t.assignee===p.id&&t.status!=="done").length;
      return `<tr style="${p.active?"":"opacity:.55"}"><td>${who(p.id)}</td><td><input class="field" style="width:150px" data-mtitle="${p.id}" value="${esc(p.title)}" placeholder="مثال: فني كهرباء"></td>
-     <td>${dsel(p.dept,`data-mdept="${p.id}"`)}</td><td>${p.role==="pending"?"—":msel(p)}</td><td class="num">${Object.values(S.profiles).filter(x=>x.reports_to===p.id&&x.active).length||"—"}</td><td>${p.role==="pending"?`<span class="chip">طلب مرفوض</span>`:rsel(p.role==="admin"?"admin":"staff",`data-mrole="${p.id}"`,self)}</td><td class="num">${openN}</td>
+     <td>${dsel(p.dept,`data-mdept="${p.id}"`)}</td><td>${p.role==="pending"?"—":msel(p)}</td><td class="num">${Object.values(S.profiles).filter(x=>x.reports_to===p.id&&x.active).length||"—"}</td><td>${p.role==="pending"?`<span class="chip">طلب مرفوض</span>`:rsel(p.role,`data-mrole="${p.id}"`,self)}</td><td class="num">${openN}</td>
      <td>${self?`<span class="chip ok">أنت</span>`:`<button class="btn sm ${p.active?"bad":""}" data-mact="${p.id}">${p.active?"إيقاف الوصول":"إعادة التفعيل"}</button>`}</td></tr>`;}).join("")}</tbody></table>`;
   $("#tDeps").innerHTML=S.depts.map(d=>`<span class="chip">${esc(d)}<button aria-label="حذف ${esc(d)}" data-dep="${esc(d)}">×</button></span>`).join("");
   const setM=async(id,patch,msg)=>{ const p=Object.assign({},S.profiles[id],patch); await call(S.sb.rpc("admin_set_member",{p_id:id,p_role:p.role,p_dept:p.dept,p_title:p.title,p_active:p.active,p_reports_to:p.reports_to||null}),msg||"تم الحفظ").catch(()=>{}); await loadProfiles(); render(); };
@@ -559,7 +560,7 @@ function openTask(id,parentId){ const t=id?T(id):null; if(id&&!t) return; closeS
   const par=t?(t.parentId?T(t.parentId):null):(parentId?T(parentId):null);
   const ov=document.createElement("div"); ov.className="overlay"; ov.id="ov";
   const ed=canEditFields(t), dis=ed?"":" disabled";
-  const asList=activeMembers().filter(canAssignTo).filter(mid=>!(par&&!t&&mid===S.uid&&par.assignee===S.uid&&subordinates().length)); const cur=t?t.assignee||"":((isAdmin()||subordinates().length)?"":S.uid); if(cur&&!asList.includes(cur)) asList.push(cur);
+  const asList=activeMembers().filter(canAssignTo).filter(mid=>!(par&&!t&&mid===S.uid&&par.assignee===S.uid&&subordinates().length)); const cur=t?t.assignee||"":((isAdmin()||(isManager()&&subordinates().length))?"":S.uid); if(cur&&!asList.includes(cur)) asList.push(cur);
   const opt=(v,l,sel)=>`<option value="${esc(v)}"${v===sel?" selected":""}>${esc(l)}</option>`;
   const depts=S.depts.concat(t&&t.dept&&!S.depts.includes(t.dept)?[t.dept]:[]);
   ov.innerHTML=`<div class="sheet" role="dialog" aria-modal="true" aria-label="تفاصيل المهمة">
@@ -593,7 +594,7 @@ function openTask(id,parentId){ const t=id?T(id):null; if(id&&!t) return; closeS
   const dg=$("#delegateBtn"); if(dg) dg.onclick=()=>openTask(null,t.id);
   ov.querySelectorAll("[data-sub]").forEach(b=>b.onclick=()=>openTask(b.dataset.sub));
   renderSheetSide(); if(t) loadThread(t.id); else setTimeout(()=>{ const f=$("#fTitle"); if(f) f.focus(); },30); }
-function subtasksBox(t){ const kids=childrenOf(t.id); const canDel=(t.assignee===S.uid||t.reporter===S.uid||isAdmin())&&(isAdmin()||subordinates().length>0)&&t.status!=="done";
+function subtasksBox(t){ const kids=childrenOf(t.id); const canDel=(t.assignee===S.uid||t.reporter===S.uid||isAdmin())&&(isAdmin()||(isManager()&&subordinates().length>0))&&t.status!=="done";
   if(!kids.length&&!canDel) return "";
   const d=kids.filter(k=>k.status==="done").length;
   return `<div class="box"><div class="row" style="justify-content:space-between"><h4>المهام الفرعية ${kids.length?`<span class="num">(${d}/${kids.length} خلصت)</span>`:""}</h4>${canDel?`<button type="button" class="btn sm primary" id="delegateBtn">+ وزّع جزء على فريقك</button>`:""}</div>
