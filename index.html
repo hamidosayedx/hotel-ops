@@ -238,7 +238,7 @@ en:{
  r_admin:"System admin",r_supervisor:"Supervisor",r_manager:"Department head",r_staff:"Staff",r_pending:"Pending",
  noTasks:"No tasks yet",noTasksHint:"Add the first task: a room repair, a VIP suite setup, or a laundry inventory. It appears under “New” and is followed up until approval.",addFirst:"+ Add the first task",
  emptyCol:"Nothing here",doneOn:"Done",dueOn:"Due",overdue:"Overdue",since:"for",
- delegated:"Delegated: {d}/{n} done",subOf:"Part of {k}",rejectedTimes:"Rejected {n}×",
+ delegated:"Delegated: {d}/{n} done",trFrom:"Transferred from {n}",trTitle:"Transfer this task",trHint:"Hand the whole task to someone else. It stays one task (no copy) and shows who it was transferred from. You keep following it.",trTo:"Transfer to…",trNote:"Note for them (optional)",trBtn:"Transfer",trDone:"Transferred to {n}",trInfo:"Transferred from {f} to {t} by {b}",ev_transfer:"transferred the task",splitHint:"Need to split it into separate parts for several people? Use this only then.",subOf:"Part of {k}",rejectedTimes:"Rejected {n}×",
  colKey:"No.",colTask:"Task",colDept:"Department",colHotel:"Hotel",colAssignee:"Assignee",colPri:"Priority",colStatus:"Status",colDue:"Due",colCreated:"Created",colWork:"Work time",noMatch:"No tasks match the filters",
  apprTitle:"Waiting for your approval",apprHint:"Tasks of your team, or tasks you assigned. Approve to close them, or reject with a clear reason so they go back.",apprNone:"Nothing waiting for your approval",
  mySubmitted:"My submitted tasks awaiting approval",rejTitle:"Rejected, needs rework",rejNone:"No rejected tasks",recentTitle:"Recently approved",recentNone:"Nothing approved yet",
@@ -271,7 +271,7 @@ en:{
  needsAppr:"Needs approval from whoever assigned it",saveChanges:"Save changes",create:"Create task",cancel:"Cancel",
  editOnly:"Only whoever assigned this task, the supervisor or the system admin can edit details.",
  comments:"Comments",commentPh:"Write an update or a note for the team…",addComment:"Add comment",noComments:"No comments yet",
- subtasks:"Subtasks",subDone:"({d}/{n} done)",delegateBtn:"+ Distribute to your team",subHint:"Split this task between the people on your team. Each one sees their part, and you follow it from here.",
+ subtasks:"Subtasks",subDone:"({d}/{n} done)",delegateBtn:"+ Split into parts",subHint:"Split this task between the people on your team. Each one sees their part, and you follow it from here.",
  flow:"How a task moves",flowTxt:"New → In progress → Awaiting approval → Done & approved.<br>If it's rejected, it goes back to the employee with the reason.<br>Start, submit and approval times are recorded automatically by the server.",
  status:"Status",noActions:"No actions available at this stage",assignedTo:"Assigned to {n}",lateBy:"Overdue by {d}",
  time:"Time",createdBy:"Created by",createdAt:"Created",startedAt:"Started",submittedAt:"Submitted",completedAt:"Completed",dueReq:"Due",startDelay:"Start delay",workT:"Work time",est:"est. {h} h",rejCount:"Rejections",
@@ -302,7 +302,7 @@ ar:{
  r_admin:"مدير النظام",r_supervisor:"مشرف",r_manager:"مدير قسم",r_staff:"موظف",r_pending:"بانتظار الموافقة",
  noTasks:"لا توجد مهام بعد",noTasksHint:"ابدأ بأول مهمة: صيانة غرفة، تجهيز جناح لضيف مهم، أو جرد للمغسلة. هتظهر في «جديدة» وتتتابع لحد الاعتماد.",addFirst:"+ إضافة أول مهمة",
  emptyCol:"لا توجد مهام هنا",doneOn:"أُنجزت",dueOn:"موعد",overdue:"متأخرة",since:"منذ",
- delegated:"موزّعة: {d}/{n} خلصت",subOf:"فرعية من {k}",rejectedTimes:"رُفضت {n}×",
+ delegated:"موزّعة: {d}/{n} خلصت",trFrom:"منقولة من {n}",trTitle:"تحويل المهمة",trHint:"سلّم المهمة كلها لحد تاني. هتفضل مهمة واحدة من غير تكرار، ومكتوب عليها منقولة من مين، وانت تفضل متابعها.",trTo:"حوّلها لـ…",trNote:"ملاحظة ليه (اختياري)",trBtn:"تحويل",trDone:"تم التحويل إلى {n}",trInfo:"منقولة من {f} إلى {t} بواسطة {b}",ev_transfer:"حوّل المهمة",splitHint:"عايز تقسمها لأجزاء منفصلة على كذا حد؟ استخدم ده بس في الحالة دي.",subOf:"فرعية من {k}",rejectedTimes:"رُفضت {n}×",
  colKey:"الرقم",colTask:"المهمة",colDept:"القسم",colHotel:"الفندق",colAssignee:"المسؤول",colPri:"الأولوية",colStatus:"الحالة",colDue:"الموعد",colCreated:"أُنشئت",colWork:"زمن العمل",noMatch:"لا توجد مهام تطابق الفلاتر",
  apprTitle:"بانتظار موافقتك",apprHint:"مهام فريقك، أو المهام اللي انت كلّفت بيها. اعتمدها عشان تتقفل، أو ارفضها بسبب واضح عشان ترجع للموظف.",apprNone:"لا توجد مهام بانتظار موافقتك",
  mySubmitted:"مهامي المسلّمة ومستنية الموافقة",rejTitle:"مرفوضة وتحتاج إعادة عمل",rejNone:"لا توجد مهام مرفوضة",recentTitle:"آخر ما تم اعتماده",recentNone:"لم تُعتمد مهام بعد",
@@ -335,7 +335,7 @@ ar:{
  needsAppr:"تحتاج موافقة اللي كلّف بيها قبل الإغلاق",saveChanges:"حفظ التعديلات",create:"إنشاء المهمة",cancel:"إلغاء",
  editOnly:"تعديل التفاصيل متاح للي كلّف بالمهمة وللمشرف ولمدير النظام.",
  comments:"التعليقات",commentPh:"اكتب تحديث أو ملاحظة للفريق…",addComment:"إضافة تعليق",noComments:"لا توجد تعليقات بعد",
- subtasks:"المهام الفرعية",subDone:"({d}/{n} خلصت)",delegateBtn:"+ وزّع جزء على فريقك",subHint:"قسّم المهمة على الناس اللي تحتك، وكل واحد هيظهرله الجزء بتاعه وتتابعه من هنا.",
+ subtasks:"المهام الفرعية",subDone:"({d}/{n} خلصت)",delegateBtn:"+ قسّمها لأجزاء",subHint:"قسّم المهمة على الناس اللي تحتك، وكل واحد هيظهرله الجزء بتاعه وتتابعه من هنا.",
  flow:"مسار المهمة",flowTxt:"جديدة ← قيد التنفيذ ← بانتظار الموافقة ← مكتملة ومعتمدة.<br>لو اترفضت، بترجع للموظف مع السبب.<br>وقت البدء والتسليم والاعتماد بيتسجل تلقائيًا من السيرفر.",
  status:"الحالة",noActions:"لا توجد إجراءات متاحة في المرحلة دي",assignedTo:"المهمة مسندة لـ {n}",lateBy:"متأخرة عن الموعد بـ {d}",
  time:"الوقت",createdBy:"أنشأها",createdAt:"تاريخ الإنشاء",startedAt:"بدء العمل",submittedAt:"التسليم",completedAt:"الإنجاز",dueReq:"الموعد المطلوب",startDelay:"زمن البدء",workT:"زمن العمل",est:"المقدّر {h} س",rejCount:"مرات الرفض",
@@ -423,6 +423,7 @@ const hotelOpts=(sel,blank)=>(blank!=null?opt("",blank,sel):"")+S.hotelRows.map(
 /* ================= data ================= */
 function normTask(r){ return {id:r.id,num:r.id,title:r.title,desc:r.descr,dept:r.dept,hotel:r.hotel,location:r.location,assignee:r.assignee,reporter:r.reporter,
   priority:r.priority,status:r.status,due:ms(r.due),shift:r.shift,estimate:r.estimate,needsApproval:r.needs_approval,rejections:r.rejections,
+  transfer:r.transferred_at?{from:r.transferred_from,by:r.transferred_by,at:ms(r.transferred_at)}:null,
   lastReject:r.last_reject_at?{by:r.last_reject_by,at:ms(r.last_reject_at),note:r.last_reject_note}:null,
   approval:r.approval_at?{by:r.approval_by,at:ms(r.approval_at),note:r.approval_note}:null,
   parentId:r.parent_id||null,createdAt:ms(r.created_at),updatedAt:ms(r.updated_at),statusAt:ms(r.status_at),startedAt:ms(r.started_at),submittedAt:ms(r.submitted_at),completedAt:ms(r.completed_at)}; }
@@ -592,6 +593,7 @@ function renderGate(){ const m=$("#main"); const me=S.me;
 function subBadge(x){ const kids=childrenOf(x.id); const par=x.parentId?T(x.parentId):null; const out=[];
   if(kids.length){ const d=kids.filter(k=>k.status==="done").length; out.push(`<span class="chip info">${esc(t("delegated",{d,n:kids.length}))}</span>`); }
   if(x.parentId) out.push(`<span class="chip">${esc(t("subOf",{k:par?keyOf(par):"#"+x.parentId}))}</span>`);
+  if(x.transfer&&x.transfer.from) out.push(`<span class="chip info">↪ ${esc(t("trFrom",{n:nameOf(x.transfer.from)}))}</span>`);
   return out.length?`<div class="row">${out.join("")}</div>`:""; }
 function cardHTML(x){ const p=PRI[x.priority]||PRI.normal; const late=isLate(x)&&x.status!=="done"; const dragOk=STATUSES.some(s=>allowed(x,s.k));
   return `<article class="card" data-id="${x.id}" data-pri="${esc(x.priority)}" draggable="${dragOk}" tabindex="0">
@@ -622,7 +624,7 @@ function listHTML(){ const list=filtered().slice(); const k=S.sort.k,d=S.sort.d;
   const th=(key,l)=>`<th class="sort" data-k="${key}">${esc(t(l))}${S.sort.k===key?(S.sort.d>0?" ↑":" ↓"):""}</th>`;
   return `<div class="panel tablewrap"><table><thead><tr>${th("key","colKey")}<th>${esc(t("colTask"))}</th>${isAdmin()?`<th>${esc(t("colHotel"))}</th>`:""}<th>${esc(t("colDept"))}</th>${th("assignee","colAssignee")}${th("priority","colPri")}${th("status","colStatus")}${th("due","colDue")}${th("createdAt","colCreated")}${th("work","colWork")}</tr></thead>
   <tbody>${list.map(x=>{const p=PRI[x.priority]||PRI.normal; const late=isLate(x);
-   return `<tr class="click" data-id="${x.id}"><td class="mono meta">${esc(keyOf(x))}</td><td><div class="t">${esc(x.title)}</div>${x.location?`<span class="meta">${esc(x.location)}</span>`:""}</td>${isAdmin()?`<td>${esc(hotelL(x.hotel))}</td>`:""}<td>${esc(deptL(x.dept))}</td><td>${who(x.assignee)}</td>
+   return `<tr class="click" data-id="${x.id}"><td class="mono meta">${esc(keyOf(x))}</td><td><div class="t">${esc(x.title)}</div>${x.location?`<span class="meta">${esc(x.location)}</span>`:""}${x.transfer&&x.transfer.from?` <span class="chip info" style="font-size:11px">↪ ${esc(t("trFrom",{n:nameOf(x.transfer.from)}))}</span>`:""}</td>${isAdmin()?`<td>${esc(hotelL(x.hotel))}</td>`:""}<td>${esc(deptL(x.dept))}</td><td>${who(x.assignee)}</td>
    <td><span class="chip ${p.c}">${esc(priL(x.priority))}</span></td><td><span class="chip" style="color:${ST[x.status].c}">${esc(stL(x.status))}</span></td>
    <td class="num">${x.due?`<span class="${late?"chip bad":""}">${esc(fmt(x.due))}</span>`:"—"}</td><td class="num meta">${esc(fmt(x.createdAt))}</td><td class="num">${x.startedAt?dur(workTime(x)):"—"}</td></tr>`;}).join("")||`<tr><td colspan="10" class="meta" style="text-align:center;padding:30px">${esc(t("noMatch"))}</td></tr>`}</tbody></table></div>`; }
 function bindList(){ const m=$("#main"); m.querySelectorAll("tr.click").forEach(r=>r.onclick=()=>openTask(r.dataset.id));
@@ -766,6 +768,7 @@ function openTask(id,parentId){ const x=id?T(id):null; if(id&&!x) return; closeS
       <label class="lb">${esc(t("estimate"))}<input class="field num" type="number" min="0" step="0.25" id="fEst" value="${x&&x.estimate!=null?x.estimate:""}"${dis}></label>
       <label class="chk" style="align-self:end;padding-bottom:8px"><input type="checkbox" id="fNA"${(!x||x.needsApproval!==false)?" checked":""}${dis}> ${esc(t("needsAppr"))}</label></div>
      ${ed?`<div class="actions"><button class="btn primary" type="submit" id="saveT">${esc(t(x?"saveChanges":"create"))}</button>${x?"":`<button class="btn" type="button" id="cancelT">${esc(t("cancel"))}</button>`}</div>`:`<p class="meta" style="margin:0">${esc(t("editOnly"))}</p>`}
+     ${x?transferBox(x):""}
      ${x?subtasksBox(x):""}
      ${x?`<div class="box"><h4>${esc(t("comments"))}</h4><div class="comments" id="cmList"><div class="meta">${esc(t("loading"))}</div></div>
        <div style="display:grid;gap:6px"><textarea class="field" id="cmIn" rows="2" placeholder="${esc(t("commentPh"))}" style="min-height:60px" maxlength="2000"></textarea><div><button class="btn sm" type="button" id="cmSend">${esc(t("addComment"))}</button></div></div></div>`:""}
@@ -780,13 +783,24 @@ function openTask(id,parentId){ const x=id?T(id):null; if(id&&!x) return; closeS
   $("#tf").addEventListener("submit",saveTask); const cs=$("#cmSend"); if(cs) cs.onclick=addComment;
   const op=$("#openPar"); if(op) op.onclick=()=>openTask(par.id);
   const dg=$("#delegateBtn"); if(dg) dg.onclick=()=>openTask(null,x.id);
+  const tb=$("#trBtn"); if(tb) tb.onclick=()=>doTransfer(x);
   ov.querySelectorAll("[data-sub]").forEach(b=>b.onclick=()=>openTask(b.dataset.sub));
   renderSheetSide(); if(x) loadThread(x.id); else setTimeout(()=>{ const f=$("#fTitle"); if(f) f.focus(); },30); }
+function canTransfer(x){ return !!x&&x.status!=="done"&&(isAdmin()||(isSup()&&x.hotel===myHotel())||x.assignee===S.uid||x.reporter===S.uid||(x.assignee&&isAbove(S.uid,x.assignee))); }
+function transferTargets(x){ return activeMembers().filter(id=>id!==x.assignee&&S.profiles[id].role!=="admin"&&S.profiles[id].hotel===x.hotel&&canAssignTo(id,x.hotel)); }
+function transferBox(x){ const info=x.transfer&&x.transfer.from?`<div class="note info">↪ ${esc(t("trInfo",{f:nameOf(x.transfer.from),t:nameOf(x.assignee),b:nameOf(x.transfer.by)}))} · <span class="num">${esc(fmt(x.transfer.at))}</span></div>`:"";
+  const list=canTransfer(x)?transferTargets(x):[];
+  if(!list.length) return info;
+  return `${info}<div class="box"><h4>${esc(t("trTitle"))}</h4><div class="meta">${esc(t("trHint"))}</div>
+   <div class="row"><select class="field" id="trTo" style="flex:1 1 200px;width:auto"><option value="">${esc(t("trTo"))}</option>${list.map(id=>{const p=S.profiles[id]; return opt(id,nameOf(id)+(p.dept?" — "+deptL(p.dept):"")+(["manager","supervisor"].includes(p.role)?" ("+roleL(p.role)+")":""),"");}).join("")}</select>
+   <input class="field" id="trNote" placeholder="${esc(t("trNote"))}" maxlength="300" style="flex:2 1 200px;width:auto"><button type="button" class="btn primary" id="trBtn">${esc(t("trBtn"))}</button></div></div>`; }
+async function doTransfer(x){ const to=$("#trTo").value; if(!to){ $("#trTo").focus(); return; } const b=$("#trBtn"); b.disabled=true;
+  try{ await call(S.sb.rpc("transfer_task",{p_id:x.id,p_to:to,p_note:$("#trNote").value.trim()||null}),t("trDone",{n:nameOf(to)})); await loadTasks(); render(); if(T(x.id)) openTask(x.id); else closeSheet(); }catch(e){ b.disabled=false; } }
 function subtasksBox(x){ const kids=childrenOf(x.id);
   const canDel=(x.assignee===S.uid||x.reporter===S.uid||isAdmin()||(isSup()&&x.hotel===myHotel()))&&x.status!=="done"&&(isAdmin()||isSup()||(isManager()&&subordinates().length>0));
   if(!kids.length&&!canDel) return ""; const d=kids.filter(k=>k.status==="done").length;
-  return `<div class="box"><div class="row" style="justify-content:space-between"><h4>${esc(t("subtasks"))} ${kids.length?`<span class="num">${esc(t("subDone",{d,n:kids.length}))}</span>`:""}</h4>${canDel?`<button type="button" class="btn sm primary" id="delegateBtn">${esc(t("delegateBtn"))}</button>`:""}</div>
-   ${kids.length?`<div class="meter" style="width:100%"><i style="width:${d/kids.length*100}%;background:var(--ok)"></i></div><div style="display:grid;gap:6px">${kids.map(k=>`<button type="button" class="hit" data-sub="${k.id}"><span class="mono meta">${esc(keyOf(k))}</span><span class="ht">${esc(k.title)}</span>${who(k.assignee)}<span class="chip" style="color:${ST[k.status].c}">${esc(stL(k.status))}</span></button>`).join("")}</div>`:`<div class="meta">${esc(t("subHint"))}</div>`}</div>`; }
+  return `<div class="box"><div class="row" style="justify-content:space-between"><h4>${esc(t("subtasks"))} ${kids.length?`<span class="num">${esc(t("subDone",{d,n:kids.length}))}</span>`:""}</h4>${canDel?`<button type="button" class="btn sm" id="delegateBtn" title="${esc(t("splitHint"))}">${esc(t("delegateBtn"))}</button>`:""}</div>
+   ${kids.length?`<div class="meter" style="width:100%"><i style="width:${d/kids.length*100}%;background:var(--ok)"></i></div><div style="display:grid;gap:6px">${kids.map(k=>`<button type="button" class="hit" data-sub="${k.id}"><span class="mono meta">${esc(keyOf(k))}</span><span class="ht">${esc(k.title)}</span>${who(k.assignee)}<span class="chip" style="color:${ST[k.status].c}">${esc(stL(k.status))}</span></button>`).join("")}</div>`:`<div class="meta">${esc(t("splitHint"))}</div>`}</div>`; }
 function closeSheet(){ const o=$("#ov"); if(o) o.remove(); document.body.style.overflow=""; S.openId=null; }
 async function saveTask(e){ e.preventDefault(); const x=S.openId?T(S.openId):null; const title=$("#fTitle").value.trim(); if(!title){$("#fTitle").focus();return;}
   const dueV=$("#fDue").value, est=$("#fEst").value;
@@ -801,6 +815,7 @@ async function saveTask(e){ e.preventDefault(); const x=S.openId?T(S.openId):nul
 async function addComment(){ const id=S.openId; const inp=$("#cmIn"); const body=inp.value.trim(); if(!id||!body) return; inp.value="";
   try{ await call(S.sb.from("task_comments").insert({task_id:id,author:S.uid,body})); loadThread(id); }catch(e){ inp.value=body; } }
 function evText(h){ let s=t("ev_"+h.action)||h.action;
+  if(h.action==="transfer"){ const [ft,rest]=String(h.note||"").split(">"); const [to,...nt]=String(rest||"").split("|"); s+=": "+(ft?nameOf(ft)+(LANG==="ar"?" ← ":" → "):"")+nameOf(to); if(h.to_status&&h.from_status!==h.to_status) s+=" ("+stL(h.to_status)+")"; if(nt.length) s+=" — "+nt.join("|"); return s; }
   if(h.to_status&&h.action!=="create") s+=" → "+stL(h.to_status);
   if(h.note){ const n=(h.action==="edit"||h.action==="assign")?h.note.split(/[,،]\s*/).map(f=>I18N.en["f_"+f]?t("f_"+f):f).join(", "):h.note; s+=": "+n; }
   return s; }
