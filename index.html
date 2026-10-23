@@ -122,6 +122,17 @@ td .field{width:auto}
 .kpi b{display:block;font-family:var(--f-display);font-size:24px;font-weight:600;font-variant-numeric:tabular-nums}
 .kpi span{color:var(--muted);font-size:12.5px}
 .kpi.alert b{color:var(--bad)} .kpi.wait b{color:var(--brass)}
+.days{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
+.daybox{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px;display:grid;gap:10px;align-content:start;border-top:5px solid var(--line)}
+.daybox.open{border-top-color:var(--warn)} .daybox.late{border-top-color:var(--bad)} .daybox.closed{border-top-color:var(--ok)}
+.dayhead{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap} .dayhead h3{margin:0;font-size:16px}
+.dayalert{border-radius:8px;padding:8px 10px;font-size:13px;font-weight:600}
+.dayalert.open{background:var(--warn-soft);color:var(--warn)} .dayalert.late{background:var(--bad-soft);color:var(--bad)} .dayalert.closed{background:var(--ok-soft);color:var(--ok)} .dayalert.empty{background:var(--surface-2);color:var(--muted);font-weight:500}
+.daynums{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;text-align:center}
+.daynums div{background:var(--surface-2);border-radius:8px;padding:6px 2px} .daynums b{display:block;font-size:20px;font-variant-numeric:tabular-nums} .daynums span{font-size:11.5px;color:var(--muted)}
+.dayrow{display:flex;align-items:center;gap:8px;width:100%;text-align:start;background:none;border:0;border-top:1px solid var(--line);padding:7px 2px;cursor:pointer;color:inherit;font:inherit}
+.dayrow:hover{background:var(--surface-2)} .dayrow .ht{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.daybanner{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:12px;border-radius:10px;padding:10px 14px;background:var(--bad-soft);color:var(--bad);font-weight:600}
 .meter{height:8px;border-radius:4px;background:var(--surface-2);overflow:hidden;min-width:60px;display:flex}
 .meter i{display:block;height:100%}
 .grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:16px}
@@ -202,6 +213,7 @@ input.title{font-size:17px;font-weight:600;font-family:var(--f-display)}
   </div>
   <nav class="wrap tabs" id="tabs" role="tablist" hidden>
     <button class="tab" data-v="board" role="tab"><span data-i18n="tabBoard">Board </span></button>
+    <button class="tab" data-v="days" role="tab"><span data-i18n="tabDays">Days</span><span class="badge" id="dayBadge" hidden>0</span></button>
     <button class="tab" data-v="list" role="tab"><span data-i18n="tabList">List </span></button>
     <button class="tab" data-v="approvals" role="tab"><span data-i18n="tabApprovals">Approvals </span><span class="badge" id="apBadge" hidden>0</span></button>
     <button class="tab" data-v="reports" role="tab"><span data-i18n="tabReports">Reports </span></button>
@@ -229,7 +241,7 @@ const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&
 const I18N={
 en:{
  app:"Hotel Operations",tagline:"Tasks, time and approvals for every department",newTask:"+ New task",logout:"Log out",langBtn:"العربية",
- tabBoard:"Board",tabList:"List",tabApprovals:"Approvals",tabReports:"Reports",tabTeam:"Team & access",tabDepts:"Departments",dpTitle:"Departments",dpHint:"Add, rename or remove departments. Changes show up right away for every hotel, in sign-up, task forms, filters and reports.",dpAddTitle:"Add a new department",dpNeedName:"Write the department name (English or Arabic).",dpExists:"A department with this name already exists.",dpPeople:"People",dpOpen:"Open tasks",dpOrder:"Order",dpInUse:"Move the {n} people in this department to another department first.",tDeptSaved:"Department saved",e_use_transfer:"Use “Transfer” to hand a task to someone.",e_dept_in_use:"This department still has people in it. Move them first.",
+ tabBoard:"Board",tabDays:"Days",dyToday:"Today",dyYesterday:"Yesterday",dyTotal:"Total",dyNew:"New",dyPending:"Pending",dyDone:"Done",dyOpen:"⚠ Day still open — {n} task(s) not finished yet",dyLate:"⚠ Past day still open — {n} task(s) not finished!",dyClosed:"✓ Day closed — all tasks are done",dyEmpty:"No tasks yet",dyShowDone:"Show finished ({n})",dyHideDone:"Hide finished",dyOnlyOpen:"Open days only",dyAll:"All days",dyHint:"Every task goes into the box of the day it was created. A day stays open (warning) until all its tasks are finished.",dyBanner:"⚠ {d} past day(s) still open with {n} unfinished task(s)",dyGo:"Open the days",dyNoneOpen:"No open days. Great work!",tabList:"List",tabApprovals:"Approvals",tabReports:"Reports",tabTeam:"Team & access",tabDepts:"Departments",dpTitle:"Departments",dpHint:"Add, rename or remove departments. Changes show up right away for every hotel, in sign-up, task forms, filters and reports.",dpAddTitle:"Add a new department",dpNeedName:"Write the department name (English or Arabic).",dpExists:"A department with this name already exists.",dpPeople:"People",dpOpen:"Open tasks",dpOrder:"Order",dpInUse:"Move the {n} people in this department to another department first.",tDeptSaved:"Department saved",e_use_transfer:"Use “Transfer” to hand a task to someone.",e_dept_in_use:"This department still has people in it. Move them first.",
  search:"Search by title, number or room…",allDepts:"All departments",allPeople:"All people",unassigned:"Unassigned",allPri:"All priorities",allHotels:"All hotels",
  mine:"My tasks only",lateOnly:"Overdue only",loading:"Loading…",
  st_todo:"New",st_progress:"In progress",st_review:"Awaiting approval",st_rejected:"Rejected",st_done:"Done & approved",
@@ -293,7 +305,7 @@ en:{
 },
 ar:{
  app:"لوحة عمليات الفندق",tagline:"متابعة المهام والوقت والاعتماد لكل قسم",newTask:"+ مهمة جديدة",logout:"خروج",langBtn:"English",
- tabBoard:"لوحة المهام",tabList:"القائمة",tabApprovals:"الموافقات",tabReports:"التقارير والأداء",tabTeam:"الفريق والصلاحيات",tabDepts:"الأقسام",dpTitle:"الأقسام",dpHint:"ضيف أو عدّل أو امسح الأقسام. التغيير بيظهر فورًا لكل الفنادق: في التسجيل، وفورم المهام، والفلاتر، والتقارير.",dpAddTitle:"إضافة قسم جديد",dpNeedName:"اكتب اسم القسم (إنجليزي أو عربي).",dpExists:"في قسم بنفس الاسم ده بالفعل.",dpPeople:"الموظفين",dpOpen:"مهام مفتوحة",dpOrder:"الترتيب",dpInUse:"انقل الـ {n} موظفين اللي في القسم ده لقسم تاني الأول.",tDeptSaved:"تم حفظ القسم",e_use_transfer:"استخدم «تحويل» عشان تدّي المهمة لحد.",e_dept_in_use:"القسم ده لسه فيه موظفين. انقلهم الأول.",
+ tabBoard:"لوحة المهام",tabDays:"الأيام",dyToday:"النهاردة",dyYesterday:"امبارح",dyTotal:"الكل",dyNew:"جديد",dyPending:"متعلق",dyDone:"خلصان",dyOpen:"⚠ اليوم لسه مفتوح — فيه {n} مهام لم تنتهِ",dyLate:"⚠ يوم فات ولسه مفتوح — فيه {n} مهام لم تنتهِ!",dyClosed:"✓ اليوم مقفول — كل المهام خلصت",dyEmpty:"مافيش مهام لسه",dyShowDone:"اعرض الخلصان ({n})",dyHideDone:"اخفي الخلصان",dyOnlyOpen:"الأيام المفتوحة بس",dyAll:"كل الأيام",dyHint:"كل مهمة بتتحط في بوكس اليوم اللي اتعملت فيه. اليوم بيفضل مفتوح وعليه تحذير لحد ما كل مهامه تخلص.",dyBanner:"⚠ فيه {d} أيام فاتت لسه مفتوحة وفيها {n} مهام لم تنتهِ",dyGo:"افتح الأيام",dyNoneOpen:"مافيش أيام مفتوحة. شغل عظيم!",tabList:"القائمة",tabApprovals:"الموافقات",tabReports:"التقارير والأداء",tabTeam:"الفريق والصلاحيات",tabDepts:"الأقسام",dpTitle:"الأقسام",dpHint:"ضيف أو عدّل أو امسح الأقسام. التغيير بيظهر فورًا لكل الفنادق: في التسجيل، وفورم المهام، والفلاتر، والتقارير.",dpAddTitle:"إضافة قسم جديد",dpNeedName:"اكتب اسم القسم (إنجليزي أو عربي).",dpExists:"في قسم بنفس الاسم ده بالفعل.",dpPeople:"الموظفين",dpOpen:"مهام مفتوحة",dpOrder:"الترتيب",dpInUse:"انقل الـ {n} موظفين اللي في القسم ده لقسم تاني الأول.",tDeptSaved:"تم حفظ القسم",e_use_transfer:"استخدم «تحويل» عشان تدّي المهمة لحد.",e_dept_in_use:"القسم ده لسه فيه موظفين. انقلهم الأول.",
  search:"بحث بالعنوان أو الرقم أو الغرفة…",allDepts:"كل الأقسام",allPeople:"كل الموظفين",unassigned:"غير مُسند",allPri:"كل الأولويات",allHotels:"كل الفنادق",
  mine:"مهامي فقط",lateOnly:"المتأخرة فقط",loading:"جارٍ التحميل…",
  st_todo:"جديدة",st_progress:"قيد التنفيذ",st_review:"بانتظار الموافقة",st_rejected:"مرفوضة",st_done:"مكتملة ومعتمدة",
@@ -514,12 +526,45 @@ function render(){
   const rq=Object.values(S.profiles).filter(p=>p.role==="pending"&&p.active).length; $("#rqBadge").hidden=!rq||!canManageMembers(); $("#rqBadge").textContent=rq;
   if(S.view==="team"&&!canManageMembers()) S.view="board"; if(S.view==="depts"&&!isAdmin()) S.view="board";
   document.querySelectorAll(".tab").forEach(b=>b.setAttribute("aria-selected",b.dataset.v===S.view));
-  $("#toolbar").hidden=!(S.view==="board"||S.view==="list");
+  $("#toolbar").hidden=!(S.view==="board"||S.view==="list"||S.view==="days");
+  { const od=dayGroups(S.tasks).filter(g=>g.open).length; $("#dayBadge").hidden=!od; $("#dayBadge").textContent=od; }
   fillFilters(); renderMain(); renderSheetSide(); }
 function renderMain(){ if(!isMember()) return; const v=S.view,m=$("#main");
-  if(v==="board"){m.innerHTML=boardHTML();bindBoard();} else if(v==="list"){m.innerHTML=listHTML();bindList();}
+  if(v==="board"){m.innerHTML=dayBanner()+boardHTML();bindBoard();bindBanner();} else if(v==="list"){m.innerHTML=dayBanner()+listHTML();bindList();bindBanner();}
+  else if(v==="days"){m.innerHTML=daysHTML();bindDays();}
   else if(v==="approvals"){m.innerHTML=approvalsHTML();bindApprovals();} else if(v==="reports") renderReports();
   else if(v==="team") renderTeam(); else if(v==="depts") renderDepts(); }
+
+/* ================= days ================= */
+const dayKey=ms_=>{ const d=new Date(ms_); return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); };
+function dayGroups(list){ const today=dayKey(Date.now()); const g={}; g[today]=[];
+  list.forEach(x=>{ const k=dayKey(x.createdAt||Date.now()); (g[k]=g[k]||[]).push(x); });
+  return Object.keys(g).sort().reverse().map(k=>{ const ts=g[k]; const done=ts.filter(x=>x.status==="done").length, nw=ts.filter(x=>x.status==="todo").length;
+    const open=ts.length-done>0; return {k,ts,total:ts.length,done,nw,pend:ts.length-done-nw,open,past:k<today,today:k===today}; }); }
+function dayLabel(k){ const [y,mo,d]=k.split("-").map(Number); const dt=new Date(y,mo-1,d); const today=dayKey(Date.now()); const yd=dayKey(Date.now()-864e5);
+  return {main:new Intl.DateTimeFormat(loc(),{weekday:"long",day:"numeric",month:"long"}).format(dt),tag:k===today?t("dyToday"):k===yd?t("dyYesterday"):""}; }
+function dayBanner(){ const od=dayGroups(S.tasks).filter(g=>g.open&&g.past); if(!od.length) return "";
+  const n=od.reduce((a,g)=>a+g.total-g.done,0); return `<div class="daybanner"><span>${esc(t("dyBanner",{d:od.length,n}))}</span><button class="btn sm" id="goDays">${esc(t("dyGo"))}</button></div>`; }
+function bindBanner(){ const b=$("#goDays"); if(b) b.onclick=()=>setView("days"); }
+function daysHTML(){ S.dayShow=S.dayShow||{}; let gs=dayGroups(filtered()); if(S.daysOpenOnly) gs=gs.filter(g=>g.open||g.today); gs=gs.slice(0,60);
+  const ordered=STATUSES.map(s=>s.k);
+  const row=x=>`<button type="button" class="dayrow" data-id="${x.id}"><span class="mono meta">${esc(keyOf(x))}</span><span class="ht">${esc(x.title)}</span>${who(x.assignee)}<span class="chip" style="color:${ST[x.status].c}">${esc(stL(x.status))}</span></button>`;
+  return `<div class="row" style="justify-content:space-between;align-items:center;margin-bottom:10px"><p class="sub" style="margin:0">${esc(t("dyHint"))}</p>
+    <div class="seg"><button class="btn sm${S.daysOpenOnly?"":" primary"}" data-dmode="all">${esc(t("dyAll"))}</button> <button class="btn sm${S.daysOpenOnly?" primary":""}" data-dmode="open">${esc(t("dyOnlyOpen"))}</button></div></div>
+   ${gs.length?`<div class="days">${gs.map(g=>{ const L=dayLabel(g.k); const cls=!g.total?"empty":!g.open?"closed":g.past?"late":"open";
+     const left=g.ts.filter(x=>x.status!=="done").sort((a,b)=>ordered.indexOf(b.status)-ordered.indexOf(a.status)||(PRI[a.priority]||PRI.normal).o-(PRI[b.priority]||PRI.normal).o);
+     const fin=g.ts.filter(x=>x.status==="done"); const show=!!S.dayShow[g.k];
+     return `<section class="daybox ${cls==="empty"?"":cls}"><div class="dayhead"><h3>${esc(L.main)}</h3>${L.tag?`<span class="chip info">${esc(L.tag)}</span>`:""}</div>
+      <div class="dayalert ${cls}">${esc(cls==="empty"?t("dyEmpty"):cls==="closed"?t("dyClosed"):t(cls==="late"?"dyLate":"dyOpen",{n:g.total-g.done}))}</div>
+      <div class="daynums"><div><b>${g.total}</b><span>${esc(t("dyTotal"))}</span></div><div><b style="color:var(--muted)">${g.nw}</b><span>${esc(t("dyNew"))}</span></div><div><b style="color:var(--warn)">${g.pend}</b><span>${esc(t("dyPending"))}</span></div><div><b style="color:var(--ok)">${g.done}</b><span>${esc(t("dyDone"))}</span></div></div>
+      ${g.total?`<div class="meter" style="width:100%"><i style="width:${g.done/g.total*100}%;background:var(--ok)"></i></div>`:""}
+      ${left.length?`<div>${left.map(row).join("")}</div>`:""}
+      ${fin.length?`<button type="button" class="link" data-dshow="${g.k}">${esc(show?t("dyHideDone"):t("dyShowDone",{n:fin.length}))}</button>${show?`<div>${fin.map(row).join("")}</div>`:""}`:""}
+     </section>`; }).join("")}</div>`:`<div class="empty-col">${esc(t("dyNoneOpen"))}</div>`}`; }
+function bindDays(){ const m=$("#main");
+  m.querySelectorAll(".dayrow").forEach(b=>b.onclick=()=>openTask(b.dataset.id));
+  m.querySelectorAll("[data-dshow]").forEach(b=>b.onclick=()=>{ S.dayShow[b.dataset.dshow]=!S.dayShow[b.dataset.dshow]; renderMain(); });
+  m.querySelectorAll("[data-dmode]").forEach(b=>b.onclick=()=>{ S.daysOpenOnly=b.dataset.dmode==="open"; renderMain(); }); }
 
 /* ================= departments (admin) ================= */
 function renderDepts(){ const m=$("#main"); if(!isAdmin()) return;
@@ -838,7 +883,7 @@ function renderSheetSide(){ const side=$("#sideP"); if(!side) return; const x=S.
 /* ================= boot ================= */
 function boot(){
   applyLangChrome();
-  const h=(location.hash||"").slice(1); if(["board","list","approvals","reports","team"].includes(h)) S.view=h;
+  const h=(location.hash||"").slice(1); if(["board","days","list","approvals","reports","team","depts"].includes(h)) S.view=h;
   if(!window.supabase||!CFG.SUPABASE_URL||CFG.SUPABASE_URL.includes("YOUR-PROJECT")){ $("#main").innerHTML=`<div class="gate"><h2>${esc(t("cfgTitle"))}</h2><p>${esc(t("cfgTxt"))}</p></div>`; return; }
   S.sb=supabase.createClient(CFG.SUPABASE_URL,CFG.SUPABASE_ANON_KEY);
   loadMeta().then(()=>{ if(!S.session) render(); });
