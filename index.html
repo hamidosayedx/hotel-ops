@@ -206,6 +206,7 @@ input.title{font-size:17px;font-weight:600;font-family:var(--f-display)}
     <button class="tab" data-v="approvals" role="tab"><span data-i18n="tabApprovals">Approvals </span><span class="badge" id="apBadge" hidden>0</span></button>
     <button class="tab" data-v="reports" role="tab"><span data-i18n="tabReports">Reports </span></button>
     <button class="tab" data-v="team" role="tab" id="teamTab" hidden><span data-i18n="tabTeam">Team </span><span class="badge" id="rqBadge" hidden>0</span></button>
+    <button class="tab" data-v="depts" role="tab" id="deptTab" hidden><span data-i18n="tabDepts">Departments</span></button>
   </nav>
 </header>
 <div class="wrap toolbar" id="toolbar" hidden>
@@ -228,7 +229,7 @@ const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&
 const I18N={
 en:{
  app:"Hotel Operations",tagline:"Tasks, time and approvals for every department",newTask:"+ New task",logout:"Log out",langBtn:"العربية",
- tabBoard:"Board",tabList:"List",tabApprovals:"Approvals",tabReports:"Reports",tabTeam:"Team & access",
+ tabBoard:"Board",tabList:"List",tabApprovals:"Approvals",tabReports:"Reports",tabTeam:"Team & access",tabDepts:"Departments",dpTitle:"Departments",dpHint:"Add, rename or remove departments. Changes show up right away for every hotel, in sign-up, task forms, filters and reports.",dpAddTitle:"Add a new department",dpNeedName:"Write the department name (English or Arabic).",dpExists:"A department with this name already exists.",dpPeople:"People",dpOpen:"Open tasks",dpOrder:"Order",dpInUse:"Move the {n} people in this department to another department first.",tDeptSaved:"Department saved",e_dept_in_use:"This department still has people in it. Move them first.",
  search:"Search by title, number or room…",allDepts:"All departments",allPeople:"All people",unassigned:"Unassigned",allPri:"All priorities",allHotels:"All hotels",
  mine:"My tasks only",lateOnly:"Overdue only",loading:"Loading…",
  st_todo:"New",st_progress:"In progress",st_review:"Awaiting approval",st_rejected:"Rejected",st_done:"Done & approved",
@@ -292,7 +293,7 @@ en:{
 },
 ar:{
  app:"لوحة عمليات الفندق",tagline:"متابعة المهام والوقت والاعتماد لكل قسم",newTask:"+ مهمة جديدة",logout:"خروج",langBtn:"English",
- tabBoard:"لوحة المهام",tabList:"القائمة",tabApprovals:"الموافقات",tabReports:"التقارير والأداء",tabTeam:"الفريق والصلاحيات",
+ tabBoard:"لوحة المهام",tabList:"القائمة",tabApprovals:"الموافقات",tabReports:"التقارير والأداء",tabTeam:"الفريق والصلاحيات",tabDepts:"الأقسام",dpTitle:"الأقسام",dpHint:"ضيف أو عدّل أو امسح الأقسام. التغيير بيظهر فورًا لكل الفنادق: في التسجيل، وفورم المهام، والفلاتر، والتقارير.",dpAddTitle:"إضافة قسم جديد",dpNeedName:"اكتب اسم القسم (إنجليزي أو عربي).",dpExists:"في قسم بنفس الاسم ده بالفعل.",dpPeople:"الموظفين",dpOpen:"مهام مفتوحة",dpOrder:"الترتيب",dpInUse:"انقل الـ {n} موظفين اللي في القسم ده لقسم تاني الأول.",tDeptSaved:"تم حفظ القسم",e_dept_in_use:"القسم ده لسه فيه موظفين. انقلهم الأول.",
  search:"بحث بالعنوان أو الرقم أو الغرفة…",allDepts:"كل الأقسام",allPeople:"كل الموظفين",unassigned:"غير مُسند",allPri:"كل الأولويات",allHotels:"كل الفنادق",
  mine:"مهامي فقط",lateOnly:"المتأخرة فقط",loading:"جارٍ التحميل…",
  st_todo:"جديدة",st_progress:"قيد التنفيذ",st_review:"بانتظار الموافقة",st_rejected:"مرفوضة",st_done:"مكتملة ومعتمدة",
@@ -387,7 +388,7 @@ function dur(x){ if(x==null||isNaN(x)) return "—"; x=Math.max(0,x); const m=Ma
 const toLocal=x=>{ if(!x) return ""; const d=new Date(x); return new Date(x-d.getTimezoneOffset()*60000).toISOString().slice(0,16); };
 let toastT;
 function toast(msg,err){ let el=$(".toast"); if(!el){el=document.createElement("div");document.body.appendChild(el);} el.className="toast"+(err?" err":""); el.textContent=msg; clearTimeout(toastT); toastT=setTimeout(()=>el.remove(),3500); }
-const ERRK=["not_allowed","reason_required","assign_not_allowed","other_hotel","hotel_required","bad_assignee","cannot_change_self","not_found","same_status","hierarchy_cycle","boss_not_manager","supervisor_limit","bad_dept"];
+const ERRK=["not_allowed","reason_required","assign_not_allowed","other_hotel","hotel_required","bad_assignee","cannot_change_self","not_found","same_status","hierarchy_cycle","boss_not_manager","supervisor_limit","bad_dept","dept_in_use"];
 function errText(e){ const m=(e&&(e.message||e.error_description))||""; for(const k of ERRK) if(m.includes(k)) return t("e_"+k);
   if(/row-level security|permission denied/i.test(m)) return t("e_not_allowed");
   if(/Invalid login credentials/i.test(m)) return t("e_login"); if(/Email not confirmed/i.test(m)) return t("e_confirm");
@@ -440,6 +441,7 @@ function subscribe(){ if(chan) return;
   chan=S.sb.channel("ops")
    .on("postgres_changes",{event:"*",schema:"public",table:"tasks"},()=>later("t",async()=>{await loadTasks().catch(()=>{});render();}))
    .on("postgres_changes",{event:"*",schema:"public",table:"profiles"},()=>later("p",async()=>{const was=isMember();await loadProfiles().catch(()=>{}); if(!was&&isMember()){await loadMeta();await loadTasks().catch(()=>{});} S.builtView=null; render();}))
+   .on("postgres_changes",{event:"*",schema:"public",table:"departments"},()=>later("d",async()=>{await loadMeta().catch(()=>{}); if(S.view!=="depts") S.builtView=null; render();}))
    .on("postgres_changes",{event:"INSERT",schema:"public",table:"task_comments"},p=>{ if(p.new&&p.new.task_id===S.openId) later("c",()=>loadThread(S.openId)); })
    .on("postgres_changes",{event:"INSERT",schema:"public",table:"task_events"},p=>{ if(p.new&&p.new.task_id===S.openId) later("c",()=>loadThread(S.openId)); })
    .subscribe();
@@ -504,18 +506,46 @@ function render(){
   $("#outBtn").hidden=false;
   if(!isMember()){ hideShell(); $("#meBox").innerHTML=""; return renderGate(); }
   if(S.builtView==="gate") S.builtView=null;
-  $("#tabs").hidden=false; $("#newBtn").hidden=false; $("#teamTab").hidden=!canManageMembers();
+  $("#tabs").hidden=false; $("#newBtn").hidden=false; $("#teamTab").hidden=!canManageMembers(); $("#deptTab").hidden=!isAdmin();
   $("#meBox").innerHTML=`${av(S.uid)}<span class="nm">${esc(nameOf(S.uid))}</span><span class="rolepill">${esc(roleL(myRole()))}${myHotel()&&!isAdmin()?" · "+esc(hotelL(myHotel())):""}</span>`;
   const rev=S.tasks.filter(x=>x.status==="review"&&canApprove(x)).length; $("#apBadge").hidden=!rev; $("#apBadge").textContent=rev;
   const rq=Object.values(S.profiles).filter(p=>p.role==="pending"&&p.active).length; $("#rqBadge").hidden=!rq||!canManageMembers(); $("#rqBadge").textContent=rq;
-  if(S.view==="team"&&!canManageMembers()) S.view="board";
+  if(S.view==="team"&&!canManageMembers()) S.view="board"; if(S.view==="depts"&&!isAdmin()) S.view="board";
   document.querySelectorAll(".tab").forEach(b=>b.setAttribute("aria-selected",b.dataset.v===S.view));
   $("#toolbar").hidden=!(S.view==="board"||S.view==="list");
   fillFilters(); renderMain(); renderSheetSide(); }
 function renderMain(){ if(!isMember()) return; const v=S.view,m=$("#main");
   if(v==="board"){m.innerHTML=boardHTML();bindBoard();} else if(v==="list"){m.innerHTML=listHTML();bindList();}
   else if(v==="approvals"){m.innerHTML=approvalsHTML();bindApprovals();} else if(v==="reports") renderReports();
-  else if(v==="team") renderTeam(); }
+  else if(v==="team") renderTeam(); else if(v==="depts") renderDepts(); }
+
+/* ================= departments (admin) ================= */
+function renderDepts(){ const m=$("#main"); if(!isAdmin()) return;
+  const people=c=>Object.values(S.profiles).filter(p=>p.dept===c&&p.role!=="admin"&&p.active).length;
+  const openT=c=>S.tasks.filter(x=>x.dept===c&&x.status!=="done").length;
+  m.innerHTML=`<h2 class="h2">${esc(t("dpTitle"))}</h2><p class="sub">${esc(t("dpHint"))}</p>
+   <div class="panel" style="padding:16px;display:grid;gap:10px;margin-bottom:18px"><b>${esc(t("dpAddTitle"))}</b>
+    <div class="row"><input class="field" id="dNewEn" placeholder="${esc(t("deptEn"))}" style="flex:1 1 180px;width:auto" dir="ltr"><input class="field" id="dNewAr" placeholder="${esc(t("deptAr"))}" style="flex:1 1 180px;width:auto" dir="rtl"><button class="btn primary" id="dAdd">${esc(t("addDept"))}</button></div></div>
+   <div class="panel tablewrap"><table><thead><tr><th>${esc(t("deptEn"))}</th><th>${esc(t("deptAr"))}</th><th>${esc(t("dpOrder"))}</th><th>${esc(t("dpPeople"))}</th><th>${esc(t("dpOpen"))}</th><th></th></tr></thead><tbody>
+   ${S.deptRows.map(d=>{const n=people(d.name); return `<tr data-row="${esc(d.name)}"><td><input class="field" data-en value="${esc(d.label_en||"")}" dir="ltr" style="min-width:150px"></td><td><input class="field" data-ar value="${esc(d.label_ar||"")}" dir="rtl" style="min-width:150px"></td>
+     <td><input class="field num" data-so type="number" value="${Number(d.sort)||0}" style="width:80px"></td><td class="num">${n}</td><td class="num">${openT(d.name)}</td>
+     <td><div class="row" style="gap:6px;flex-wrap:nowrap"><button class="btn sm" data-dsave="${esc(d.name)}">${esc(t("save"))}</button><button class="btn sm bad" data-ddel="${esc(d.name)}" data-n="${n}">${esc(t("del"))}</button></div></td></tr>`;}).join("")}
+   </tbody></table></div>
+   <h2 class="h2" style="margin-top:22px">${esc(t("settings"))}</h2><div class="panel" style="padding:16px"><div class="row"><label class="lb" style="flex:0 1 200px">${esc(t("prefix"))}<input class="field mono" id="tPrefix" maxlength="6" dir="ltr" value="${esc(S.settings.prefix||"HTL")}"></label><button class="btn" id="tPrefixSave" style="align-self:end">${esc(t("save"))}</button></div></div>`;
+  const reload=async()=>{ await loadMeta(); S.builtView=null; render(); };
+  $("#dAdd").onclick=async()=>{ const en=$("#dNewEn").value.trim(), ar=$("#dNewAr").value.trim(); if(!en&&!ar) return toast(t("dpNeedName"));
+    const low=v=>String(v||"").trim().toLowerCase(); if(S.deptRows.some(d=>(en&&low(d.label_en)===low(en))||(ar&&low(d.label_ar)===low(ar)))) return toast(t("dpExists"));
+    let code=(en.toLowerCase().replace(/[^a-z0-9]+/g,"_").replace(/^_|_$/g,"").slice(0,40))||("dept_"+Date.now().toString(36)); if(S.deptRows.some(d=>d.name===code)) code+="_"+Date.now().toString(36);
+    const so=Math.max(0,...S.deptRows.map(d=>Number(d.sort)||0))+1;
+    try{ await call(S.sb.from("departments").insert({name:code,label_en:en||ar,label_ar:ar||en,sort:so}),t("tDeptAdded")); }catch(e){ return; } await reload(); };
+  m.querySelectorAll("[data-dsave]").forEach(b=>b.onclick=async()=>{ const tr=b.closest("tr"); const en=tr.querySelector("[data-en]").value.trim(), ar=tr.querySelector("[data-ar]").value.trim(), so=parseInt(tr.querySelector("[data-so]").value,10)||0;
+    if(!en&&!ar) return toast(t("dpNeedName"));
+    try{ await call(S.sb.from("departments").update({label_en:en||ar,label_ar:ar||en,sort:so}).eq("name",b.dataset.dsave),t("tDeptSaved")); }catch(e){ return; } await reload(); });
+  m.querySelectorAll("[data-ddel]").forEach(b=>b.onclick=async()=>{ const c=b.dataset.ddel, n=+b.dataset.n; if(n>0) return toast(t("dpInUse",{n}));
+    const ok=await ask({title:t("confirmDelDept",{n:deptL(c)}),text:t("confirmDelDeptTxt"),noInput:true,okText:t("del"),danger:true}); if(ok==null) return;
+    try{ await call(S.sb.from("departments").delete().eq("name",c),t("tDeptDel")); }catch(e){ return; } await reload(); });
+  $("#tPrefixSave").onclick=async()=>{ const v=$("#tPrefix").value.trim().toUpperCase().replace(/[^A-Z0-9]/g,""); if(!v) return; try{ await call(S.sb.from("settings").update({prefix:v}).eq("id",1),t("tSavedS")); }catch(e){ return; } await reload(); };
+}
 
 /* ================= auth ================= */
 function renderAuth(){ const m=$("#main"); const mode=S.authMode;
@@ -666,17 +696,9 @@ function renderTeam(){ const m=$("#main");
     m.innerHTML=`<h2 class="h2">${esc(t("reqTitle"))}</h2><p class="sub">${esc(t("reqHint"))}</p><div id="tRq"></div>
     <div class="row" style="justify-content:space-between;align-items:end"><h2 class="h2">${esc(t("teamTitle"))}</h2>${isAdmin()?`<select class="field" id="tHotelF" style="width:auto;margin-bottom:10px">${hotelOpts(S.teamHotel||"",t("allHotels"))}</select>`:""}</div>
     <p class="sub">${t("teamHint")}</p>
-    <div class="panel tablewrap" id="tMembers"></div>
-    ${isAdmin()?`<h2 class="h2">${esc(t("settings"))}</h2><div class="panel" style="padding:16px;display:grid;gap:14px">
-      <div style="display:grid;gap:8px"><b>${esc(t("depts"))}</b><div class="depchips" id="tDeps"></div>
-       <div class="row"><input class="field" id="tDepEn" placeholder="${esc(t("deptEn"))}" style="flex:1 1 160px;width:auto" dir="ltr"><input class="field" id="tDepAr" placeholder="${esc(t("deptAr"))}" style="flex:1 1 160px;width:auto" dir="rtl"><button class="btn" id="tDepAdd">${esc(t("addDept"))}</button></div></div>
-      <div class="row"><label class="lb" style="flex:0 1 200px">${esc(t("prefix"))}<input class="field mono" id="tPrefix" maxlength="6" dir="ltr"></label><button class="btn" id="tPrefixSave" style="align-self:end">${esc(t("save"))}</button></div></div>`:""}`;
+    <div class="panel tablewrap" id="tMembers"></div>`;
     const hf=$("#tHotelF"); if(hf) hf.onchange=()=>{ S.teamHotel=hf.value; renderTeam(); };
-    if(isAdmin()){
-      $("#tDepAdd").onclick=async()=>{ const en=$("#tDepEn").value.trim(), ar=$("#tDepAr").value.trim(); if(!en) return; const code=en.toLowerCase().replace(/[^a-z0-9]+/g,"_").replace(/^_|_$/g,"").slice(0,40)||("d"+Date.now());
-        if(S.deptRows.some(d=>d.name===code)) return; await call(S.sb.from("departments").insert({name:code,label_en:en,label_ar:ar||en,sort:100}),t("tDeptAdded")).catch(()=>{}); $("#tDepEn").value=""; $("#tDepAr").value=""; await loadMeta(); renderTeam(); };
-      $("#tPrefixSave").onclick=async()=>{ const v=$("#tPrefix").value.trim().toUpperCase().replace(/[^A-Z0-9]/g,""); if(!v) return; await call(S.sb.from("settings").update({prefix:v}).eq("id",1),t("tSavedS")).catch(()=>{}); await loadMeta(); render(); };
-      $("#tPrefix").value=S.settings.prefix||"HTL"; } }
+  }
   const roleOptsFor=(p)=>{ const keys=isAdmin()?ROLE_KEYS:["manager","staff"]; return keys.map(k=>opt(k,roleL(k),p.role)).join(""); };
   const canEditRow=p=>isAdmin()||(isSup()&&p.hotel===myHotel()&&!["admin","supervisor"].includes(p.role));
   const bossSel=(p,attr,sel)=>{ const opts=heads(p.hotel).filter(id=>id!==p.id&&!isAbove(p.id,id)); return `<select class="field" ${attr}><option value="">${esc(sel===undefined?t("none"):t("mgrPick"))}</option>${opts.map(id=>opt(id,nameOf(id)+(S.profiles[id].dept?" — "+deptL(S.profiles[id].dept):""),sel||p.reports_to||"")).join("")}</select>`; };
@@ -698,7 +720,6 @@ function renderTeam(){ const m=$("#main");
      <td class="num">${Object.values(S.profiles).filter(x=>x.reports_to===p.id&&x.active).length||"—"}</td>
      <td>${p.role==="pending"?`<span class="chip">${esc(t("rejectedReq"))}</span>`:ed?`<select class="field" data-mrole="${p.id}">${roleOptsFor(p)}</select>`:`<span class="rolepill">${esc(roleL(p.role))}</span>`}</td><td class="num">${openN}</td>
      <td>${self?`<span class="chip ok">${esc(t("you"))}</span>`:ed?`<button class="btn sm ${p.active?"bad":""}" data-mact="${p.id}">${esc(t(p.active?"disable":"enable"))}</button>`:""}</td></tr>`;}).join("")}</tbody></table>`;
-  if(isAdmin()) $("#tDeps").innerHTML=S.deptRows.map(d=>`<span class="chip">${esc(deptL(d.name))}<button aria-label="${esc(t("del"))}" data-dep="${esc(d.name)}">×</button></span>`).join("");
   const setM=async(id,patch,msg)=>{ const p=Object.assign({},S.profiles[id],patch);
     await call(S.sb.rpc("admin_set_member",{p_id:id,p_role:p.role,p_dept:p.dept||"",p_title:p.title||"",p_active:p.active,p_reports_to:p.reports_to||null,p_hotel:isAdmin()?(p.hotel||null):null}),msg||t("tSavedS")).catch(()=>{}); await loadProfiles(); render(); };
   const q=s=>m.querySelectorAll(s);
@@ -715,8 +736,7 @@ function renderTeam(){ const m=$("#main");
     setM(id,patch,t("tApprovedU",{n:nameOf(id)})); });
   q("[data-rqhotel]").forEach(s=>s.onchange=()=>{ const id=s.dataset.rqhotel; const bs=m.querySelector(`[data-rqboss="${id}"]`); if(bs) bs.outerHTML=bossSel(Object.assign({},S.profiles[id],{hotel:s.value}),`data-rqboss="${id}" style="width:auto"`,""); });
   q("[data-rqno]").forEach(b=>b.onclick=()=>setM(b.dataset.rqno,{active:false},t("tRejectedU")));
-  q("[data-dep]").forEach(b=>b.onclick=async()=>{ const ok=await ask({title:t("confirmDelDept",{n:deptL(b.dataset.dep)}),text:t("confirmDelDeptTxt"),noInput:true,okText:t("del"),danger:true}); if(ok==null) return;
-    await call(S.sb.from("departments").delete().eq("name",b.dataset.dep),t("tDeptDel")).catch(()=>{}); await loadMeta(); renderTeam(); }); }
+}
 
 /* ================= task sheet ================= */
 function assigneeOptions(hotel,cur,par,isNew){ let list=activeMembers().filter(id=>canAssignTo(id,hotel));
