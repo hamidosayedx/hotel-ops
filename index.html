@@ -1,22 +1,19 @@
 <!doctype html>
-<html lang="ar" dir="rtl">
+<html lang="en" dir="ltr">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<title>لوحة عمليات الفندق</title>
+<title>Hotel Operations</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Readex+Pro:wght@500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Readex+Pro:wght@500;600;700&display=swap">
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js"></script>
 <script>
-/* ============================================================
-   الإعداد: حط هنا بيانات مشروع Supabase بتاعك
-   (Supabase → Project Settings → API)
-   ============================================================ */
+/* Supabase project settings (Project Settings → API) */
 window.APP_CONFIG = {
   SUPABASE_URL: "https://ggqctwkbpeidoctbcdfk.supabase.co",
   SUPABASE_ANON_KEY: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImdncWN0d2ticGVpZG9jdGJjZGZrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI2Njk0NTEsImV4cCI6MjEwODI0NTQ1MX0.0AruVq2FUfbr9qlvJs12yXAqo0U_EouaLn9KBhXdt2c",
-  HOTEL_NAME: "لوحة عمليات الفندق"
+  HOTEL_NAME: "Hotel Operations"
 };
 </script>
 <style>
@@ -25,8 +22,8 @@ window.APP_CONFIG = {
   --accent:#1E5A48; --accent-fg:#FFFFFF; --accent-soft:#D9E9E1; --brass:#9C7020; --brass-soft:#F3E7CD;
   --ok:#2A7A4B; --ok-soft:#DBEFE2; --warn:#A86300; --warn-soft:#FAEACD; --bad:#B0382E; --bad-soft:#F7DDD9; --info:#2D5B9A; --info-soft:#DDE6F4;
   --shadow:0 10px 30px rgba(22,32,28,.14);
-  --f-display:"Readex Pro","IBM Plex Sans Arabic",system-ui,sans-serif;
-  --f-body:"IBM Plex Sans Arabic",system-ui,"Segoe UI",Tahoma,sans-serif;
+  --f-display:"Readex Pro","IBM Plex Sans","IBM Plex Sans Arabic",system-ui,sans-serif;
+  --f-body:"IBM Plex Sans","IBM Plex Sans Arabic",system-ui,"Segoe UI",Tahoma,sans-serif;
   --f-mono:"IBM Plex Mono",ui-monospace,Menlo,monospace;
   color-scheme:light;
 }
@@ -110,7 +107,7 @@ main{padding-block:0 40px}
 .panel{background:var(--surface);border:1px solid var(--line);border-radius:10px}
 .tablewrap{overflow-x:auto}
 table{width:100%;border-collapse:collapse;font-size:13.5px}
-th,td{padding:10px 12px;text-align:right;border-bottom:1px solid var(--line);vertical-align:middle}
+th,td{padding:10px 12px;text-align:start;border-bottom:1px solid var(--line);vertical-align:middle}
 th{font-size:12px;color:var(--muted);font-weight:600;white-space:nowrap;background:var(--surface)}
 th.sort{cursor:pointer} th.sort:hover{color:var(--fg)}
 tbody tr:hover{background:var(--surface-2)}
@@ -161,7 +158,7 @@ input.title{font-size:17px;font-weight:600;font-family:var(--f-display)}
 .box{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px;display:grid;gap:10px}
 .box h4{margin:0;font-size:12px;color:var(--muted);font-weight:600}
 .kv{display:grid;grid-template-columns:auto 1fr;gap:6px 12px;font-size:13px;margin:0}
-.kv dt{color:var(--muted)} .kv dd{margin:0;text-align:left;font-variant-numeric:tabular-nums}
+.kv dt{color:var(--muted)} .kv dd{margin:0;text-align:end;font-variant-numeric:tabular-nums}
 .statusline{display:flex;align-items:center;gap:8px;font-weight:600;font-size:15px}
 .actions{display:flex;gap:6px;flex-wrap:wrap}
 .note{border-radius:8px;padding:10px 12px;font-size:13px}
@@ -180,7 +177,7 @@ input.title{font-size:17px;font-weight:600;font-family:var(--f-display)}
 .dlg h4{margin:0;font-family:var(--f-display);font-size:16px}
 .toast{position:fixed;bottom:calc(20px + env(safe-area-inset-bottom,0px));left:50%;transform:translateX(-50%);background:var(--fg);color:var(--bg);padding:10px 18px;border-radius:8px;z-index:80;font-size:13.5px;max-width:calc(100% - 32px);box-shadow:var(--shadow)}
 .toast.err{background:var(--bad);color:#fff}
-.hit:hover{border-color:var(--accent)!important}
+
 .depchips{display:flex;gap:6px;flex-wrap:wrap}
 .depchips .chip{display:inline-flex;gap:6px;align-items:center;font-size:13px;padding:4px 10px}
 .depchips button{border:0;background:none;cursor:pointer;color:var(--bad);padding:0;font-size:14px;line-height:1}
@@ -188,173 +185,318 @@ input.title{font-size:17px;font-weight:600;font-family:var(--f-display)}
 .rolepill{font-size:11px;padding:2px 8px;border-radius:20px;background:var(--accent-soft);color:var(--accent);font-weight:600}
 @media (max-width:600px){.brand small{display:none}.me .nm{display:none}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+.hit{border:1px solid var(--line);border-radius:8px;padding:8px 10px;display:flex;gap:8px;align-items:center;background:var(--surface);cursor:pointer;width:100%;text-align:start}
+.hit:hover{border-color:var(--accent)}
+.hit .ht{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500}
+#langBtn{font-weight:600}
 </style>
 </head>
 <body>
 <header class="top">
   <div class="wrap bar">
-    <div class="brand"><div class="mark">ع</div><div><h1 id="hotelName">لوحة عمليات الفندق</h1><small>متابعة المهام والوقت والاعتماد لكل قسم</small></div></div>
+    <div class="brand"><div class="mark">H</div><div><h1 id="appName">Hotel Operations</h1><small id="appTag"></small></div></div>
     <div class="me" id="meBox"></div>
-    <button class="btn primary" id="newBtn" hidden>+ مهمة جديدة</button>
-    <button class="btn ghost sm" id="outBtn" hidden>خروج</button>
+    <button class="btn ghost sm" id="langBtn" type="button">العربية</button>
+    <button class="btn primary" id="newBtn" hidden>+ New task</button>
+    <button class="btn ghost sm" id="outBtn" hidden>Log out</button>
   </div>
   <nav class="wrap tabs" id="tabs" role="tablist" hidden>
-    <button class="tab" data-v="board" role="tab">لوحة المهام</button>
-    <button class="tab" data-v="list" role="tab">القائمة</button>
-    <button class="tab" data-v="approvals" role="tab">الموافقات <span class="badge" id="apBadge" hidden>0</span></button>
-    <button class="tab" data-v="reports" role="tab">التقارير والأداء</button>
-    <button class="tab" data-v="team" role="tab" id="teamTab" hidden>الفريق والصلاحيات <span class="badge" id="rqBadge" hidden>0</span></button>
+    <button class="tab" data-v="board" role="tab"><span data-i18n="tabBoard">Board </span></button>
+    <button class="tab" data-v="list" role="tab"><span data-i18n="tabList">List </span></button>
+    <button class="tab" data-v="approvals" role="tab"><span data-i18n="tabApprovals">Approvals </span><span class="badge" id="apBadge" hidden>0</span></button>
+    <button class="tab" data-v="reports" role="tab"><span data-i18n="tabReports">Reports </span></button>
+    <button class="tab" data-v="team" role="tab" id="teamTab" hidden><span data-i18n="tabTeam">Team </span><span class="badge" id="rqBadge" hidden>0</span></button>
   </nav>
 </header>
 <div class="wrap toolbar" id="toolbar" hidden>
-  <input class="field search" id="fQ" type="search" placeholder="بحث بالعنوان أو الرقم أو الغرفة…">
+  <input class="field search" id="fQ" type="search">
+  <select class="field" id="fHotel" hidden></select>
   <select class="field" id="fDept"></select>
   <select class="field" id="fAs"></select>
   <select class="field" id="fPri"></select>
-  <label class="chk"><input type="checkbox" id="fMine"> مهامي فقط</label>
-  <label class="chk"><input type="checkbox" id="fLate"> المتأخرة فقط</label>
+  <label class="chk" id="lblMine"><input type="checkbox" id="fMine"> My tasks only</label>
+  <label class="chk" id="lblLate"><input type="checkbox" id="fLate"> Overdue only</label>
 </div>
-<main class="wrap" id="main"><div class="loading">جارٍ التحميل…</div></main>
-
+<main class="wrap" id="main"><div class="loading">Loading…</div></main>
 <script>
 (function(){
 const CFG=window.APP_CONFIG;
 const $=s=>document.querySelector(s);
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-const STATUSES=[{k:"todo",l:"جديدة",c:"var(--muted)"},{k:"progress",l:"قيد التنفيذ",c:"var(--info)"},{k:"review",l:"بانتظار الموافقة",c:"var(--brass)"},{k:"rejected",l:"مرفوضة",c:"var(--bad)"},{k:"done",l:"مكتملة ومعتمدة",c:"var(--ok)"}];
-const ST=Object.fromEntries(STATUSES.map(s=>[s.k,s]));
-const PRI={urgent:{l:"عاجلة",c:"bad",o:0},high:{l:"عالية",c:"warn",o:1},normal:{l:"عادية",c:"info",o:2},low:{l:"منخفضة",c:"",o:3}};
-const SHIFTS={"":"بدون","morning":"صباحي","evening":"مسائي","night":"ليلي"};
-const ROLES={admin:"مدير النظام",manager:"مدير قسم",staff:"موظف"};
-const ACT={create:"أنشأ المهمة",edit:"عدّل",move:"غيّر الحالة",approve:"اعتمد المهمة",reject:"رفض المهمة",assign:"غيّر",delegate:"وزّع مهمة فرعية"};
-const ERR={not_allowed:"لا تملك صلاحية هذا الإجراء.",reason_required:"لازم تكتب سبب الرفض.",staff_assign_self_only:"الموظف يقدر يسند المهمة لنفسه بس.",
-  assign_not_allowed:"تقدر تسند المهام لنفسك بس. التوزيع على الموظفين لمدير القسم ولمدير النظام.",boss_not_manager:"المدير المباشر لازم يكون «مدير قسم». غيّر دوره الأول.",hierarchy_cycle:"مينفعش الموظف يبقى مدير لمديره.",
-  bad_assignee:"الموظف المختار غير مفعّل.",cannot_change_self:"مينفعش تغيّر دورك أو توقف حسابك بنفسك.",not_found:"المهمة غير موجودة أو مش متاحة لك.",same_status:"المهمة في الحالة دي بالفعل."};
 
-document.title=CFG.HOTEL_NAME||document.title; $("#hotelName").textContent=CFG.HOTEL_NAME||"لوحة عمليات الفندق";
+/* ================= i18n ================= */
+const I18N={
+en:{
+ app:"Hotel Operations",tagline:"Tasks, time and approvals for every department",newTask:"+ New task",logout:"Log out",langBtn:"العربية",
+ tabBoard:"Board",tabList:"List",tabApprovals:"Approvals",tabReports:"Reports",tabTeam:"Team & access",
+ search:"Search by title, number or room…",allDepts:"All departments",allPeople:"All people",unassigned:"Unassigned",allPri:"All priorities",allHotels:"All hotels",
+ mine:"My tasks only",lateOnly:"Overdue only",loading:"Loading…",
+ st_todo:"New",st_progress:"In progress",st_review:"Awaiting approval",st_rejected:"Rejected",st_done:"Done & approved",
+ p_urgent:"Urgent",p_high:"High",p_normal:"Normal",p_low:"Low",
+ sh_:"None",sh_morning:"Morning",sh_evening:"Evening",sh_night:"Night",
+ r_admin:"System admin",r_supervisor:"Supervisor",r_manager:"Department head",r_staff:"Staff",r_pending:"Pending",
+ noTasks:"No tasks yet",noTasksHint:"Add the first task: a room repair, a VIP suite setup, or a laundry inventory. It appears under “New” and is followed up until approval.",addFirst:"+ Add the first task",
+ emptyCol:"Nothing here",doneOn:"Done",dueOn:"Due",overdue:"Overdue",since:"for",
+ delegated:"Delegated: {d}/{n} done",subOf:"Part of {k}",rejectedTimes:"Rejected {n}×",
+ colKey:"No.",colTask:"Task",colDept:"Department",colHotel:"Hotel",colAssignee:"Assignee",colPri:"Priority",colStatus:"Status",colDue:"Due",colCreated:"Created",colWork:"Work time",noMatch:"No tasks match the filters",
+ apprTitle:"Waiting for your approval",apprHint:"Tasks of your team, or tasks you assigned. Approve to close them, or reject with a clear reason so they go back.",apprNone:"Nothing waiting for your approval",
+ mySubmitted:"My submitted tasks awaiting approval",rejTitle:"Rejected, needs rework",rejNone:"No rejected tasks",recentTitle:"Recently approved",recentNone:"Nothing approved yet",
+ approve:"Approve",reject:"Reject",withdraw:"Withdraw to edit",redo:"Rework",workTime:"work time",submitted:"submitted",due:"due",pastDue:"Past due",rejReason:"Reason for rejection",approvedBy:"Approved by {n}",
+ repTitle:"Team performance",repAll:"All hotels.",repHotel:"Your hotel.",repDept:"Your department only.",repNote:"Numbers here are counts and times only. Task details are visible only to the employee, their managers and the supervisor.",
+ today:"Today",d7:"7 days",d30:"30 days",all:"All",calc:"Calculating…",
+ kOpen:"Open tasks",kWait:"Awaiting approval",kLate:"Overdue",kDone:"Done & approved",kOnTime:"On-time rate",kAvg:"Avg. completion time",
+ byPerson:"By employee",byDept:"By department",cOpen:"Open",cDone:"Done",cLate:"Overdue",cOnTime:"On time",cAvg:"Avg. completion",cStart:"Avg. start delay",cRej:"Rejections",noData:"No data",
+ lgDone:"Done",lgOpen:"Open",lgLate:"Overdue",reportsTo:"reports to",
+ reqTitle:"Join requests",reqHint:"Anyone who signs up stays locked out and sees nothing until approved here. Set their hotel, role, department and direct manager, then approve. If you don't know them, reject.",
+ reqNone:"No new requests",requests:"wants",approveReq:"Approve",rejectReq:"Reject",mgrPick:"Direct manager…",
+ teamTitle:"Team members",teamHint:"<b>System admin</b> sees all hotels and assigns supervisors. <b>Supervisor</b> approves and manages the people of their hotel. <b>Department head</b> distributes work to their team and can send tasks to other department heads in the same hotel. <b>Staff</b> works on their own tasks. Each hotel sees only itself.",
+ tName:"Employee",tHotel:"Hotel",tTitle:"Job title",tDept:"Department",tBoss:"Direct manager",tUnder:"Team",tRole:"Role",tOpen:"Open",tAccess:"Access",
+ none:"— None —",you:"You",disable:"Disable access",enable:"Re-enable",rejectedReq:"Rejected request",
+ settings:"Settings",depts:"Departments",deptEn:"Name (English)",deptAr:"Name (Arabic)",addDept:"Add department",prefix:"Task number prefix",save:"Save",
+ confirmDisable:"Disable access for {n}?",confirmDisableTxt:"They won't be able to open the board. Their past tasks stay in the history.",confirmDelDept:"Delete department {n}?",confirmDelDeptTxt:"Existing people and tasks keep this department.",
+ signIn:"Sign in",signUp:"Create account",forgot:"Forgot password",forgotQ:"Forgot password?",back:"Back to sign in",
+ signUpHint:"After signing up, an administrator reviews your request. You can't enter until you're approved.",
+ fullName:"Full name",jobTitle:"Job title",jobTitlePh:"e.g. Receptionist",hotel:"Hotel",chooseHotel:"Choose your hotel…",dept:"Department",chooseDept:"Choose your department…",
+ email:"Email",password:"Password",createBtn:"Create account",signInBtn:"Sign in",sendLink:"Send link",forgotHint:"Enter your email and we'll send you a link to set a new password.",
+ newPass:"New password",setPass:"Set new password",passChanged:"Password changed",
+ created:"Account created. Your request is now waiting for approval.",linkSent:"If this email is registered, a password reset link is on its way.",
+ pendingTitle:"Your request is under review",pendingTxt:"An administrator will review your request and set your access. The board opens automatically once you're approved.",
+ yourName:"Your name",updateMe:"Update my details",disabledTitle:"Access disabled",disabledTxt:"Your account is disabled. Contact your hotel's system administrator.",
+ setupTitle:"Setting up your account",setupTxt:"If this message stays, make sure the database setup was run.",
+ cfgTitle:"Setup needed",cfgTxt:"Add your Supabase URL and key at the top of index.html.",loadErr:"Couldn't load the data",retry:"Try again",
+ taskDetails:"Task details",newTaskT:"New task",delegateT:"Delegate a subtask",del:"Delete",close:"Close",open:"Open",
+ partOf:"Part of task",titlePh:"Task title, e.g. Water leak in room 214 bathroom",descPh:"Details, steps, guest notes…",
+ location:"Location / room",locationPh:"Room 214 · Lobby · Kitchen",assignee:"Assigned to",priority:"Priority",dueAt:"Due",shift:"Shift",estimate:"Estimated time (hours)",
+ needsAppr:"Needs approval from whoever assigned it",saveChanges:"Save changes",create:"Create task",cancel:"Cancel",
+ editOnly:"Only whoever assigned this task, the supervisor or the system admin can edit details.",
+ comments:"Comments",commentPh:"Write an update or a note for the team…",addComment:"Add comment",noComments:"No comments yet",
+ subtasks:"Subtasks",subDone:"({d}/{n} done)",delegateBtn:"+ Distribute to your team",subHint:"Split this task between the people on your team. Each one sees their part, and you follow it from here.",
+ flow:"How a task moves",flowTxt:"New → In progress → Awaiting approval → Done & approved.<br>If it's rejected, it goes back to the employee with the reason.<br>Start, submit and approval times are recorded automatically by the server.",
+ status:"Status",noActions:"No actions available at this stage",assignedTo:"Assigned to {n}",lateBy:"Overdue by {d}",
+ time:"Time",createdBy:"Created by",createdAt:"Created",startedAt:"Started",submittedAt:"Submitted",completedAt:"Completed",dueReq:"Due",startDelay:"Start delay",workT:"Work time",est:"est. {h} h",rejCount:"Rejections",
+ activity:"Activity",
+ a_start:"Start work",a_redo:"Rework",a_withdraw:"Withdraw from review",a_reopen:"Reopen",a_submit:"Submit for approval",a_approve:"Approve",a_finish:"Finish & approve",a_reject:"Reject with reason",a_back:"Back to New",
+ rejDlg:"Reason for rejection",rejDlgL:"Write what needs fixing so the employee knows",rejDlgOk:"Reject task",apprDlg:"Approve task",apprDlgL:"Approval note (optional)",
+ delDlg:"Delete task {k}?",delDlgT:"The task, its history and comments will be deleted permanently.",delOk:"Delete permanently",
+ ok:"Confirm",
+ tApproved:"Task approved",tRejected:"Task rejected and sent back",tMoved:"Moved to “{s}”",tCreated:"Task {k} created",tDelegated:"Subtask {k} delegated",tSaved:"Changes saved",tDeleted:"Task deleted",tGone:"This task was deleted",tSavedS:"Saved",tDeptAdded:"Department added",tDeptDel:"Department deleted",tApprovedU:"{n} approved",tRejectedU:"Request rejected",tDisabled:"Access disabled",tEnabled:"Access enabled",tBoss:"Direct manager set",
+ ev_create:"created the task",ev_edit:"edited",ev_move:"changed status",ev_approve:"approved the task",ev_reject:"rejected the task",ev_assign:"changed",ev_delegate:"delegated a subtask",
+ f_title:"title",f_details:"details",f_department:"department",f_location:"location",f_assignee:"assignee",f_priority:"priority",f_due:"due",f_shift:"shift",f_estimate:"estimate",f_approval:"approval rule",
+ someone:"Employee",min:"m",hr:"h",day:"d",ago:"ago",
+ e_not_allowed:"You don't have permission for this.",e_reason_required:"Please write a reason for rejecting.",e_assign_not_allowed:"You can't assign tasks to this person.",
+ e_other_hotel:"That person is in another hotel.",e_hotel_required:"Choose a hotel first.",e_bad_assignee:"That person's account isn't active.",e_cannot_change_self:"You can't change your own role or disable yourself.",
+ e_not_found:"Task not found or not available to you.",e_same_status:"The task is already in that status.",e_hierarchy_cycle:"An employee can't manage their own manager.",
+ e_boss_not_manager:"The direct manager must be a department head or supervisor in the same hotel.",e_supervisor_limit:"Supervisors can't change admins or supervisors.",e_bad_dept:"Unknown department.",
+ e_login:"Wrong email or password.",e_confirm:"Please confirm your email first.",e_exists:"This email is already registered. Sign in instead.",e_pass:"Password must be at least 6 characters.",e_net:"Can't reach the server. Check your connection.",e_generic:"Something went wrong. Try again.",
+ e_pickHotel:"Please choose your hotel and department."
+},
+ar:{
+ app:"لوحة عمليات الفندق",tagline:"متابعة المهام والوقت والاعتماد لكل قسم",newTask:"+ مهمة جديدة",logout:"خروج",langBtn:"English",
+ tabBoard:"لوحة المهام",tabList:"القائمة",tabApprovals:"الموافقات",tabReports:"التقارير والأداء",tabTeam:"الفريق والصلاحيات",
+ search:"بحث بالعنوان أو الرقم أو الغرفة…",allDepts:"كل الأقسام",allPeople:"كل الموظفين",unassigned:"غير مُسند",allPri:"كل الأولويات",allHotels:"كل الفنادق",
+ mine:"مهامي فقط",lateOnly:"المتأخرة فقط",loading:"جارٍ التحميل…",
+ st_todo:"جديدة",st_progress:"قيد التنفيذ",st_review:"بانتظار الموافقة",st_rejected:"مرفوضة",st_done:"مكتملة ومعتمدة",
+ p_urgent:"عاجلة",p_high:"عالية",p_normal:"عادية",p_low:"منخفضة",
+ sh_:"بدون",sh_morning:"صباحي",sh_evening:"مسائي",sh_night:"ليلي",
+ r_admin:"مدير النظام",r_supervisor:"مشرف",r_manager:"مدير قسم",r_staff:"موظف",r_pending:"بانتظار الموافقة",
+ noTasks:"لا توجد مهام بعد",noTasksHint:"ابدأ بأول مهمة: صيانة غرفة، تجهيز جناح لضيف مهم، أو جرد للمغسلة. هتظهر في «جديدة» وتتتابع لحد الاعتماد.",addFirst:"+ إضافة أول مهمة",
+ emptyCol:"لا توجد مهام هنا",doneOn:"أُنجزت",dueOn:"موعد",overdue:"متأخرة",since:"منذ",
+ delegated:"موزّعة: {d}/{n} خلصت",subOf:"فرعية من {k}",rejectedTimes:"رُفضت {n}×",
+ colKey:"الرقم",colTask:"المهمة",colDept:"القسم",colHotel:"الفندق",colAssignee:"المسؤول",colPri:"الأولوية",colStatus:"الحالة",colDue:"الموعد",colCreated:"أُنشئت",colWork:"زمن العمل",noMatch:"لا توجد مهام تطابق الفلاتر",
+ apprTitle:"بانتظار موافقتك",apprHint:"مهام فريقك، أو المهام اللي انت كلّفت بيها. اعتمدها عشان تتقفل، أو ارفضها بسبب واضح عشان ترجع للموظف.",apprNone:"لا توجد مهام بانتظار موافقتك",
+ mySubmitted:"مهامي المسلّمة ومستنية الموافقة",rejTitle:"مرفوضة وتحتاج إعادة عمل",rejNone:"لا توجد مهام مرفوضة",recentTitle:"آخر ما تم اعتماده",recentNone:"لم تُعتمد مهام بعد",
+ approve:"اعتماد",reject:"رفض",withdraw:"سحب للتعديل",redo:"إعادة العمل",workTime:"زمن العمل",submitted:"سُلّمت",due:"الموعد",pastDue:"تجاوزت الموعد",rejReason:"سبب الرفض",approvedBy:"اعتمدها {n}",
+ repTitle:"أداء الفريق",repAll:"كل الفنادق.",repHotel:"فندقك.",repDept:"قسمك بس.",repNote:"الأرقام هنا عدد المهام والوقت بس. تفاصيل المهام بتظهر للموظف ومديريه والمشرف فقط.",
+ today:"اليوم",d7:"7 أيام",d30:"30 يومًا",all:"الكل",calc:"جارٍ حساب الإحصائيات…",
+ kOpen:"مهام مفتوحة",kWait:"بانتظار الموافقة",kLate:"متأخرة عن الموعد",kDone:"أُنجزت واعتُمدت",kOnTime:"الالتزام بالمواعيد",kAvg:"متوسط زمن الإنجاز",
+ byPerson:"حسب الموظف",byDept:"حسب القسم",cOpen:"مفتوحة",cDone:"منجزة",cLate:"متأخرة",cOnTime:"في الموعد",cAvg:"متوسط الإنجاز",cStart:"متوسط وقت البدء",cRej:"مرات الرفض",noData:"لا توجد بيانات",
+ lgDone:"منجزة",lgOpen:"مفتوحة",lgLate:"متأخرة",reportsTo:"تبع",
+ reqTitle:"طلبات الانضمام",reqHint:"أي حد يعمل حساب بيفضل مقفول عليه ومايشوفش أي حاجة لحد ما توافق عليه هنا. حدد فندقه ودوره وقسمه ومديره المباشر، وبعدين وافق. لو مش عارفه، دوس رفض.",
+ reqNone:"لا توجد طلبات جديدة",requests:"يطلب",approveReq:"موافقة",rejectReq:"رفض",mgrPick:"المدير المباشر…",
+ teamTitle:"أعضاء الفريق",teamHint:"<b>مدير النظام</b> يشوف كل الفنادق ويعيّن المشرفين. <b>المشرف</b> يوافق على ناس فندقه ويديرهم. <b>مدير القسم</b> يوزّع الشغل على فريقه، ويقدر يبعت مهام لمديري الأقسام التانية في نفس الفندق. <b>الموظف</b> ينفّذ مهامه. كل فندق يشوف نفسه بس.",
+ tName:"الموظف",tHotel:"الفندق",tTitle:"المسمى الوظيفي",tDept:"القسم",tBoss:"المدير المباشر",tUnder:"الفريق",tRole:"الدور",tOpen:"مفتوحة",tAccess:"الوصول",
+ none:"— بدون —",you:"أنت",disable:"إيقاف الوصول",enable:"إعادة التفعيل",rejectedReq:"طلب مرفوض",
+ settings:"الإعدادات",depts:"الأقسام",deptEn:"الاسم بالإنجليزي",deptAr:"الاسم بالعربي",addDept:"إضافة قسم",prefix:"بادئة رقم المهمة",save:"حفظ",
+ confirmDisable:"إيقاف وصول {n}؟",confirmDisableTxt:"مش هيقدر يفتح اللوحة، ومهامه السابقة هتفضل في السجل.",confirmDelDept:"حذف قسم {n}؟",confirmDelDeptTxt:"الموظفين والمهام الحالية هتفضل بالقسم ده.",
+ signIn:"تسجيل الدخول",signUp:"حساب جديد",forgot:"نسيت كلمة السر",forgotQ:"نسيت كلمة السر؟",back:"رجوع للدخول",
+ signUpHint:"بعد التسجيل، الإدارة بتراجع طلبك. مش هتقدر تدخل غير بعد الموافقة.",
+ fullName:"الاسم الكامل",jobTitle:"المسمى الوظيفي",jobTitlePh:"مثال: موظف استقبال",hotel:"الفندق",chooseHotel:"اختار الفندق…",dept:"القسم",chooseDept:"اختار القسم…",
+ email:"الإيميل",password:"كلمة السر",createBtn:"إنشاء الحساب",signInBtn:"دخول",sendLink:"إرسال اللينك",forgotHint:"اكتب إيميلك وهيوصلك لينك لتغيير كلمة السر.",
+ newPass:"كلمة السر الجديدة",setPass:"كلمة سر جديدة",passChanged:"تم تغيير كلمة السر",
+ created:"تم إنشاء الحساب. طلبك دلوقتي مستني الموافقة.",linkSent:"لو الإيميل مسجّل عندنا، هيوصلك لينك تغيير كلمة السر.",
+ pendingTitle:"طلبك قيد المراجعة",pendingTxt:"الإدارة هتراجع طلبك وتحدد صلاحيتك. اللوحة هتفتح لوحدها أول ما يتوافق عليك.",
+ yourName:"اسمك",updateMe:"تحديث بياناتي",disabledTitle:"الوصول متوقف",disabledTxt:"حسابك موقوف. تواصل مع إدارة الفندق.",
+ setupTitle:"جارٍ تجهيز حسابك",setupTxt:"لو الرسالة دي فضلت ظاهرة، اتأكد إن إعداد قاعدة البيانات اتشغّل.",
+ cfgTitle:"البرنامج محتاج إعداد",cfgTxt:"حط رابط Supabase والمفتاح في أول ملف index.html.",loadErr:"تعذّر تحميل البيانات",retry:"إعادة المحاولة",
+ taskDetails:"تفاصيل المهمة",newTaskT:"مهمة جديدة",delegateT:"توزيع مهمة فرعية",del:"حذف",close:"إغلاق",open:"فتح",
+ partOf:"جزء من المهمة",titlePh:"عنوان المهمة، مثال: تسريب مياه في حمام غرفة 214",descPh:"التفاصيل، الخطوات المطلوبة، ملاحظات الضيف…",
+ location:"الموقع / رقم الغرفة",locationPh:"غرفة 214 · اللوبي · المطبخ",assignee:"المسؤول عن التنفيذ",priority:"الأولوية",dueAt:"موعد التسليم",shift:"الوردية",estimate:"الوقت المقدّر (ساعات)",
+ needsAppr:"تحتاج موافقة اللي كلّف بيها قبل الإغلاق",saveChanges:"حفظ التعديلات",create:"إنشاء المهمة",cancel:"إلغاء",
+ editOnly:"تعديل التفاصيل متاح للي كلّف بالمهمة وللمشرف ولمدير النظام.",
+ comments:"التعليقات",commentPh:"اكتب تحديث أو ملاحظة للفريق…",addComment:"إضافة تعليق",noComments:"لا توجد تعليقات بعد",
+ subtasks:"المهام الفرعية",subDone:"({d}/{n} خلصت)",delegateBtn:"+ وزّع جزء على فريقك",subHint:"قسّم المهمة على الناس اللي تحتك، وكل واحد هيظهرله الجزء بتاعه وتتابعه من هنا.",
+ flow:"مسار المهمة",flowTxt:"جديدة ← قيد التنفيذ ← بانتظار الموافقة ← مكتملة ومعتمدة.<br>لو اترفضت، بترجع للموظف مع السبب.<br>وقت البدء والتسليم والاعتماد بيتسجل تلقائيًا من السيرفر.",
+ status:"الحالة",noActions:"لا توجد إجراءات متاحة في المرحلة دي",assignedTo:"المهمة مسندة لـ {n}",lateBy:"متأخرة عن الموعد بـ {d}",
+ time:"الوقت",createdBy:"أنشأها",createdAt:"تاريخ الإنشاء",startedAt:"بدء العمل",submittedAt:"التسليم",completedAt:"الإنجاز",dueReq:"الموعد المطلوب",startDelay:"زمن البدء",workT:"زمن العمل",est:"المقدّر {h} س",rejCount:"مرات الرفض",
+ activity:"سجل النشاط",
+ a_start:"بدء العمل",a_redo:"إعادة العمل",a_withdraw:"سحب من المراجعة",a_reopen:"إعادة فتح",a_submit:"تسليم للموافقة",a_approve:"اعتماد",a_finish:"إنهاء واعتماد",a_reject:"رفض مع السبب",a_back:"إرجاع إلى جديدة",
+ rejDlg:"سبب الرفض",rejDlgL:"اكتب المطلوب تعديله عشان الموظف يعرف يعيد الشغل",rejDlgOk:"رفض المهمة",apprDlg:"اعتماد المهمة",apprDlgL:"ملاحظة على الاعتماد (اختياري)",
+ delDlg:"حذف المهمة {k}؟",delDlgT:"المهمة وسجلها وتعليقاتها هيتحذفوا نهائيًا.",delOk:"حذف نهائي",
+ ok:"تأكيد",
+ tApproved:"تم اعتماد المهمة",tRejected:"تم رفض المهمة وإرجاعها",tMoved:"تم النقل إلى «{s}»",tCreated:"تم إنشاء المهمة {k}",tDelegated:"تم توزيع المهمة الفرعية {k}",tSaved:"تم حفظ التعديلات",tDeleted:"تم حذف المهمة",tGone:"المهمة دي اتحذفت",tSavedS:"تم الحفظ",tDeptAdded:"تمت إضافة القسم",tDeptDel:"تم حذف القسم",tApprovedU:"تمت الموافقة على {n}",tRejectedU:"تم رفض الطلب",tDisabled:"تم إيقاف الوصول",tEnabled:"تم التفعيل",tBoss:"تم تحديد المدير المباشر",
+ ev_create:"أنشأ المهمة",ev_edit:"عدّل",ev_move:"غيّر الحالة",ev_approve:"اعتمد المهمة",ev_reject:"رفض المهمة",ev_assign:"غيّر",ev_delegate:"وزّع مهمة فرعية",
+ f_title:"العنوان",f_details:"التفاصيل",f_department:"القسم",f_location:"الموقع",f_assignee:"المسؤول",f_priority:"الأولوية",f_due:"الموعد",f_shift:"الوردية",f_estimate:"الوقت المقدّر",f_approval:"شرط الموافقة",
+ someone:"موظف",min:"د",hr:"س",day:"يوم",ago:"",
+ e_not_allowed:"لا تملك صلاحية هذا الإجراء.",e_reason_required:"لازم تكتب سبب الرفض.",e_assign_not_allowed:"مينفعش تسند مهام للشخص ده.",
+ e_other_hotel:"الشخص ده في فندق تاني.",e_hotel_required:"اختار الفندق الأول.",e_bad_assignee:"حساب الشخص ده مش مفعّل.",e_cannot_change_self:"مينفعش تغيّر دورك أو توقف حسابك بنفسك.",
+ e_not_found:"المهمة غير موجودة أو مش متاحة لك.",e_same_status:"المهمة في الحالة دي بالفعل.",e_hierarchy_cycle:"مينفعش الموظف يبقى مدير لمديره.",
+ e_boss_not_manager:"المدير المباشر لازم يكون مدير قسم أو مشرف في نفس الفندق.",e_supervisor_limit:"المشرف مايقدرش يغيّر مديري النظام أو المشرفين.",e_bad_dept:"قسم غير معروف.",
+ e_login:"الإيميل أو كلمة السر غير صحيحة.",e_confirm:"لازم تأكد الإيميل الأول.",e_exists:"الإيميل ده متسجل قبل كده. سجّل دخول بدل كده.",e_pass:"كلمة السر لازم تكون 6 حروف على الأقل.",e_net:"مفيش اتصال بالسيرفر. اتأكد من النت.",e_generic:"حصل خطأ. حاول تاني.",
+ e_pickHotel:"اختار الفندق والقسم من فضلك."
+}};
+let LANG="en"; try{ LANG=localStorage.getItem("hotelops_lang")||"en"; }catch(e){}
+if(!I18N[LANG]) LANG="en";
+const t=(k,v)=>{ let s=(I18N[LANG][k]??I18N.en[k]??k); if(v) for(const x in v) s=s.split("{"+x+"}").join(v[x]); return s; };
+function applyLangChrome(){ const h=document.documentElement; h.lang=LANG; h.dir=LANG==="ar"?"rtl":"ltr";
+  document.title=t("app"); $("#appName").textContent=t("app"); $("#appTag").textContent=t("tagline"); $("#langBtn").textContent=t("langBtn");
+  $("#newBtn").textContent=t("newTask"); $("#outBtn").textContent=t("logout");
+  document.querySelectorAll("[data-i18n]").forEach(el=>{ el.firstChild.nodeValue=t(el.dataset.i18n)+" "; });
+  $("#fQ").placeholder=t("search"); $("#lblMine").lastChild.nodeValue=" "+t("mine"); $("#lblLate").lastChild.nodeValue=" "+t("lateOnly"); }
+function setLang(l){ LANG=l; try{localStorage.setItem("hotelops_lang",l);}catch(e){} applyLangChrome(); S.builtView=null; S.authBuilt=false;
+  const reopen=S.openId; closeSheet(); render(); if(reopen) openTask(reopen); }
 
-const S={sb:null,session:null,uid:null,me:null,profiles:{},tasks:[],depts:[],settings:{staff_see_all:false,prefix:"HTL"},
-  view:"board",f:{q:"",dept:"",as:"",pri:"",mine:false,late:false},range:"30",sort:{k:"createdAt",d:-1},
-  openId:null,thread:{comments:[],events:[]},dragId:null,builtView:null,authMode:"login",ready:false};
+/* ================= constants ================= */
+const STATUSES=[{k:"todo",c:"var(--muted)"},{k:"progress",c:"var(--info)"},{k:"review",c:"var(--brass)"},{k:"rejected",c:"var(--bad)"},{k:"done",c:"var(--ok)"}];
+const ST=Object.fromEntries(STATUSES.map(s=>[s.k,s])); const stL=k=>t("st_"+k);
+const PRI={urgent:{c:"bad",o:0},high:{c:"warn",o:1},normal:{c:"info",o:2},low:{c:"",o:3}}; const priL=k=>t("p_"+k);
+const SHIFTS=["","morning","evening","night"];
+const ROLE_KEYS=["admin","supervisor","manager","staff"]; const roleL=r=>t("r_"+r);
 
-/* ---------- helpers ---------- */
-const nf=new Intl.DateTimeFormat("ar-EG-u-nu-latn",{day:"numeric",month:"short",hour:"numeric",minute:"2-digit"});
-const df=new Intl.DateTimeFormat("ar-EG-u-nu-latn",{day:"numeric",month:"short"});
-const fmt=ms=>ms?nf.format(new Date(ms)):"—";
+const S={sb:null,session:null,uid:null,me:null,profiles:{},tasks:[],deptRows:[],hotelRows:[],settings:{prefix:"HTL"},
+  view:"board",f:{q:"",dept:"",as:"",pri:"",hotel:"",mine:false,late:false},range:"30",repHotel:"",sort:{k:"createdAt",d:-1},
+  openId:null,newParent:null,thread:{comments:[],events:[]},dragId:null,builtView:null,authMode:"login",ready:false,statsCache:null};
+
+/* ================= helpers ================= */
+const loc=()=>LANG==="ar"?"ar-EG-u-nu-latn":"en-GB";
+const fmt=x=>x?new Intl.DateTimeFormat(loc(),{day:"numeric",month:"short",hour:"numeric",minute:"2-digit"}).format(new Date(x)):"—";
+const fmtD=x=>new Intl.DateTimeFormat(loc(),{day:"numeric",month:"short"}).format(new Date(x));
 const ms=v=>v?new Date(v).getTime():null;
 function dur(x){ if(x==null||isNaN(x)) return "—"; x=Math.max(0,x); const m=Math.round(x/60000);
-  if(m<60) return m+" د"; const h=Math.floor(m/60), mm=m%60; if(h<24) return h+" س"+(mm?" "+mm+" د":"");
-  const d=Math.floor(h/24), hh=h%24; return d+" يوم"+(hh?" "+hh+" س":""); }
+  if(m<60) return m+" "+t("min"); const h=Math.floor(m/60), mm=m%60; if(h<24) return h+" "+t("hr")+(mm?" "+mm+" "+t("min"):"");
+  const d=Math.floor(h/24), hh=h%24; return d+" "+t("day")+(hh?" "+hh+" "+t("hr"):""); }
 const toLocal=x=>{ if(!x) return ""; const d=new Date(x); return new Date(x-d.getTimezoneOffset()*60000).toISOString().slice(0,16); };
 let toastT;
-function toast(msg,err){ let t=$(".toast"); if(!t){t=document.createElement("div");document.body.appendChild(t);} t.className="toast"+(err?" err":""); t.textContent=msg; clearTimeout(toastT); toastT=setTimeout(()=>t.remove(),3500); }
-function errText(e){ const m=(e&&(e.message||e.error_description))||""; for(const k in ERR) if(m.includes(k)) return ERR[k];
-  if(/row-level security|permission denied/i.test(m)) return ERR.not_allowed;
-  if(/Invalid login credentials/i.test(m)) return "الإيميل أو كلمة السر غير صحيحة.";
-  if(/Email not confirmed/i.test(m)) return "لازم تأكد الإيميل الأول من الرسالة اللي وصلتك.";
-  if(/already registered/i.test(m)) return "الإيميل ده متسجل قبل كده. سجّل دخول بدل كده.";
-  if(/Password should be/i.test(m)) return "كلمة السر لازم تكون 6 حروف على الأقل.";
-  if(/Failed to fetch|NetworkError/i.test(m)) return "مفيش اتصال بالسيرفر. اتأكد من النت.";
-  return m||"حصل خطأ. حاول تاني."; }
+function toast(msg,err){ let el=$(".toast"); if(!el){el=document.createElement("div");document.body.appendChild(el);} el.className="toast"+(err?" err":""); el.textContent=msg; clearTimeout(toastT); toastT=setTimeout(()=>el.remove(),3500); }
+const ERRK=["not_allowed","reason_required","assign_not_allowed","other_hotel","hotel_required","bad_assignee","cannot_change_self","not_found","same_status","hierarchy_cycle","boss_not_manager","supervisor_limit","bad_dept"];
+function errText(e){ const m=(e&&(e.message||e.error_description))||""; for(const k of ERRK) if(m.includes(k)) return t("e_"+k);
+  if(/row-level security|permission denied/i.test(m)) return t("e_not_allowed");
+  if(/Invalid login credentials/i.test(m)) return t("e_login"); if(/Email not confirmed/i.test(m)) return t("e_confirm");
+  if(/already registered/i.test(m)) return t("e_exists"); if(/Password should be/i.test(m)) return t("e_pass");
+  if(/Failed to fetch|NetworkError/i.test(m)) return t("e_net"); return m||t("e_generic"); }
 async function call(p,okMsg){ try{ const r=await p; if(r&&r.error) throw r.error; if(okMsg) toast(okMsg); return r; }catch(e){ toast(errText(e),true); throw e; } }
 
-/* ---------- roles ---------- */
+/* ================= roles & permissions (mirror of the server rules) ================= */
 const myRole=()=>S.me&&S.me.active&&S.me.role!=="pending"?S.me.role:null;
-const isManager=()=>myRole()==="manager";
-const isAdmin=()=>myRole()==="admin";
+const isAdmin=()=>myRole()==="admin"; const isSup=()=>myRole()==="supervisor"; const isManager=()=>myRole()==="manager";
+const isMember=()=>!!myRole(); const myDept=()=>(S.me&&S.me.dept)||""; const myHotel=()=>(S.me&&S.me.hotel)||"";
+const canManageMembers=()=>isAdmin()||isSup();
+const nameOf=id=>!id?t("unassigned"):(S.profiles[id]&&S.profiles[id].full_name)||t("someone");
+const deptL=c=>{ const r=S.deptRows.find(d=>d.name===c); return r?(LANG==="ar"?r.label_ar:r.label_en)||c:(c||""); };
+const hotelL=c=>{ const r=S.hotelRows.find(h=>h.code===c); return r?(LANG==="ar"?r.name_ar:r.name_en):(c||""); };
 function isAbove(boss,emp){ if(!boss||!emp) return false; let cur=S.profiles[emp], n=0; while(cur&&cur.reports_to&&n<25){ if(cur.reports_to===boss) return true; cur=S.profiles[cur.reports_to]; n++; } return false; }
-const subordinates=()=>isManager()||isAdmin()?Object.keys(S.profiles).filter(id=>isAbove(S.uid,id)&&S.profiles[id].active&&S.profiles[id].role!=="pending"):[];
-const canAssignTo=id=>isAdmin()||id===S.uid||(isManager()&&isAbove(S.uid,id));
-const canApprove=t=>isAdmin()||isAbove(S.uid,t.assignee)||(t.reporter===S.uid&&!!t.assignee&&t.assignee!==S.uid);
-
-const isMember=()=>!!myRole();
-const myDept=()=>(S.me&&S.me.dept)||"";
-const nameOf=id=>!id?"غير مُسند":(S.profiles[id]&&S.profiles[id].full_name)||"موظف";
-function colorOf(id){ let h=0; for(const c of String(id||"x")) h=(h*31+c.charCodeAt(0))%360; return `hsl(${h} 38% 42%)`; }
-const av=(id,lg)=>`<span class="av${lg?" lg":""}" style="background:${colorOf(id)}">${esc((nameOf(id).trim().charAt(0))||"؟")}</span>`;
+const activeMembers=()=>Object.values(S.profiles).filter(p=>p.active&&p.role!=="pending").map(p=>p.id).sort((a,b)=>nameOf(a).localeCompare(nameOf(b),LANG));
+const subordinates=()=>(isManager()||isSup()||isAdmin())?activeMembers().filter(id=>isAbove(S.uid,id)):[];
+function canAssignTo(id,hotel){ const p=S.profiles[id]; if(!p||!p.active||p.role==="pending"||p.role==="admin") return false; if(isAdmin()) return !hotel||p.hotel===hotel;
+  if(p.hotel!==myHotel()) return false; if(isSup()||id===S.uid) return true;
+  return isManager()&&(isAbove(S.uid,id)||["manager","supervisor"].includes(p.role)); }
+const canApprove=x=>isAdmin()||(x.hotel===myHotel()&&(isSup()||isAbove(S.uid,x.assignee)||(x.reporter===S.uid&&!!x.assignee&&x.assignee!==S.uid)));
+const canEditFields=x=>!x||isAdmin()||(isSup()&&x.hotel===myHotel())||x.reporter===S.uid;
+const heads=hotel=>activeMembers().filter(id=>{ const p=S.profiles[id]; return p.role==="admin"||(["manager","supervisor"].includes(p.role)&&p.hotel===hotel); });
+const colorOf=id=>{ let h=0; for(const c of String(id||"x")) h=(h*31+c.charCodeAt(0))%360; return `hsl(${h} 38% 42%)`; };
+const av=(id,lg)=>`<span class="av${lg?" lg":""}" style="background:${colorOf(id)}">${esc((nameOf(id).trim().charAt(0))||"?")}</span>`;
 const who=(id,lg)=>`<span class="who">${id?av(id,lg):`<span class="av${lg?" lg":""}" style="background:var(--line)"></span>`}<span class="n">${esc(nameOf(id))}</span></span>`;
+const opt=(v,l,sel)=>`<option value="${esc(v)}"${v===sel?" selected":""}>${esc(l)}</option>`;
+const deptOpts=(sel,blank)=>(blank!=null?opt("",blank,sel):"")+S.deptRows.map(d=>opt(d.name,deptL(d.name),sel)).join("")+(sel&&!S.deptRows.some(d=>d.name===sel)?opt(sel,sel,sel):"");
+const hotelOpts=(sel,blank)=>(blank!=null?opt("",blank,sel):"")+S.hotelRows.map(h=>opt(h.code,hotelL(h.code),sel)).join("");
 
-/* ---------- data ---------- */
-function normTask(r){ return {id:r.id,num:r.id,title:r.title,desc:r.descr,dept:r.dept,location:r.location,assignee:r.assignee,reporter:r.reporter,
+/* ================= data ================= */
+function normTask(r){ return {id:r.id,num:r.id,title:r.title,desc:r.descr,dept:r.dept,hotel:r.hotel,location:r.location,assignee:r.assignee,reporter:r.reporter,
   priority:r.priority,status:r.status,due:ms(r.due),shift:r.shift,estimate:r.estimate,needsApproval:r.needs_approval,rejections:r.rejections,
   lastReject:r.last_reject_at?{by:r.last_reject_by,at:ms(r.last_reject_at),note:r.last_reject_note}:null,
   approval:r.approval_at?{by:r.approval_by,at:ms(r.approval_at),note:r.approval_note}:null,
   parentId:r.parent_id||null,createdAt:ms(r.created_at),updatedAt:ms(r.updated_at),statusAt:ms(r.status_at),startedAt:ms(r.started_at),submittedAt:ms(r.submitted_at),completedAt:ms(r.completed_at)}; }
 async function loadProfiles(){ const {data,error}=await S.sb.from("profiles").select("*"); if(error) throw error; const m={}; data.forEach(p=>m[p.id]=p); S.profiles=m; S.me=m[S.uid]||null; }
-async function loadMeta(){ const [d,s]=await Promise.all([S.sb.from("departments").select("name,sort").order("sort").order("name"),S.sb.from("settings").select("*").eq("id",1).maybeSingle()]);
-  if(!d.error) S.depts=d.data.map(x=>x.name); if(!s.error&&s.data) S.settings=s.data; }
-async function loadTasks(){ if(!isMember()){S.tasks=[];return;} const {data,error}=await S.sb.from("tasks").select("*").order("created_at",{ascending:false}).limit(1000); if(error) throw error; S.tasks=data.map(normTask); }
+async function loadMeta(){ const [d,h,s]=await Promise.all([S.sb.from("departments").select("name,label_en,label_ar,sort").order("sort").order("name"),
+  S.sb.from("hotels").select("*").order("sort"),S.sb.from("settings").select("*").eq("id",1).maybeSingle()]);
+  if(!d.error) S.deptRows=d.data; if(!h.error) S.hotelRows=h.data; if(!s.error&&s.data) S.settings=s.data; }
+async function loadTasks(){ if(!isMember()){S.tasks=[];return;} const {data,error}=await S.sb.from("tasks").select("*").order("created_at",{ascending:false}).limit(2000); if(error) throw error; S.tasks=data.map(normTask); }
 async function loadThread(id){ const [c,e]=await Promise.all([S.sb.from("task_comments").select("*").eq("task_id",id).order("created_at"),S.sb.from("task_events").select("*").eq("task_id",id).order("created_at")]);
   if(S.openId!==id) return; S.thread={comments:c.data||[],events:e.data||[]}; renderSheetSide(); }
 async function loadAll(){ try{ await loadProfiles(); await loadMeta(); await loadTasks(); S.ready=true; render(); subscribe(); }
-  catch(e){ $("#main").innerHTML=`<div class="gate"><h2>تعذّر تحميل البيانات</h2><p>${esc(errText(e))}</p><div><button class="btn" onclick="location.reload()">إعادة المحاولة</button></div></div>`; } }
+  catch(e){ $("#main").innerHTML=`<div class="gate"><h2>${esc(t("loadErr"))}</h2><p>${esc(errText(e))}</p><div><button class="btn" onclick="location.reload()">${esc(t("retry"))}</button></div></div>`; } }
 let chan=null, timers={};
 function later(k,fn){ clearTimeout(timers[k]); timers[k]=setTimeout(fn,350); }
 function subscribe(){ if(chan) return;
   chan=S.sb.channel("ops")
    .on("postgres_changes",{event:"*",schema:"public",table:"tasks"},()=>later("t",async()=>{await loadTasks().catch(()=>{});render();}))
-   .on("postgres_changes",{event:"*",schema:"public",table:"profiles"},()=>later("p",async()=>{const was=isMember();await loadProfiles().catch(()=>{}); if(!was&&isMember()){await loadMeta();await loadTasks().catch(()=>{});} render();}))
+   .on("postgres_changes",{event:"*",schema:"public",table:"profiles"},()=>later("p",async()=>{const was=isMember();await loadProfiles().catch(()=>{}); if(!was&&isMember()){await loadMeta();await loadTasks().catch(()=>{});} S.builtView=null; render();}))
    .on("postgres_changes",{event:"INSERT",schema:"public",table:"task_comments"},p=>{ if(p.new&&p.new.task_id===S.openId) later("c",()=>loadThread(S.openId)); })
    .on("postgres_changes",{event:"INSERT",schema:"public",table:"task_events"},p=>{ if(p.new&&p.new.task_id===S.openId) later("c",()=>loadThread(S.openId)); })
    .subscribe();
   setInterval(async()=>{ if(document.hidden) return; try{ const was=isMember(); await loadProfiles(); if(isMember()){ if(!was) await loadMeta(); await loadTasks(); } render(); }catch(e){} },60000);
 }
 
-/* ---------- task rules (UI mirror of server rules) ---------- */
-const isLate=t=>t.due&&(t.status==="done"?(t.completedAt||0)>t.due:Date.now()>t.due);
-const workTime=t=>t.startedAt?((t.completedAt||(t.status==="review"&&t.submittedAt)||Date.now())-t.startedAt):null;
-const keyOf=t=>(S.settings.prefix||"HTL")+"-"+String(t.num||0).padStart(3,"0");
-function allowed(t,to){ if(!t||t.status===to) return false; const from=t.status;
-  if(canApprove(t)&&(to!=="rejected"||from==="review")) return true;
-  if(t.assignee!==S.uid) return false; const na=t.needsApproval!==false;
-  return (from==="todo"&&to==="progress")||(from==="rejected"&&to==="progress")||(from==="progress"&&to==="review"&&na)||(from==="progress"&&to==="done"&&!na)||(from==="review"&&to==="progress"); }
-function actLabel(t,to){ const f=t.status;
-  if(to==="progress") return f==="todo"?"بدء العمل":f==="rejected"?"إعادة العمل":f==="review"?"سحب من المراجعة":"إعادة فتح";
-  if(to==="review") return "تسليم للموافقة"; if(to==="done") return f==="review"?"اعتماد":"إنهاء واعتماد";
-  if(to==="rejected") return "رفض مع السبب"; return "إرجاع إلى جديدة"; }
-const canEditFields=t=>!t||isAdmin()||t.reporter===S.uid;
+/* ================= task rules ================= */
+const isLate=x=>x.due&&(x.status==="done"?(x.completedAt||0)>x.due:Date.now()>x.due);
+const workTime=x=>x.startedAt?((x.completedAt||(x.status==="review"&&x.submittedAt)||Date.now())-x.startedAt):null;
+const keyOf=x=>(S.settings.prefix||"HTL")+"-"+String(x.num||0).padStart(3,"0");
+const T=id=>S.tasks.find(x=>String(x.id)===String(id));
 const childrenOf=id=>S.tasks.filter(x=>x.parentId===id);
+function allowed(x,to){ if(!x||x.status===to) return false; const from=x.status;
+  if(canApprove(x)&&(to!=="rejected"||from==="review")) return true;
+  if(x.assignee!==S.uid) return false; const na=x.needsApproval!==false;
+  return (from==="todo"&&to==="progress")||(from==="rejected"&&to==="progress")||(from==="progress"&&to==="review"&&na)||(from==="progress"&&to==="done"&&!na)||(from==="review"&&to==="progress"); }
+function actLabel(x,to){ const f=x.status;
+  if(to==="progress") return t(f==="todo"?"a_start":f==="rejected"?"a_redo":f==="review"?"a_withdraw":"a_reopen");
+  if(to==="review") return t("a_submit"); if(to==="done") return t(f==="review"?"a_approve":"a_finish");
+  if(to==="rejected") return t("a_reject"); return t("a_back"); }
+async function transition(x,to,note){
+  await call(S.sb.rpc("transition_task",{p_id:x.id,p_to:to,p_note:note||null}), to==="done"&&x.status==="review"?t("tApproved"):to==="rejected"?t("tRejected"):t("tMoved",{s:stL(to)}));
+  await loadTasks(); render(); if(S.openId===x.id) loadThread(x.id); }
+function requestTransition(x,to){ if(!x) return;
+  if(to==="rejected") return ask({title:t("rejDlg"),label:t("rejDlgL"),required:true,okText:t("rejDlgOk"),danger:true}).then(n=>n!=null&&transition(x,to,n).catch(()=>{}));
+  if(to==="done"&&canApprove(x)) return ask({title:t("apprDlg"),label:t("apprDlgL"),okText:t("approve")}).then(n=>n!=null&&transition(x,to,n).catch(()=>{}));
+  return transition(x,to).catch(()=>{}); }
 
-async function transition(t,to,note){
-  await call(S.sb.rpc("transition_task",{p_id:t.id,p_to:to,p_note:note||null}),
-    to==="done"&&t.status==="review"?"تم اعتماد المهمة":to==="rejected"?"تم رفض المهمة وإرجاعها للموظف":"تم النقل إلى «"+ST[to].l+"»");
-  await loadTasks(); render(); if(S.openId===t.id) loadThread(t.id); }
-function requestTransition(t,to){
-  if(!t) return;
-  if(to==="rejected") return ask({title:"سبب الرفض",label:"اكتب المطلوب تعديله عشان الموظف يعرف يعيد الشغل",required:true,okText:"رفض المهمة",danger:true}).then(n=>n!=null&&transition(t,to,n).catch(()=>{}));
-  if(to==="done"&&canApprove(t)) return ask({title:"اعتماد المهمة",label:"ملاحظة على الاعتماد (اختياري)",okText:"اعتماد"}).then(n=>n!=null&&transition(t,to,n).catch(()=>{}));
-  return transition(t,to).catch(()=>{}); }
-
-/* ---------- dialog ---------- */
+/* ================= dialog ================= */
 function ask(o){ return new Promise(res=>{ const d=document.createElement("div"); d.className="dlg";
   d.innerHTML=`<div class="in" role="dialog" aria-modal="true"><h4>${esc(o.title)}</h4>${o.text?`<p class="meta" style="margin:0">${esc(o.text)}</p>`:""}
   ${o.noInput?"":`<label class="lb">${esc(o.label||"")}<textarea class="field" id="dlgIn" rows="3"></textarea></label>`}
-  <div class="actions" style="justify-content:flex-end"><button class="btn" data-x>إلغاء</button><button class="btn ${o.danger?"bad":"primary"}" data-ok>${esc(o.okText||"تأكيد")}</button></div></div>`;
+  <div class="actions" style="justify-content:flex-end"><button class="btn" data-x>${esc(t("cancel"))}</button><button class="btn ${o.danger?"bad":"primary"}" data-ok>${esc(o.okText||t("ok"))}</button></div></div>`;
   document.body.appendChild(d); const inp=d.querySelector("#dlgIn"); (inp||d.querySelector("[data-ok]")).focus();
   const close=v=>{d.remove();res(v);};
   d.addEventListener("click",e=>{ if(e.target===d||e.target.hasAttribute("data-x")) close(null);
     if(e.target.hasAttribute("data-ok")){ const v=inp?inp.value.trim():""; if(o.required&&!v){inp.focus();inp.style.borderColor="var(--bad)";return;} close(v);} });
   d.addEventListener("keydown",e=>{ if(e.key==="Escape") close(null); }); }); }
 
-/* ---------- shell ---------- */
+/* ================= shell ================= */
 function setView(v){ S.view=v; S.builtView=null; try{history.replaceState(null,"","#"+v);}catch(e){} render(); }
 document.querySelectorAll(".tab").forEach(b=>b.addEventListener("click",()=>setView(b.dataset.v)));
 $("#newBtn").addEventListener("click",()=>openTask(null));
+$("#langBtn").addEventListener("click",()=>setLang(LANG==="en"?"ar":"en"));
 $("#outBtn").addEventListener("click",async()=>{ await S.sb.auth.signOut(); location.hash=""; location.reload(); });
-[["fQ","input","q",e=>e.target.value],["fDept","change","dept",e=>e.target.value],["fAs","change","as",e=>e.target.value],["fPri","change","pri",e=>e.target.value],["fMine","change","mine",e=>e.target.checked],["fLate","change","late",e=>e.target.checked]]
+[["fQ","input","q",e=>e.target.value],["fDept","change","dept",e=>e.target.value],["fAs","change","as",e=>e.target.value],["fPri","change","pri",e=>e.target.value],["fHotel","change","hotel",e=>e.target.value],["fMine","change","mine",e=>e.target.checked],["fLate","change","late",e=>e.target.checked]]
  .forEach(([id,ev,k,g])=>$("#"+id).addEventListener(ev,e=>{S.f[k]=g(e);renderMain();}));
-
-const activeMembers=()=>Object.values(S.profiles).filter(p=>p.active&&p.role!=="pending").map(p=>p.id).sort((a,b)=>nameOf(a).localeCompare(nameOf(b),"ar"));
-function fillFilters(){ const o=(v,l,sel)=>`<option value="${esc(v)}"${sel===v?" selected":""}>${esc(l)}</option>`;
-  $("#fDept").innerHTML=o("","كل الأقسام",S.f.dept)+S.depts.map(d=>o(d,d,S.f.dept)).join("");
-  $("#fAs").innerHTML=o("","كل الموظفين",S.f.as)+o("__none","غير مُسند",S.f.as)+activeMembers().map(id=>o(id,nameOf(id),S.f.as)).join("");
-  $("#fPri").innerHTML=o("","كل الأولويات",S.f.pri)+Object.entries(PRI).map(([k,v])=>o(k,v.l,S.f.pri)).join(""); }
+function fillFilters(){
+  $("#fDept").innerHTML=deptOpts(S.f.dept,t("allDepts"));
+  $("#fAs").innerHTML=opt("",t("allPeople"),S.f.as)+opt("__none",t("unassigned"),S.f.as)+activeMembers().map(id=>opt(id,nameOf(id),S.f.as)).join("");
+  $("#fPri").innerHTML=opt("",t("allPri"),S.f.pri)+Object.keys(PRI).map(k=>opt(k,priL(k),S.f.pri)).join("");
+  $("#fHotel").hidden=!isAdmin(); if(isAdmin()) $("#fHotel").innerHTML=hotelOpts(S.f.hotel,t("allHotels")); }
 function filtered(){ const q=S.f.q.trim().toLowerCase();
-  return S.tasks.filter(t=>{ if(S.f.dept&&t.dept!==S.f.dept) return false; if(S.f.as==="__none"&&t.assignee) return false;
-    if(S.f.as&&S.f.as!=="__none"&&t.assignee!==S.f.as) return false; if(S.f.pri&&t.priority!==S.f.pri) return false;
-    if(S.f.mine&&t.assignee!==S.uid) return false; if(S.f.late&&!(isLate(t)&&t.status!=="done")) return false;
-    if(q&&!((t.title||"")+" "+(t.location||"")+" "+keyOf(t)+" "+(t.desc||"")).toLowerCase().includes(q)) return false; return true; }); }
-
+  return S.tasks.filter(x=>{ if(S.f.hotel&&x.hotel!==S.f.hotel) return false; if(S.f.dept&&x.dept!==S.f.dept) return false; if(S.f.as==="__none"&&x.assignee) return false;
+    if(S.f.as&&S.f.as!=="__none"&&x.assignee!==S.f.as) return false; if(S.f.pri&&x.priority!==S.f.pri) return false;
+    if(S.f.mine&&x.assignee!==S.uid) return false; if(S.f.late&&!(isLate(x)&&x.status!=="done")) return false;
+    if(q&&!((x.title||"")+" "+(x.location||"")+" "+keyOf(x)+" "+(x.desc||"")).toLowerCase().includes(q)) return false; return true; }); }
 function hideShell(){ $("#tabs").hidden=true; $("#toolbar").hidden=true; $("#newBtn").hidden=true; }
 function render(){
   if(!S.session){ hideShell(); $("#outBtn").hidden=true; $("#meBox").innerHTML=""; return renderAuth(); }
@@ -362,13 +504,11 @@ function render(){
   $("#outBtn").hidden=false;
   if(!isMember()){ hideShell(); $("#meBox").innerHTML=""; return renderGate(); }
   if(S.builtView==="gate") S.builtView=null;
-  $("#tabs").hidden=false; $("#newBtn").hidden=false; $("#teamTab").hidden=!isAdmin();
-  $("#meBox").innerHTML=`${av(S.uid)}<span class="nm">${esc(nameOf(S.uid))}</span><span class="rolepill">${esc(ROLES[myRole()])}</span>`;
-  const rev=S.tasks.filter(t=>t.status==="review"&&canApprove(t)).length;
-  $("#apBadge").hidden=!rev; $("#apBadge").textContent=rev;
-  const rq=Object.values(S.profiles).filter(p=>p.role==="pending"&&p.active).length;
-  $("#rqBadge").hidden=!rq||!isAdmin(); $("#rqBadge").textContent=rq;
-  if(S.view==="team"&&!isAdmin()) S.view="board";
+  $("#tabs").hidden=false; $("#newBtn").hidden=false; $("#teamTab").hidden=!canManageMembers();
+  $("#meBox").innerHTML=`${av(S.uid)}<span class="nm">${esc(nameOf(S.uid))}</span><span class="rolepill">${esc(roleL(myRole()))}${myHotel()&&!isAdmin()?" · "+esc(hotelL(myHotel())):""}</span>`;
+  const rev=S.tasks.filter(x=>x.status==="review"&&canApprove(x)).length; $("#apBadge").hidden=!rev; $("#apBadge").textContent=rev;
+  const rq=Object.values(S.profiles).filter(p=>p.role==="pending"&&p.active).length; $("#rqBadge").hidden=!rq||!canManageMembers(); $("#rqBadge").textContent=rq;
+  if(S.view==="team"&&!canManageMembers()) S.view="board";
   document.querySelectorAll(".tab").forEach(b=>b.setAttribute("aria-selected",b.dataset.v===S.view));
   $("#toolbar").hidden=!(S.view==="board"||S.view==="list");
   fillFilters(); renderMain(); renderSheetSide(); }
@@ -377,270 +517,302 @@ function renderMain(){ if(!isMember()) return; const v=S.view,m=$("#main");
   else if(v==="approvals"){m.innerHTML=approvalsHTML();bindApprovals();} else if(v==="reports") renderReports();
   else if(v==="team") renderTeam(); }
 
-/* ---------- auth ---------- */
+/* ================= auth ================= */
 function renderAuth(){ const m=$("#main"); const mode=S.authMode;
-  if(mode==="reset"){ m.innerHTML=`<form class="gate" id="af"><h2>كلمة سر جديدة</h2><label class="lb">كلمة السر الجديدة<input class="field" id="aPw" type="password" minlength="6" required autocomplete="new-password"></label><p class="err" id="aErr" hidden></p><div><button class="btn primary">حفظ</button></div></form>`;
-    $("#af").onsubmit=async e=>{ e.preventDefault(); const {error}=await S.sb.auth.updateUser({password:$("#aPw").value}); if(error){$("#aErr").hidden=false;$("#aErr").textContent=errText(error);return;} toast("تم تغيير كلمة السر"); S.authMode="login"; try{history.replaceState(null,"",location.pathname);}catch(x){}
+  if(mode==="reset"){ m.innerHTML=`<form class="gate" id="af"><h2>${esc(t("setPass"))}</h2><label class="lb">${esc(t("newPass"))}<input class="field" id="aPw" type="password" minlength="6" required autocomplete="new-password" dir="ltr"></label><p class="err" id="aErr" hidden></p><div><button class="btn primary">${esc(t("save"))}</button></div></form>`;
+    $("#af").onsubmit=async e=>{ e.preventDefault(); const {error}=await S.sb.auth.updateUser({password:$("#aPw").value}); if(error){$("#aErr").hidden=false;$("#aErr").textContent=errText(error);return;} toast(t("passChanged")); S.authMode="login"; try{history.replaceState(null,"",location.pathname);}catch(x){}
       const {data}=await S.sb.auth.getSession(); S.session=data.session; S.uid=data.session?data.session.user.id:null; if(S.session) loadAll(); else render(); }; return; }
   m.innerHTML=`<form class="gate" id="af">
-   <h2>${mode==="signup"?"حساب جديد":mode==="forgot"?"نسيت كلمة السر":"تسجيل الدخول"}</h2>
-   ${mode==="forgot"?"<p>اكتب إيميلك وهيوصلك لينك لتغيير كلمة السر.</p>":`<div class="authswitch"><button type="button" data-m="login" aria-pressed="${mode==="login"}">دخول</button><button type="button" data-m="signup" aria-pressed="${mode==="signup"}">حساب جديد</button></div>`}
-   ${mode==="signup"?`<p>بعد التسجيل، مدير النظام بيراجع طلبك ويحدد صلاحيتك.</p>
-    <label class="lb">الاسم الكامل<input class="field" id="aName" required maxlength="60" autocomplete="name"></label>
-    <label class="lb">المسمى الوظيفي<input class="field" id="aTitle" maxlength="60" placeholder="مثال: موظف استقبال"></label>
-    <label class="lb">القسم<select class="field" id="aDept">${S.depts.map(d=>`<option>${esc(d)}</option>`).join("")}</select></label>`:""}
-   <label class="lb">الإيميل<input class="field" id="aEmail" type="email" required autocomplete="email" dir="ltr"></label>
-   ${mode!=="forgot"?`<label class="lb">كلمة السر<input class="field" id="aPw" type="password" minlength="6" required autocomplete="${mode==="signup"?"new-password":"current-password"}" dir="ltr"></label>`:""}
+   <h2>${esc(t(mode==="signup"?"signUp":mode==="forgot"?"forgot":"signIn"))}</h2>
+   ${mode==="forgot"?`<p>${esc(t("forgotHint"))}</p>`:`<div class="authswitch"><button type="button" data-m="login" aria-pressed="${mode==="login"}">${esc(t("signIn"))}</button><button type="button" data-m="signup" aria-pressed="${mode==="signup"}">${esc(t("signUp"))}</button></div>`}
+   ${mode==="signup"?`<p>${esc(t("signUpHint"))}</p>
+    <label class="lb">${esc(t("fullName"))}<input class="field" id="aName" required maxlength="60" autocomplete="name"></label>
+    <label class="lb">${esc(t("hotel"))}<select class="field" id="aHotel" required>${hotelOpts("",t("chooseHotel"))}</select></label>
+    <label class="lb">${esc(t("dept"))}<select class="field" id="aDept" required>${deptOpts("",t("chooseDept"))}</select></label>
+    <label class="lb">${esc(t("jobTitle"))}<input class="field" id="aTitle" maxlength="60" placeholder="${esc(t("jobTitlePh"))}"></label>`:""}
+   <label class="lb">${esc(t("email"))}<input class="field" id="aEmail" type="email" required autocomplete="email" dir="ltr"></label>
+   ${mode!=="forgot"?`<label class="lb">${esc(t("password"))}<input class="field" id="aPw" type="password" minlength="6" required autocomplete="${mode==="signup"?"new-password":"current-password"}" dir="ltr"></label>`:""}
    <p class="err" id="aErr" hidden></p><p class="note ok" id="aOk" hidden></p>
-   <div class="row" style="justify-content:space-between"><button class="btn primary" id="aBtn">${mode==="signup"?"إنشاء الحساب":mode==="forgot"?"إرسال اللينك":"دخول"}</button>
-    ${mode==="login"?`<button type="button" class="link" data-m="forgot">نسيت كلمة السر؟</button>`:mode==="forgot"?`<button type="button" class="link" data-m="login">رجوع للدخول</button>`:""}</div></form>`;
+   <div class="row" style="justify-content:space-between"><button class="btn primary" id="aBtn">${esc(t(mode==="signup"?"createBtn":mode==="forgot"?"sendLink":"signInBtn"))}</button>
+    ${mode==="login"?`<button type="button" class="link" data-m="forgot">${esc(t("forgotQ"))}</button>`:mode==="forgot"?`<button type="button" class="link" data-m="login">${esc(t("back"))}</button>`:""}</div></form>`;
   m.querySelectorAll("[data-m]").forEach(b=>b.onclick=()=>{S.authMode=b.dataset.m;renderAuth();});
-  $("#af").onsubmit=async e=>{ e.preventDefault(); const btn=$("#aBtn"); btn.disabled=true; $("#aErr").hidden=true; $("#aOk").hidden=true;
+  $("#af").onsubmit=async e=>{ e.preventDefault(); $("#aErr").hidden=true; $("#aOk").hidden=true;
     const email=$("#aEmail").value.trim(); const redirect=location.origin+location.pathname;
-    let r; if(mode==="login") r=await S.sb.auth.signInWithPassword({email,password:$("#aPw").value});
-    else if(mode==="signup") r=await S.sb.auth.signUp({email,password:$("#aPw").value,options:{emailRedirectTo:redirect,data:{full_name:$("#aName").value.trim(),title:$("#aTitle").value.trim(),dept:$("#aDept").value}}});
+    if(mode==="signup"&&(!$("#aHotel").value||!$("#aDept").value)){ $("#aErr").hidden=false; $("#aErr").textContent=t("e_pickHotel"); return; }
+    const btn=$("#aBtn"); btn.disabled=true; let r;
+    if(mode==="login") r=await S.sb.auth.signInWithPassword({email,password:$("#aPw").value});
+    else if(mode==="signup") r=await S.sb.auth.signUp({email,password:$("#aPw").value,options:{emailRedirectTo:redirect,data:{full_name:$("#aName").value.trim(),title:$("#aTitle").value.trim(),dept:$("#aDept").value,hotel:$("#aHotel").value}}});
     else r=await S.sb.auth.resetPasswordForEmail(email,{redirectTo:redirect});
     btn.disabled=false;
     if(r.error){ $("#aErr").hidden=false; $("#aErr").textContent=errText(r.error); return; }
-    if(mode==="signup"&&!r.data.session){ $("#aOk").hidden=false; $("#aOk").textContent="تم إنشاء الحساب. افتح الإيميل ودوس على لينك التأكيد، وبعدها سجّل دخول."; }
-    if(mode==="forgot"){ $("#aOk").hidden=false; $("#aOk").textContent="لو الإيميل مسجّل عندنا، هيوصلك لينك تغيير كلمة السر."; } }; }
-
+    if(mode==="signup"&&!r.data.session){ $("#aOk").hidden=false; $("#aOk").textContent=t("created"); }
+    if(mode==="forgot"){ $("#aOk").hidden=false; $("#aOk").textContent=t("linkSent"); } }; }
 function renderGate(){ const m=$("#main"); const me=S.me;
-  if(!me){ m.innerHTML=`<div class="gate"><h2>جارٍ تجهيز حسابك</h2><p>لو الرسالة دي فضلت ظاهرة، اتأكد إن ملف schema.sql اتشغّل على قاعدة البيانات.</p></div>`; return; }
-  if(!me.active){ m.innerHTML=`<div class="gate"><h2>الوصول متوقف</h2><p>حسابك موقوف حاليًا. تواصل مع مدير النظام في الفندق.</p></div>`; return; }
+  if(!me){ m.innerHTML=`<div class="gate"><h2>${esc(t("setupTitle"))}</h2><p>${esc(t("setupTxt"))}</p></div>`; return; }
+  if(!me.active){ m.innerHTML=`<div class="gate"><h2>${esc(t("disabledTitle"))}</h2><p>${esc(t("disabledTxt"))}</p></div>`; return; }
   if(S.builtView==="gate") return; S.builtView="gate";
-  m.innerHTML=`<form class="gate" id="pf"><h2>طلبك قيد المراجعة</h2><p>مدير النظام هيراجع طلبك ويحدد دورك وقسمك. اللوحة هتفتح لوحدها أول ما يوافق.</p>
-   <label class="lb">اسمك<input class="field" id="pName" value="${esc(me.full_name)}" maxlength="60" required></label>
-   <label class="lb">المسمى الوظيفي<input class="field" id="pTitle" value="${esc(me.title)}" maxlength="60"></label>
-   <div><button class="btn">تحديث بياناتي</button></div></form>`;
-  $("#pf").onsubmit=e=>{ e.preventDefault(); call(S.sb.rpc("update_my_profile",{p_name:$("#pName").value,p_title:$("#pTitle").value}),"تم الحفظ").catch(()=>{}); }; }
+  m.innerHTML=`<form class="gate" id="pf"><h2>${esc(t("pendingTitle"))}</h2><p>${esc(t("pendingTxt"))}</p>
+   <div class="row meta">${me.hotel?`<span class="chip acc">${esc(hotelL(me.hotel))}</span>`:""}${me.dept?`<span class="chip">${esc(deptL(me.dept))}</span>`:""}</div>
+   <label class="lb">${esc(t("yourName"))}<input class="field" id="pName" value="${esc(me.full_name)}" maxlength="60" required></label>
+   <label class="lb">${esc(t("jobTitle"))}<input class="field" id="pTitle" value="${esc(me.title)}" maxlength="60"></label>
+   <div><button class="btn">${esc(t("updateMe"))}</button></div></form>`;
+  $("#pf").onsubmit=e=>{ e.preventDefault(); call(S.sb.rpc("update_my_profile",{p_name:$("#pName").value,p_title:$("#pTitle").value}),t("tSavedS")).catch(()=>{}); }; }
 
-/* ---------- board ---------- */
-function subBadge(t){ const kids=childrenOf(t.id); const par=t.parentId?T(t.parentId):null; const out=[];
-  if(kids.length){ const d=kids.filter(k=>k.status==="done").length; out.push(`<span class="chip info">موزّعة: ${d}/${kids.length} خلصت</span>`); }
-  if(t.parentId) out.push(`<span class="chip">فرعية من ${par?esc(keyOf(par)):"#"+t.parentId}</span>`);
+/* ================= board ================= */
+function subBadge(x){ const kids=childrenOf(x.id); const par=x.parentId?T(x.parentId):null; const out=[];
+  if(kids.length){ const d=kids.filter(k=>k.status==="done").length; out.push(`<span class="chip info">${esc(t("delegated",{d,n:kids.length}))}</span>`); }
+  if(x.parentId) out.push(`<span class="chip">${esc(t("subOf",{k:par?keyOf(par):"#"+x.parentId}))}</span>`);
   return out.length?`<div class="row">${out.join("")}</div>`:""; }
-function cardHTML(t){ const p=PRI[t.priority]||PRI.normal; const late=isLate(t)&&t.status!=="done"; const dragOk=STATUSES.some(s=>allowed(t,s.k));
-  return `<article class="card" data-id="${t.id}" data-pri="${esc(t.priority)}" draggable="${dragOk}" tabindex="0">
-   <div class="row"><span class="mono meta">${esc(keyOf(t))}</span><span class="chip ${p.c}">${p.l}</span>${t.rejections?`<span class="chip bad">رُفضت ${t.rejections}×</span>`:""}</div>
-   <div class="t">${esc(t.title)}</div>
-   ${subBadge(t)}
-   <div class="row meta">${t.location?`<span class="chip acc">${esc(t.location)}</span>`:""}<span>${esc(t.dept||"")}</span>${t.shift?`<span>· ${esc(SHIFTS[t.shift])}</span>`:""}</div>
-   <div class="row" style="justify-content:space-between">${who(t.assignee)}
-    <span class="meta num">${t.status==="done"?"أُنجزت "+df.format(new Date(t.completedAt||t.updatedAt)):t.due?`<span class="${late?"chip bad":""}">${late?"متأخرة · ":"موعد "}${esc(fmt(t.due))}</span>`:"منذ "+dur(Date.now()-(t.statusAt||t.createdAt))}</span></div></article>`; }
+function cardHTML(x){ const p=PRI[x.priority]||PRI.normal; const late=isLate(x)&&x.status!=="done"; const dragOk=STATUSES.some(s=>allowed(x,s.k));
+  return `<article class="card" data-id="${x.id}" data-pri="${esc(x.priority)}" draggable="${dragOk}" tabindex="0">
+   <div class="row"><span class="mono meta">${esc(keyOf(x))}</span><span class="chip ${p.c}">${esc(priL(x.priority))}</span>${x.rejections?`<span class="chip bad">${esc(t("rejectedTimes",{n:x.rejections}))}</span>`:""}${isAdmin()&&x.hotel?`<span class="chip brass">${esc(hotelL(x.hotel))}</span>`:""}</div>
+   <div class="t">${esc(x.title)}</div>
+   ${subBadge(x)}
+   <div class="row meta">${x.location?`<span class="chip acc">${esc(x.location)}</span>`:""}<span>${esc(deptL(x.dept))}</span>${x.shift?`<span>· ${esc(t("sh_"+x.shift))}</span>`:""}</div>
+   <div class="row" style="justify-content:space-between">${who(x.assignee)}
+    <span class="meta num">${x.status==="done"?esc(t("doneOn"))+" "+fmtD(x.completedAt||x.updatedAt):x.due?`<span class="${late?"chip bad":""}">${esc(t(late?"overdue":"dueOn"))} · ${esc(fmt(x.due))}</span>`:esc(t("since"))+" "+dur(Date.now()-(x.statusAt||x.createdAt))}</span></div></article>`; }
 function boardHTML(){ const list=filtered();
-  if(!S.tasks.length) return `<div class="gate" style="max-width:520px"><h2>لا توجد مهام بعد</h2><p>ابدأ بإضافة أول مهمة: طلب صيانة لغرفة، تجهيز جناح لضيف مهم، أو جرد للمغسلة. هتظهر في عمود «جديدة» ويتابعها المسؤول لحد الاعتماد.</p><div><button class="btn primary" id="emptyNew">+ إضافة أول مهمة</button></div></div>`;
-  return `<div class="board">${STATUSES.map(s=>{ const ts=list.filter(t=>t.status===s.k).sort((a,b)=>(PRI[a.priority]||PRI.normal).o-(PRI[b.priority]||PRI.normal).o||(a.due||9e15)-(b.due||9e15));
-    return `<section class="col" data-st="${s.k}"><div class="colhead"><span class="dot" style="background:${s.c}"></span>${s.l}<span class="cnt num">${ts.length}</span></div>${ts.map(cardHTML).join("")||`<div class="empty-col">لا توجد مهام هنا</div>`}</section>`; }).join("")}</div>`; }
-const T=id=>S.tasks.find(t=>String(t.id)===String(id));
+  if(!S.tasks.length) return `<div class="gate" style="max-width:520px"><h2>${esc(t("noTasks"))}</h2><p>${esc(t("noTasksHint"))}</p><div><button class="btn primary" id="emptyNew">${esc(t("addFirst"))}</button></div></div>`;
+  return `<div class="board">${STATUSES.map(s=>{ const ts=list.filter(x=>x.status===s.k).sort((a,b)=>(PRI[a.priority]||PRI.normal).o-(PRI[b.priority]||PRI.normal).o||(a.due||9e15)-(b.due||9e15));
+    return `<section class="col" data-st="${s.k}"><div class="colhead"><span class="dot" style="background:${s.c}"></span>${esc(stL(s.k))}<span class="cnt num">${ts.length}</span></div>${ts.map(cardHTML).join("")||`<div class="empty-col">${esc(t("emptyCol"))}</div>`}</section>`; }).join("")}</div>`; }
 function bindBoard(){ const m=$("#main"); const en=m.querySelector("#emptyNew"); if(en) en.onclick=()=>openTask(null);
   m.querySelectorAll(".card").forEach(c=>{ c.onclick=()=>openTask(c.dataset.id); c.onkeydown=e=>{if(e.key==="Enter") openTask(c.dataset.id);};
     c.addEventListener("dragstart",e=>{ S.dragId=c.dataset.id; c.classList.add("dragging"); try{e.dataTransfer.setData("text/plain",c.dataset.id);}catch(x){}
-      const t=T(S.dragId); m.querySelectorAll(".col").forEach(col=>{ if(col.dataset.st!==t.status&&!allowed(t,col.dataset.st)) col.classList.add("nodrop"); }); });
-    c.addEventListener("dragend",()=>{ S.dragId=null; c.classList.remove("dragging"); m.querySelectorAll(".col").forEach(x=>x.classList.remove("drop","nodrop")); }); });
+      const x=T(S.dragId); m.querySelectorAll(".col").forEach(col=>{ if(col.dataset.st!==x.status&&!allowed(x,col.dataset.st)) col.classList.add("nodrop"); }); });
+    c.addEventListener("dragend",()=>{ S.dragId=null; c.classList.remove("dragging"); m.querySelectorAll(".col").forEach(y=>y.classList.remove("drop","nodrop")); }); });
   m.querySelectorAll(".col").forEach(col=>{
-    col.addEventListener("dragover",e=>{ const t=T(S.dragId); if(t&&allowed(t,col.dataset.st)){e.preventDefault();col.classList.add("drop");} });
+    col.addEventListener("dragover",e=>{ const x=T(S.dragId); if(x&&allowed(x,col.dataset.st)){e.preventDefault();col.classList.add("drop");} });
     col.addEventListener("dragleave",()=>col.classList.remove("drop"));
-    col.addEventListener("drop",e=>{ e.preventDefault(); col.classList.remove("drop"); const t=T(S.dragId); if(t) requestTransition(t,col.dataset.st); }); }); }
+    col.addEventListener("drop",e=>{ e.preventDefault(); col.classList.remove("drop"); const x=T(S.dragId); if(x) requestTransition(x,col.dataset.st); }); }); }
 
-/* ---------- list ---------- */
+/* ================= list ================= */
 function listHTML(){ const list=filtered().slice(); const k=S.sort.k,d=S.sort.d;
-  const val=t=>k==="key"?t.num:k==="priority"?(PRI[t.priority]||PRI.normal).o:k==="assignee"?nameOf(t.assignee):k==="status"?STATUSES.findIndex(s=>s.k===t.status):k==="work"?(workTime(t)||0):(t[k]||0);
-  list.sort((a,b)=>{const x=val(a),y=val(b); return (typeof x==="string"?x.localeCompare(y,"ar"):x-y)*d;});
-  const th=(key,l)=>`<th class="sort" data-k="${key}">${l}${S.sort.k===key?(S.sort.d>0?" ↑":" ↓"):""}</th>`;
-  return `<div class="panel tablewrap"><table><thead><tr>${th("key","الرقم")}<th>المهمة</th><th>القسم</th>${th("assignee","المسؤول")}${th("priority","الأولوية")}${th("status","الحالة")}${th("due","الموعد")}${th("createdAt","أُنشئت")}${th("work","زمن العمل")}</tr></thead>
-  <tbody>${list.map(t=>{const p=PRI[t.priority]||PRI.normal; const late=isLate(t);
-   return `<tr class="click" data-id="${t.id}"><td class="mono meta">${esc(keyOf(t))}</td><td><div class="t">${esc(t.title)}</div>${t.location?`<span class="meta">${esc(t.location)}</span>`:""}</td><td>${esc(t.dept)}</td><td>${who(t.assignee)}</td>
-   <td><span class="chip ${p.c}">${p.l}</span></td><td><span class="chip" style="color:${ST[t.status].c}">${ST[t.status].l}</span></td>
-   <td class="num">${t.due?`<span class="${late?"chip bad":""}">${esc(fmt(t.due))}</span>`:"—"}</td><td class="num meta">${esc(fmt(t.createdAt))}</td><td class="num">${t.startedAt?dur(workTime(t)):"—"}</td></tr>`;}).join("")||`<tr><td colspan="9" class="meta" style="text-align:center;padding:30px">لا توجد مهام تطابق الفلاتر</td></tr>`}</tbody></table></div>`; }
+  const val=x=>k==="key"?x.num:k==="priority"?(PRI[x.priority]||PRI.normal).o:k==="assignee"?nameOf(x.assignee):k==="status"?STATUSES.findIndex(s=>s.k===x.status):k==="work"?(workTime(x)||0):(x[k]||0);
+  list.sort((a,b)=>{const x=val(a),y=val(b); return (typeof x==="string"?x.localeCompare(y,LANG):x-y)*d;});
+  const th=(key,l)=>`<th class="sort" data-k="${key}">${esc(t(l))}${S.sort.k===key?(S.sort.d>0?" ↑":" ↓"):""}</th>`;
+  return `<div class="panel tablewrap"><table><thead><tr>${th("key","colKey")}<th>${esc(t("colTask"))}</th>${isAdmin()?`<th>${esc(t("colHotel"))}</th>`:""}<th>${esc(t("colDept"))}</th>${th("assignee","colAssignee")}${th("priority","colPri")}${th("status","colStatus")}${th("due","colDue")}${th("createdAt","colCreated")}${th("work","colWork")}</tr></thead>
+  <tbody>${list.map(x=>{const p=PRI[x.priority]||PRI.normal; const late=isLate(x);
+   return `<tr class="click" data-id="${x.id}"><td class="mono meta">${esc(keyOf(x))}</td><td><div class="t">${esc(x.title)}</div>${x.location?`<span class="meta">${esc(x.location)}</span>`:""}</td>${isAdmin()?`<td>${esc(hotelL(x.hotel))}</td>`:""}<td>${esc(deptL(x.dept))}</td><td>${who(x.assignee)}</td>
+   <td><span class="chip ${p.c}">${esc(priL(x.priority))}</span></td><td><span class="chip" style="color:${ST[x.status].c}">${esc(stL(x.status))}</span></td>
+   <td class="num">${x.due?`<span class="${late?"chip bad":""}">${esc(fmt(x.due))}</span>`:"—"}</td><td class="num meta">${esc(fmt(x.createdAt))}</td><td class="num">${x.startedAt?dur(workTime(x)):"—"}</td></tr>`;}).join("")||`<tr><td colspan="10" class="meta" style="text-align:center;padding:30px">${esc(t("noMatch"))}</td></tr>`}</tbody></table></div>`; }
 function bindList(){ const m=$("#main"); m.querySelectorAll("tr.click").forEach(r=>r.onclick=()=>openTask(r.dataset.id));
   m.querySelectorAll("th.sort").forEach(h=>h.onclick=()=>{ if(S.sort.k===h.dataset.k) S.sort.d*=-1; else S.sort={k:h.dataset.k,d:-1}; renderMain(); }); }
 
-/* ---------- approvals ---------- */
+/* ================= approvals ================= */
 function approvalsHTML(){
-  const rev=S.tasks.filter(t=>t.status==="review"&&canApprove(t)).sort((a,b)=>(a.submittedAt||0)-(b.submittedAt||0));
-  const myRev=S.tasks.filter(t=>t.status==="review"&&t.assignee===S.uid&&!canApprove(t));
-  const rej=S.tasks.filter(t=>t.status==="rejected"&&(t.assignee===S.uid||canApprove(t)));
-  const recent=S.tasks.filter(t=>t.status==="done"&&t.approval&&(t.assignee===S.uid||canApprove(t))).sort((a,b)=>(b.completedAt||0)-(a.completedAt||0)).slice(0,8);
-  const item=(t,btns)=>{const p=PRI[t.priority]||PRI.normal; return `<div class="apcard"><div style="display:grid;gap:6px;min-width:0"><div class="row"><span class="mono meta">${esc(keyOf(t))}</span><span class="chip ${p.c}">${p.l}</span><span class="meta">${esc(t.dept)}${t.location?" · "+esc(t.location):""}</span></div>
-    <div class="t" data-open="${t.id}">${esc(t.title)}</div>
-    <div class="row meta">${who(t.assignee)}<span>· زمن العمل <b class="num" style="color:var(--fg)">${dur(workTime(t))}</b></span>${t.status==="review"?`<span>· سُلّمت ${esc(fmt(t.submittedAt))}</span>`:""}${t.due?`<span>· الموعد ${esc(fmt(t.due))}</span>`:""}${isLate(t)?`<span class="chip bad">تجاوزت الموعد</span>`:""}</div>
-    ${t.status==="rejected"&&t.lastReject?`<div class="note bad">سبب الرفض: ${esc(t.lastReject.note)}</div>`:""}
-    ${t.status==="done"&&t.approval?`<div class="meta">اعتمدها ${esc(nameOf(t.approval.by))} · ${esc(fmt(t.approval.at))}${t.approval.note?" · "+esc(t.approval.note):""}</div>`:""}</div><div class="actions">${btns}</div></div>`;};
-  return `<h2 class="h2">بانتظار موافقتك <span class="meta num">(${rev.length})</span></h2>
-  <p class="sub">مهام الناس اللي تحتك، أو اللي انت كلّفتهم بيها. اعتمدها عشان تتقفل، أو ارفضها مع سبب واضح عشان ترجع للموظف.</p>
-  <div class="appr">${rev.map(t=>item(t,`<button class="btn ok sm" data-ap="${t.id}">اعتماد</button><button class="btn bad sm" data-rj="${t.id}">رفض</button>`)).join("")||`<div class="empty-col">لا توجد مهام بانتظار موافقتك</div>`}</div>
-  ${myRev.length?`<h2 class="h2">مهامي المسلّمة ومستنية الموافقة <span class="meta num">(${myRev.length})</span></h2><div class="appr">${myRev.map(t=>item(t,`<button class="btn sm" data-wd="${t.id}">سحب للتعديل</button>`)).join("")}</div>`:""}
-  <h2 class="h2">مرفوضة وتحتاج إعادة عمل <span class="meta num">(${rej.length})</span></h2>
-  <div class="appr">${rej.map(t=>item(t,allowed(t,"progress")?`<button class="btn sm" data-wd="${t.id}">إعادة العمل</button>`:"")).join("")||`<div class="empty-col">لا توجد مهام مرفوضة</div>`}</div>
-  <h2 class="h2">آخر ما تم اعتماده</h2><div class="appr">${recent.map(t=>item(t,"")).join("")||`<div class="empty-col">لم تُعتمد مهام بعد</div>`}</div>`; }
+  const rev=S.tasks.filter(x=>x.status==="review"&&canApprove(x)).sort((a,b)=>(a.submittedAt||0)-(b.submittedAt||0));
+  const myRev=S.tasks.filter(x=>x.status==="review"&&x.assignee===S.uid&&!canApprove(x));
+  const rej=S.tasks.filter(x=>x.status==="rejected"&&(x.assignee===S.uid||canApprove(x)));
+  const recent=S.tasks.filter(x=>x.status==="done"&&x.approval&&(x.assignee===S.uid||canApprove(x))).sort((a,b)=>(b.completedAt||0)-(a.completedAt||0)).slice(0,8);
+  const item=(x,btns)=>{const p=PRI[x.priority]||PRI.normal; return `<div class="apcard"><div style="display:grid;gap:6px;min-width:0"><div class="row"><span class="mono meta">${esc(keyOf(x))}</span><span class="chip ${p.c}">${esc(priL(x.priority))}</span><span class="meta">${esc(deptL(x.dept))}${x.location?" · "+esc(x.location):""}${isAdmin()?" · "+esc(hotelL(x.hotel)):""}</span></div>
+    <div class="t" data-open="${x.id}">${esc(x.title)}</div>
+    <div class="row meta">${who(x.assignee)}<span>· ${esc(t("workTime"))} <b class="num" style="color:var(--fg)">${dur(workTime(x))}</b></span>${x.status==="review"?`<span>· ${esc(t("submitted"))} ${esc(fmt(x.submittedAt))}</span>`:""}${x.due?`<span>· ${esc(t("due"))} ${esc(fmt(x.due))}</span>`:""}${isLate(x)?`<span class="chip bad">${esc(t("pastDue"))}</span>`:""}</div>
+    ${x.status==="rejected"&&x.lastReject?`<div class="note bad">${esc(t("rejReason"))}: ${esc(x.lastReject.note)}</div>`:""}
+    ${x.status==="done"&&x.approval?`<div class="meta">${esc(t("approvedBy",{n:nameOf(x.approval.by)}))} · ${esc(fmt(x.approval.at))}${x.approval.note?" · "+esc(x.approval.note):""}</div>`:""}</div><div class="actions">${btns}</div></div>`;};
+  return `<h2 class="h2">${esc(t("apprTitle"))} <span class="meta num">(${rev.length})</span></h2><p class="sub">${esc(t("apprHint"))}</p>
+  <div class="appr">${rev.map(x=>item(x,`<button class="btn ok sm" data-ap="${x.id}">${esc(t("approve"))}</button><button class="btn bad sm" data-rj="${x.id}">${esc(t("reject"))}</button>`)).join("")||`<div class="empty-col">${esc(t("apprNone"))}</div>`}</div>
+  ${myRev.length?`<h2 class="h2">${esc(t("mySubmitted"))} <span class="meta num">(${myRev.length})</span></h2><div class="appr">${myRev.map(x=>item(x,`<button class="btn sm" data-wd="${x.id}">${esc(t("withdraw"))}</button>`)).join("")}</div>`:""}
+  <h2 class="h2">${esc(t("rejTitle"))} <span class="meta num">(${rej.length})</span></h2>
+  <div class="appr">${rej.map(x=>item(x,allowed(x,"progress")?`<button class="btn sm" data-wd="${x.id}">${esc(t("redo"))}</button>`:"")).join("")||`<div class="empty-col">${esc(t("rejNone"))}</div>`}</div>
+  <h2 class="h2">${esc(t("recentTitle"))}</h2><div class="appr">${recent.map(x=>item(x,"")).join("")||`<div class="empty-col">${esc(t("recentNone"))}</div>`}</div>`; }
 function bindApprovals(){ const m=$("#main");
   m.querySelectorAll("[data-open]").forEach(b=>b.onclick=()=>openTask(b.dataset.open));
   m.querySelectorAll("[data-ap]").forEach(b=>b.onclick=()=>requestTransition(T(b.dataset.ap),"done"));
   m.querySelectorAll("[data-rj]").forEach(b=>b.onclick=()=>requestTransition(T(b.dataset.rj),"rejected"));
   m.querySelectorAll("[data-wd]").forEach(b=>b.onclick=()=>requestTransition(T(b.dataset.wd),"progress")); }
 
-/* ---------- reports (counts & time only, for everyone) ---------- */
+/* ================= reports ================= */
 let statsSeq=0;
 function renderReports(){ const m=$("#main"); const seq=++statsSeq;
-  const rb=(v,l)=>`<button class="btn sm ${S.range===v?"primary":""}" data-rg="${v}">${l}</button>`;
-  const head=`<div class="row" style="margin-top:16px;justify-content:space-between"><h2 class="h2" style="margin:0">أداء الفريق</h2><div class="actions">${rb("1","اليوم")}${rb("7","7 أيام")}${rb("30","30 يومًا")}${rb("all","الكل")}</div></div>
-  <p class="sub" style="margin-top:6px">${isAdmin()?"كل أقسام الفندق.":"قسمك بس."} الأرقام هنا عدد المهام والوقت بس. تفاصيل المهام بتظهر للموظف ومديره ولمدير النظام فقط.</p>`;
-  if(S.builtView!=="reports"||!S.statsCache){ m.innerHTML=head+`<div class="loading">جارٍ حساب الإحصائيات…</div>`; S.builtView="reports"; }
+  const rb=(v,l)=>`<button class="btn sm ${S.range===v?"primary":""}" data-rg="${v}">${esc(t(l))}</button>`;
+  const scope=isAdmin()?(S.repHotel?hotelL(S.repHotel)+".":t("repAll")):isSup()?t("repHotel"):t("repDept");
+  const head=`<div class="row" style="margin-top:16px;justify-content:space-between"><h2 class="h2" style="margin:0">${esc(t("repTitle"))}</h2><div class="actions">${isAdmin()?`<select class="field" id="repHotel" style="width:auto">${hotelOpts(S.repHotel,t("allHotels"))}</select>`:""}${rb("1","today")}${rb("7","d7")}${rb("30","d30")}${rb("all","all")}</div></div>
+  <p class="sub" style="margin-top:6px">${esc(scope)} ${esc(t("repNote"))}</p>`;
+  if(S.builtView!=="reports"||!S.statsCache){ m.innerHTML=head+`<div class="loading">${esc(t("calc"))}</div>`; S.builtView="reports"; }
   bindReports();
   const since=S.range==="all"?null:new Date(Date.now()-Number(S.range)*864e5).toISOString();
-  S.sb.rpc("team_stats",{p_since:since}).then(({data,error})=>{ if(seq!==statsSeq||S.view!=="reports") return;
+  S.sb.rpc("team_stats",{p_since:since,p_hotel:isAdmin()&&S.repHotel?S.repHotel:null}).then(({data,error})=>{ if(seq!==statsSeq||S.view!=="reports") return;
     if(error){ m.innerHTML=head+`<div class="note bad">${esc(errText(error))}</div>`; bindReports(); return; }
     S.statsCache=data; m.innerHTML=head+statsHTML(data); bindReports(); }); }
 function statsHTML(rows){
   const by={}; (rows||[]).forEach(r=>by[r.user_id]=r);
-  const ids=activeMembers(); Object.keys(by).forEach(id=>{ if(!ids.includes(id)) ids.push(id); });
+  let ids=activeMembers().filter(id=>{ const p=S.profiles[id]; if(p.role==="admin") return false; if(isAdmin()) return !S.repHotel||p.hotel===S.repHotel; if(isSup()) return p.hotel===myHotel(); return p.hotel===myHotel()&&(p.dept===myDept()||id===S.uid); });
+  Object.keys(by).forEach(id=>{ if(!ids.includes(id)) ids.push(id); });
   const z={open_count:0,review_count:0,done_count:0,late_count:0,rejections:0,with_due:0,on_time:0,avg_work_sec:null,avg_start_sec:null};
   const R=ids.map(id=>Object.assign({id},z,by[id]||{}));
   const sum=k=>R.reduce((a,r)=>a+(Number(r[k])||0),0);
-  const wavg=(k,wk)=>{ let n=0,t=0; R.forEach(r=>{ if(r[k]!=null){ const w=Math.max(1,Number(r[wk])||1); t+=Number(r[k])*w; n+=w; } }); return n?t/n*1000:null; };
+  const wavg=(k,wk)=>{ let n=0,s=0; R.forEach(r=>{ if(r[k]!=null){ const w=Math.max(1,Number(r[wk])||1); s+=Number(r[k])*w; n+=w; } }); return n?s/n*1000:null; };
   const wd=sum("with_due"), ot=sum("on_time");
-  R.sort((a,b)=>(b.done_count+b.open_count)-(a.done_count+a.open_count)||nameOf(a.id).localeCompare(nameOf(b.id),"ar"));
-  const depts={}; R.forEach(r=>{ const d=(S.profiles[r.id]&&S.profiles[r.id].dept)||"بدون قسم"; const x=depts[d]||(depts[d]={open:0,done:0,late:0}); x.open+=r.open_count; x.done+=r.done_count; x.late+=r.late_count; });
+  R.sort((a,b)=>(b.done_count+b.open_count)-(a.done_count+a.open_count)||nameOf(a.id).localeCompare(nameOf(b.id),LANG));
+  const depts={}; R.forEach(r=>{ const d=(S.profiles[r.id]&&S.profiles[r.id].dept)||""; const x=depts[d]||(depts[d]={open:0,done:0,late:0}); x.open+=r.open_count; x.done+=r.done_count; x.late+=r.late_count; });
   const dmax=Math.max(1,...Object.values(depts).map(x=>x.open+x.done));
-  return `<div class="kpis"><div class="kpi"><b>${sum("open_count")}</b><span>مهام مفتوحة</span></div><div class="kpi wait"><b>${sum("review_count")}</b><span>بانتظار الموافقة</span></div><div class="kpi alert"><b>${sum("late_count")}</b><span>متأخرة عن الموعد</span></div>
-   <div class="kpi"><b>${sum("done_count")}</b><span>أُنجزت واعتُمدت</span></div><div class="kpi"><b>${wd?Math.round(ot/wd*100)+"%":"—"}</b><span>الالتزام بالمواعيد</span></div>
-   <div class="kpi"><b style="font-size:19px">${dur(wavg("avg_work_sec","done_count"))}</b><span>متوسط زمن الإنجاز</span></div></div>
-  <div class="grid2"><div><h3 class="h2" style="font-size:16px">حسب الموظف</h3><div class="panel tablewrap"><table><thead><tr><th>الموظف</th><th>مفتوحة</th><th>منجزة</th><th>متأخرة</th><th>في الموعد</th><th>متوسط الإنجاز</th><th>متوسط وقت البدء</th><th>مرات الرفض</th></tr></thead><tbody>
-  ${R.map(r=>`<tr style="${r.id===S.uid?"background:var(--accent-soft)":""}"><td>${who(r.id)}${S.profiles[r.id]?`<div class="meta">${esc(S.profiles[r.id].dept)}${S.profiles[r.id].reports_to?" · تبع "+esc(nameOf(S.profiles[r.id].reports_to)):""}</div>`:""}</td>
+  return `<div class="kpis"><div class="kpi"><b>${sum("open_count")}</b><span>${esc(t("kOpen"))}</span></div><div class="kpi wait"><b>${sum("review_count")}</b><span>${esc(t("kWait"))}</span></div><div class="kpi alert"><b>${sum("late_count")}</b><span>${esc(t("kLate"))}</span></div>
+   <div class="kpi"><b>${sum("done_count")}</b><span>${esc(t("kDone"))}</span></div><div class="kpi"><b>${wd?Math.round(ot/wd*100)+"%":"—"}</b><span>${esc(t("kOnTime"))}</span></div>
+   <div class="kpi"><b style="font-size:19px">${dur(wavg("avg_work_sec","done_count"))}</b><span>${esc(t("kAvg"))}</span></div></div>
+  <div class="grid2"><div><h3 class="h2" style="font-size:16px">${esc(t("byPerson"))}</h3><div class="panel tablewrap"><table><thead><tr><th>${esc(t("tName"))}</th><th>${esc(t("cOpen"))}</th><th>${esc(t("cDone"))}</th><th>${esc(t("cLate"))}</th><th>${esc(t("cOnTime"))}</th><th>${esc(t("cAvg"))}</th><th>${esc(t("cStart"))}</th><th>${esc(t("cRej"))}</th></tr></thead><tbody>
+  ${R.map(r=>{const p=S.profiles[r.id]; return `<tr style="${r.id===S.uid?"background:var(--accent-soft)":""}"><td>${who(r.id)}${p?`<div class="meta">${esc(deptL(p.dept))}${isAdmin()&&p.hotel?" · "+esc(hotelL(p.hotel)):""}${p.reports_to?" · "+esc(t("reportsTo"))+" "+esc(nameOf(p.reports_to)):""}</div>`:""}</td>
    <td class="num">${r.open_count}</td><td class="num">${r.done_count}</td><td class="num" style="${r.late_count?"color:var(--bad);font-weight:600":""}">${r.late_count}</td>
-   <td class="num">${r.with_due?Math.round(r.on_time/r.with_due*100)+"%":"—"}</td><td class="num">${r.avg_work_sec!=null?dur(r.avg_work_sec*1000):"—"}</td><td class="num">${r.avg_start_sec!=null?dur(r.avg_start_sec*1000):"—"}</td><td class="num">${r.rejections}</td></tr>`).join("")||`<tr><td colspan="8" class="meta" style="text-align:center;padding:24px">لا توجد بيانات</td></tr>`}</tbody></table></div></div>
-  <div><h3 class="h2" style="font-size:16px">حسب القسم</h3><div class="panel" style="padding:14px;display:grid;gap:12px">
-  ${Object.entries(depts).filter(([,x])=>x.open+x.done).sort((a,b)=>(b[1].open+b[1].done)-(a[1].open+a[1].done)).map(([d,x])=>{const n=x.open+x.done||1; return `<div style="display:grid;gap:4px"><div class="row" style="justify-content:space-between"><b style="font-weight:600">${esc(d)}</b><span class="meta num">${x.done} منجزة · ${x.open} مفتوحة${x.late?` · <span style="color:var(--bad)">${x.late} متأخرة</span>`:""}</span></div>
-   <div class="meter" style="width:${Math.max(8,(x.open+x.done)/dmax*100)}%"><i style="width:${x.done/n*100}%;background:var(--ok)"></i><i style="width:${(x.open-x.late)/n*100}%;background:var(--info)"></i><i style="width:${x.late/n*100}%;background:var(--bad)"></i></div></div>`;}).join("")||`<div class="meta">لا توجد بيانات</div>`}
-  <div class="row meta" style="gap:14px"><span class="row"><i style="width:10px;height:10px;border-radius:2px;background:var(--ok)"></i>منجزة</span><span class="row"><i style="width:10px;height:10px;border-radius:2px;background:var(--info)"></i>مفتوحة</span><span class="row"><i style="width:10px;height:10px;border-radius:2px;background:var(--bad)"></i>متأخرة</span></div></div></div></div>`; }
-function bindReports(){ $("#main").querySelectorAll("[data-rg]").forEach(b=>b.onclick=()=>{S.range=b.dataset.rg;S.statsCache=null;S.builtView=null;renderReports();}); }
+   <td class="num">${r.with_due?Math.round(r.on_time/r.with_due*100)+"%":"—"}</td><td class="num">${r.avg_work_sec!=null?dur(r.avg_work_sec*1000):"—"}</td><td class="num">${r.avg_start_sec!=null?dur(r.avg_start_sec*1000):"—"}</td><td class="num">${r.rejections}</td></tr>`;}).join("")||`<tr><td colspan="8" class="meta" style="text-align:center;padding:24px">${esc(t("noData"))}</td></tr>`}</tbody></table></div></div>
+  <div><h3 class="h2" style="font-size:16px">${esc(t("byDept"))}</h3><div class="panel" style="padding:14px;display:grid;gap:12px">
+  ${Object.entries(depts).filter(([,x])=>x.open+x.done).sort((a,b)=>(b[1].open+b[1].done)-(a[1].open+a[1].done)).map(([d,x])=>{const n=x.open+x.done||1; return `<div style="display:grid;gap:4px"><div class="row" style="justify-content:space-between"><b style="font-weight:600">${esc(deptL(d)||"—")}</b><span class="meta num">${x.done} ${esc(t("lgDone"))} · ${x.open} ${esc(t("lgOpen"))}${x.late?` · <span style="color:var(--bad)">${x.late} ${esc(t("lgLate"))}</span>`:""}</span></div>
+   <div class="meter" style="width:${Math.max(8,(x.open+x.done)/dmax*100)}%"><i style="width:${x.done/n*100}%;background:var(--ok)"></i><i style="width:${(x.open-x.late)/n*100}%;background:var(--info)"></i><i style="width:${x.late/n*100}%;background:var(--bad)"></i></div></div>`;}).join("")||`<div class="meta">${esc(t("noData"))}</div>`}
+  <div class="row meta" style="gap:14px"><span class="row"><i style="width:10px;height:10px;border-radius:2px;background:var(--ok)"></i>${esc(t("lgDone"))}</span><span class="row"><i style="width:10px;height:10px;border-radius:2px;background:var(--info)"></i>${esc(t("lgOpen"))}</span><span class="row"><i style="width:10px;height:10px;border-radius:2px;background:var(--bad)"></i>${esc(t("lgLate"))}</span></div></div></div></div>`; }
+function bindReports(){ const m=$("#main"); m.querySelectorAll("[data-rg]").forEach(b=>b.onclick=()=>{S.range=b.dataset.rg;S.statsCache=null;S.builtView=null;renderReports();});
+  const rh=m.querySelector("#repHotel"); if(rh) rh.onchange=()=>{S.repHotel=rh.value;S.statsCache=null;S.builtView=null;renderReports();}; }
 
-/* ---------- team ---------- */
+/* ================= team & access ================= */
 function renderTeam(){ const m=$("#main");
   if(S.builtView!=="team"){ S.builtView="team";
-    m.innerHTML=`<h2 class="h2">طلبات الانضمام</h2><p class="sub">أي حد يعمل حساب بيفضل مقفول عليه ومايشوفش أي حاجة لحد ما توافق عليه هنا. حدد دوره وقسمه ومديره المباشر، وبعدين وافق. لو مش عارفه، دوس رفض.</p><div id="tRq"></div>
-    <h2 class="h2">أعضاء الفريق</h2><p class="sub"><b>مدير النظام</b> (انت) يشوف كل حاجة ويوافق على الحسابات ويحدد الأدوار. <b>مدير القسم</b> يوزّع الشغل على الموظفين اللي مديرهم المباشر هو، ويشوف تفاصيل شغلهم ويعتمده أو يرفضه. <b>الموظف</b> ينفّذ مهامه بس. كل واحد يشوف زمايل قسمه بس، والأرقام في التقارير لقسمه بس.</p>
+    m.innerHTML=`<h2 class="h2">${esc(t("reqTitle"))}</h2><p class="sub">${esc(t("reqHint"))}</p><div id="tRq"></div>
+    <div class="row" style="justify-content:space-between;align-items:end"><h2 class="h2">${esc(t("teamTitle"))}</h2>${isAdmin()?`<select class="field" id="tHotelF" style="width:auto;margin-bottom:10px">${hotelOpts(S.teamHotel||"",t("allHotels"))}</select>`:""}</div>
+    <p class="sub">${t("teamHint")}</p>
     <div class="panel tablewrap" id="tMembers"></div>
-    <h2 class="h2">الإعدادات</h2><div class="panel" style="padding:16px;display:grid;gap:14px">
-      <div style="display:grid;gap:8px"><b>الأقسام</b><div class="depchips" id="tDeps"></div><div class="row"><input class="field" id="tDepIn" placeholder="اسم قسم جديد" style="flex:1 1 180px;width:auto"><button class="btn" id="tDepAdd">إضافة قسم</button></div></div>
-      <div class="row"><label class="lb" style="flex:0 1 200px">بادئة رقم المهمة<input class="field mono" id="tPrefix" maxlength="6" dir="ltr"></label><button class="btn" id="tPrefixSave" style="align-self:end">حفظ</button></div></div>`;
-    $("#tDepAdd").onclick=async()=>{ const v=$("#tDepIn").value.trim(); if(!v||S.depts.includes(v)) return; await call(S.sb.from("departments").insert({name:v,sort:100}),"تمت إضافة القسم").catch(()=>{}); $("#tDepIn").value=""; await loadMeta(); renderTeam(); };
-    $("#tPrefixSave").onclick=async()=>{ const v=$("#tPrefix").value.trim().toUpperCase().replace(/[^A-Z0-9]/g,""); if(!v) return; await call(S.sb.from("settings").update({prefix:v}).eq("id",1),"تم الحفظ").catch(()=>{}); await loadMeta(); render(); };
-    $("#tPrefix").value=S.settings.prefix||"HTL"; }
-  const dsel=(cur,attr)=>`<select class="field" ${attr}>${S.depts.concat(cur&&!S.depts.includes(cur)?[cur]:[]).map(d=>`<option${d===cur?" selected":""}>${esc(d)}</option>`).join("")}</select>`;
-  const rsel=(cur,attr,dis)=>`<select class="field" ${attr}${dis?" disabled":""}>${Object.entries(ROLES).map(([k,l])=>`<option value="${k}"${k===cur?" selected":""}>${l}</option>`).join("")}</select>`;
-  const P=Object.values(S.profiles); const rqs=P.filter(p=>p.role==="pending"&&p.active);
-  $("#tRq").innerHTML=rqs.length?`<div class="appr">${rqs.map(p=>`<div class="apcard"><div style="display:grid;gap:4px">${who(p.id,true)}<div class="meta">${esc(p.title)}${p.requested_dept?" · يطلب قسم "+esc(p.requested_dept):""} · ${esc(fmt(ms(p.created_at)))}</div></div>
-     <div class="actions">${rsel("staff",`data-rqrole="${p.id}"`)}${dsel(p.requested_dept||S.depts[0],`data-rqdept="${p.id}"`)}<select class="field" data-rqboss="${p.id}"><option value="">المدير المباشر…</option>${activeMembers().filter(id=>["manager","admin"].includes(S.profiles[id].role)).map(id=>`<option value="${id}">${esc(nameOf(id))} — ${esc(S.profiles[id].dept||"")}</option>`).join("")}</select><button class="btn ok sm" data-rqok="${p.id}">موافقة</button><button class="btn bad sm" data-rqno="${p.id}">رفض</button></div></div>`).join("")}</div>`:`<div class="empty-col">لا توجد طلبات جديدة</div>`;
-  const ord={admin:0,manager:1,staff:2,pending:3};
-  const msel=(p)=>{ const opts=activeMembers().filter(id=>id!==p.id&&!isAbove(p.id,id)&&["manager","admin"].includes(S.profiles[id].role)); return `<select class="field" data-mboss="${p.id}"><option value="">— بدون —</option>${opts.map(id=>`<option value="${id}"${id===p.reports_to?" selected":""}>${esc(nameOf(id))}</option>`).join("")}</select>`; };
-  const mem=P.filter(p=>p.role!=="pending"||!p.active).sort((a,b)=>(ord[a.role]-ord[b.role])||nameOf(a.id).localeCompare(nameOf(b.id),"ar"));
-  $("#tMembers").innerHTML=`<table><thead><tr><th>الموظف</th><th>المسمى الوظيفي</th><th>القسم</th><th>المدير المباشر</th><th>تحته</th><th>الدور</th><th>مهام مفتوحة</th><th>الوصول</th></tr></thead><tbody>
-   ${mem.map(p=>{const self=p.id===S.uid; const openN=S.tasks.filter(t=>t.assignee===p.id&&t.status!=="done").length;
-     return `<tr style="${p.active?"":"opacity:.55"}"><td>${who(p.id)}</td><td><input class="field" style="width:150px" data-mtitle="${p.id}" value="${esc(p.title)}" placeholder="مثال: فني كهرباء"></td>
-     <td>${dsel(p.dept,`data-mdept="${p.id}"`)}</td><td>${p.role==="pending"?"—":msel(p)}</td><td class="num">${Object.values(S.profiles).filter(x=>x.reports_to===p.id&&x.active).length||"—"}</td><td>${p.role==="pending"?`<span class="chip">طلب مرفوض</span>`:rsel(p.role,`data-mrole="${p.id}"`,self)}</td><td class="num">${openN}</td>
-     <td>${self?`<span class="chip ok">أنت</span>`:`<button class="btn sm ${p.active?"bad":""}" data-mact="${p.id}">${p.active?"إيقاف الوصول":"إعادة التفعيل"}</button>`}</td></tr>`;}).join("")}</tbody></table>`;
-  $("#tDeps").innerHTML=S.depts.map(d=>`<span class="chip">${esc(d)}<button aria-label="حذف ${esc(d)}" data-dep="${esc(d)}">×</button></span>`).join("");
-  const setM=async(id,patch,msg)=>{ const p=Object.assign({},S.profiles[id],patch); await call(S.sb.rpc("admin_set_member",{p_id:id,p_role:p.role,p_dept:p.dept,p_title:p.title,p_active:p.active,p_reports_to:p.reports_to||null}),msg||"تم الحفظ").catch(()=>{}); await loadProfiles(); render(); };
-  m.querySelectorAll("[data-mrole]").forEach(s=>s.onchange=()=>setM(s.dataset.mrole,{role:s.value}));
-  m.querySelectorAll("[data-mdept]").forEach(s=>s.onchange=()=>setM(s.dataset.mdept,{dept:s.value}));
-  m.querySelectorAll("[data-mboss]").forEach(s=>s.onchange=()=>setM(s.dataset.mboss,{reports_to:s.value||null},"تم تحديد المدير المباشر"));
-  m.querySelectorAll("[data-mtitle]").forEach(s=>s.onchange=()=>setM(s.dataset.mtitle,{title:s.value.trim()}));
-  m.querySelectorAll("[data-mact]").forEach(b=>b.onclick=async()=>{ const id=b.dataset.mact, p=S.profiles[id];
-    if(p.active){ const ok=await ask({title:"إيقاف وصول "+nameOf(id)+"؟",text:"مش هيقدر يفتح اللوحة، ومهامه السابقة هتفضل في السجل.",noInput:true,okText:"إيقاف",danger:true}); if(ok==null) return; }
-    setM(id,{active:!p.active},p.active?"تم إيقاف الوصول":"تم التفعيل"); });
-  m.querySelectorAll("[data-rqok]").forEach(b=>b.onclick=()=>{ const id=b.dataset.rqok; setM(id,{role:m.querySelector(`[data-rqrole="${id}"]`).value,dept:m.querySelector(`[data-rqdept="${id}"]`).value,reports_to:m.querySelector(`[data-rqboss="${id}"]`).value||null,active:true},"تمت الموافقة على "+nameOf(id)); });
-  m.querySelectorAll("[data-rqno]").forEach(b=>b.onclick=()=>setM(b.dataset.rqno,{active:false},"تم رفض الطلب"));
-  m.querySelectorAll("[data-dep]").forEach(b=>b.onclick=async()=>{ const ok=await ask({title:"حذف قسم "+b.dataset.dep+"؟",text:"المهام والموظفين الحاليين هيفضلوا باسم القسم ده.",noInput:true,okText:"حذف",danger:true}); if(ok==null) return;
-    await call(S.sb.from("departments").delete().eq("name",b.dataset.dep),"تم حذف القسم").catch(()=>{}); await loadMeta(); renderTeam(); }); }
+    ${isAdmin()?`<h2 class="h2">${esc(t("settings"))}</h2><div class="panel" style="padding:16px;display:grid;gap:14px">
+      <div style="display:grid;gap:8px"><b>${esc(t("depts"))}</b><div class="depchips" id="tDeps"></div>
+       <div class="row"><input class="field" id="tDepEn" placeholder="${esc(t("deptEn"))}" style="flex:1 1 160px;width:auto" dir="ltr"><input class="field" id="tDepAr" placeholder="${esc(t("deptAr"))}" style="flex:1 1 160px;width:auto" dir="rtl"><button class="btn" id="tDepAdd">${esc(t("addDept"))}</button></div></div>
+      <div class="row"><label class="lb" style="flex:0 1 200px">${esc(t("prefix"))}<input class="field mono" id="tPrefix" maxlength="6" dir="ltr"></label><button class="btn" id="tPrefixSave" style="align-self:end">${esc(t("save"))}</button></div></div>`:""}`;
+    const hf=$("#tHotelF"); if(hf) hf.onchange=()=>{ S.teamHotel=hf.value; renderTeam(); };
+    if(isAdmin()){
+      $("#tDepAdd").onclick=async()=>{ const en=$("#tDepEn").value.trim(), ar=$("#tDepAr").value.trim(); if(!en) return; const code=en.toLowerCase().replace(/[^a-z0-9]+/g,"_").replace(/^_|_$/g,"").slice(0,40)||("d"+Date.now());
+        if(S.deptRows.some(d=>d.name===code)) return; await call(S.sb.from("departments").insert({name:code,label_en:en,label_ar:ar||en,sort:100}),t("tDeptAdded")).catch(()=>{}); $("#tDepEn").value=""; $("#tDepAr").value=""; await loadMeta(); renderTeam(); };
+      $("#tPrefixSave").onclick=async()=>{ const v=$("#tPrefix").value.trim().toUpperCase().replace(/[^A-Z0-9]/g,""); if(!v) return; await call(S.sb.from("settings").update({prefix:v}).eq("id",1),t("tSavedS")).catch(()=>{}); await loadMeta(); render(); };
+      $("#tPrefix").value=S.settings.prefix||"HTL"; } }
+  const roleOptsFor=(p)=>{ const keys=isAdmin()?ROLE_KEYS:["manager","staff"]; return keys.map(k=>opt(k,roleL(k),p.role)).join(""); };
+  const canEditRow=p=>isAdmin()||(isSup()&&p.hotel===myHotel()&&!["admin","supervisor"].includes(p.role));
+  const bossSel=(p,attr,sel)=>{ const opts=heads(p.hotel).filter(id=>id!==p.id&&!isAbove(p.id,id)); return `<select class="field" ${attr}><option value="">${esc(sel===undefined?t("none"):t("mgrPick"))}</option>${opts.map(id=>opt(id,nameOf(id)+(S.profiles[id].dept?" — "+deptL(S.profiles[id].dept):""),sel||p.reports_to||"")).join("")}</select>`; };
+  const P=Object.values(S.profiles).filter(p=>!isAdmin()||!S.teamHotel||p.hotel===S.teamHotel||p.role==="admin");
+  const rqs=P.filter(p=>p.role==="pending"&&p.active);
+  $("#tRq").innerHTML=rqs.length?`<div class="appr">${rqs.map(p=>`<div class="apcard"><div style="display:grid;gap:4px">${who(p.id,true)}<div class="meta">${esc(p.title)}${p.hotel?" · "+esc(hotelL(p.hotel)):""}${p.requested_dept?" · "+esc(t("requests"))+" "+esc(deptL(p.requested_dept)):""} · ${esc(fmt(ms(p.created_at)))}</div></div>
+     <div class="actions">${isAdmin()?`<select class="field" data-rqhotel="${p.id}" style="width:auto">${hotelOpts(p.hotel||"",t("chooseHotel"))}</select>`:""}<select class="field" data-rqrole="${p.id}" style="width:auto">${(isAdmin()?ROLE_KEYS:["manager","staff"]).map(k=>opt(k,roleL(k),"staff")).join("")}</select>
+     <select class="field" data-rqdept="${p.id}" style="width:auto">${deptOpts(p.requested_dept||p.dept||"",t("chooseDept"))}</select>${bossSel(p,`data-rqboss="${p.id}" style="width:auto"`,"")}
+     <button class="btn ok sm" data-rqok="${p.id}">${esc(t("approveReq"))}</button><button class="btn bad sm" data-rqno="${p.id}">${esc(t("rejectReq"))}</button></div></div>`).join("")}</div>`:`<div class="empty-col">${esc(t("reqNone"))}</div>`;
+  const ord={admin:0,supervisor:1,manager:2,staff:3,pending:4};
+  const mem=P.filter(p=>p.role!=="pending"||!p.active).sort((a,b)=>String(a.hotel||"").localeCompare(String(b.hotel||""))||(ord[a.role]-ord[b.role])||nameOf(a.id).localeCompare(nameOf(b.id),LANG));
+  $("#tMembers").innerHTML=`<table><thead><tr><th>${esc(t("tName"))}</th>${isAdmin()?`<th>${esc(t("tHotel"))}</th>`:""}<th>${esc(t("tTitle"))}</th><th>${esc(t("tDept"))}</th><th>${esc(t("tBoss"))}</th><th>${esc(t("tUnder"))}</th><th>${esc(t("tRole"))}</th><th>${esc(t("tOpen"))}</th><th>${esc(t("tAccess"))}</th></tr></thead><tbody>
+   ${mem.map(p=>{const self=p.id===S.uid; const ed=canEditRow(p)&&!self; const openN=S.tasks.filter(x=>x.assignee===p.id&&x.status!=="done").length; const dis=ed?"":" disabled";
+     return `<tr style="${p.active?"":"opacity:.55"}"><td>${who(p.id)}</td>
+     ${isAdmin()?`<td>${p.role==="admin"?"—":`<select class="field" data-mhotel="${p.id}"${dis}>${hotelOpts(p.hotel||"",t("chooseHotel"))}</select>`}</td>`:""}
+     <td><input class="field" style="width:140px" data-mtitle="${p.id}" value="${esc(p.title)}"${canEditRow(p)?"":" disabled"}></td>
+     <td><select class="field" data-mdept="${p.id}"${canEditRow(p)?"":" disabled"}>${deptOpts(p.dept||"","—")}</select></td>
+     <td>${p.role==="pending"||p.role==="admin"?"—":ed?bossSel(p,`data-mboss="${p.id}"`):esc(p.reports_to?nameOf(p.reports_to):"—")}</td>
+     <td class="num">${Object.values(S.profiles).filter(x=>x.reports_to===p.id&&x.active).length||"—"}</td>
+     <td>${p.role==="pending"?`<span class="chip">${esc(t("rejectedReq"))}</span>`:ed?`<select class="field" data-mrole="${p.id}">${roleOptsFor(p)}</select>`:`<span class="rolepill">${esc(roleL(p.role))}</span>`}</td><td class="num">${openN}</td>
+     <td>${self?`<span class="chip ok">${esc(t("you"))}</span>`:ed?`<button class="btn sm ${p.active?"bad":""}" data-mact="${p.id}">${esc(t(p.active?"disable":"enable"))}</button>`:""}</td></tr>`;}).join("")}</tbody></table>`;
+  if(isAdmin()) $("#tDeps").innerHTML=S.deptRows.map(d=>`<span class="chip">${esc(deptL(d.name))}<button aria-label="${esc(t("del"))}" data-dep="${esc(d.name)}">×</button></span>`).join("");
+  const setM=async(id,patch,msg)=>{ const p=Object.assign({},S.profiles[id],patch);
+    await call(S.sb.rpc("admin_set_member",{p_id:id,p_role:p.role,p_dept:p.dept||"",p_title:p.title||"",p_active:p.active,p_reports_to:p.reports_to||null,p_hotel:isAdmin()?(p.hotel||null):null}),msg||t("tSavedS")).catch(()=>{}); await loadProfiles(); render(); };
+  const q=s=>m.querySelectorAll(s);
+  q("[data-mrole]").forEach(s=>s.onchange=()=>setM(s.dataset.mrole,{role:s.value}));
+  q("[data-mdept]").forEach(s=>s.onchange=()=>setM(s.dataset.mdept,{dept:s.value}));
+  q("[data-mhotel]").forEach(s=>s.onchange=()=>setM(s.dataset.mhotel,{hotel:s.value,reports_to:null}));
+  q("[data-mtitle]").forEach(s=>s.onchange=()=>setM(s.dataset.mtitle,{title:s.value.trim()}));
+  q("[data-mboss]").forEach(s=>s.onchange=()=>setM(s.dataset.mboss,{reports_to:s.value||null},t("tBoss")));
+  q("[data-mact]").forEach(b=>b.onclick=async()=>{ const id=b.dataset.mact, p=S.profiles[id];
+    if(p.active){ const ok=await ask({title:t("confirmDisable",{n:nameOf(id)}),text:t("confirmDisableTxt"),noInput:true,okText:t("disable"),danger:true}); if(ok==null) return; }
+    setM(id,{active:!p.active},t(p.active?"tDisabled":"tEnabled")); });
+  q("[data-rqok]").forEach(b=>b.onclick=()=>{ const id=b.dataset.rqok; const g=a=>{ const el=m.querySelector(`[${a}="${id}"]`); return el?el.value:null; };
+    const patch={role:g("data-rqrole"),dept:g("data-rqdept")||"",reports_to:g("data-rqboss")||null,active:true}; if(isAdmin()) patch.hotel=g("data-rqhotel")||null;
+    setM(id,patch,t("tApprovedU",{n:nameOf(id)})); });
+  q("[data-rqhotel]").forEach(s=>s.onchange=()=>{ const id=s.dataset.rqhotel; const bs=m.querySelector(`[data-rqboss="${id}"]`); if(bs) bs.outerHTML=bossSel(Object.assign({},S.profiles[id],{hotel:s.value}),`data-rqboss="${id}" style="width:auto"`,""); });
+  q("[data-rqno]").forEach(b=>b.onclick=()=>setM(b.dataset.rqno,{active:false},t("tRejectedU")));
+  q("[data-dep]").forEach(b=>b.onclick=async()=>{ const ok=await ask({title:t("confirmDelDept",{n:deptL(b.dataset.dep)}),text:t("confirmDelDeptTxt"),noInput:true,okText:t("del"),danger:true}); if(ok==null) return;
+    await call(S.sb.from("departments").delete().eq("name",b.dataset.dep),t("tDeptDel")).catch(()=>{}); await loadMeta(); renderTeam(); }); }
 
-/* ---------- task sheet ---------- */
-function openTask(id,parentId){ const t=id?T(id):null; if(id&&!t) return; closeSheet(); S.openId=t?t.id:null; S.newParent=t?null:(parentId||null); S.thread={comments:[],events:[]};
-  const par=t?(t.parentId?T(t.parentId):null):(parentId?T(parentId):null);
+/* ================= task sheet ================= */
+function assigneeOptions(hotel,cur,par,isNew){ let list=activeMembers().filter(id=>canAssignTo(id,hotel));
+  if(par&&isNew&&par.assignee===S.uid&&subordinates().length) list=list.filter(id=>id!==S.uid);
+  if(cur&&!list.includes(cur)) list.push(cur);
+  return opt("",t("unassigned"),cur||"")+list.map(id=>{const p=S.profiles[id]; return opt(id,nameOf(id)+(p&&p.dept?" — "+deptL(p.dept):"")+(p&&["manager","supervisor"].includes(p.role)?" ("+roleL(p.role)+")":"")+(isAdmin()&&!hotel&&p&&p.hotel?" · "+hotelL(p.hotel):""),cur||"");}).join(""); }
+function openTask(id,parentId){ const x=id?T(id):null; if(id&&!x) return; closeSheet(); S.openId=x?x.id:null; S.newParent=x?null:(parentId||null); S.thread={comments:[],events:[]};
+  const par=x?(x.parentId?T(x.parentId):null):(parentId?T(parentId):null);
   const ov=document.createElement("div"); ov.className="overlay"; ov.id="ov";
-  const ed=canEditFields(t), dis=ed?"":" disabled";
-  const asList=activeMembers().filter(canAssignTo).filter(mid=>!(par&&!t&&mid===S.uid&&par.assignee===S.uid&&subordinates().length)); const cur=t?t.assignee||"":((isAdmin()||(isManager()&&subordinates().length))?"":S.uid); if(cur&&!asList.includes(cur)) asList.push(cur);
-  const opt=(v,l,sel)=>`<option value="${esc(v)}"${v===sel?" selected":""}>${esc(l)}</option>`;
-  const depts=S.depts.concat(t&&t.dept&&!S.depts.includes(t.dept)?[t.dept]:[]);
-  ov.innerHTML=`<div class="sheet" role="dialog" aria-modal="true" aria-label="تفاصيل المهمة">
-   <div class="sheethead wrap"><span class="mono meta">${t?esc(keyOf(t)):"جديدة"}</span><h3>${t?"تفاصيل المهمة":par?"توزيع مهمة فرعية":"مهمة جديدة"}</h3>${t&&(isAdmin()||t.reporter===S.uid)?`<button class="btn ghost sm" id="delT" style="color:var(--bad)">حذف</button>`:""}<button class="btn" id="closeT">إغلاق</button></div>
+  const ed=canEditFields(x), dis=ed?"":" disabled";
+  const hotel=x?x.hotel:(par?par.hotel:(isAdmin()?(S.f.hotel||""):myHotel()));
+  const cur=x?x.assignee||"":((isAdmin()||isSup()||(isManager()&&subordinates().length))?"":S.uid);
+  ov.innerHTML=`<div class="sheet" role="dialog" aria-modal="true" aria-label="${esc(t("taskDetails"))}">
+   <div class="sheethead wrap"><span class="mono meta">${x?esc(keyOf(x)):"+"}</span><h3>${esc(t(x?"taskDetails":par?"delegateT":"newTaskT"))}</h3>${x&&canEditFields(x)?`<button class="btn ghost sm" id="delT" style="color:var(--bad)">${esc(t("del"))}</button>`:""}<button class="btn" id="closeT">${esc(t("close"))}</button></div>
    <div class="sheetbody wrap"><form class="form" id="tf">
-     ${par?`<div class="note info">جزء من المهمة <b class="mono">${esc(keyOf(par))}</b>: ${esc(par.title)} <button type="button" class="link" id="openPar">فتح</button></div>`:""}
-     <input class="field title" id="fTitle" placeholder="عنوان المهمة، مثال: تسريب مياه في حمام غرفة 214" value="${esc(t?t.title:"")}" maxlength="140" required${dis}>
-     <textarea class="field" id="fDesc" placeholder="التفاصيل، الخطوات المطلوبة، ملاحظات الضيف…"${dis}>${esc(t?t.desc:"")}</textarea>
+     ${par?`<div class="note info">${esc(t("partOf"))} <b class="mono">${esc(keyOf(par))}</b>: ${esc(par.title)} <button type="button" class="link" id="openPar">${esc(t("open"))}</button></div>`:""}
+     <input class="field title" id="fTitle" placeholder="${esc(t("titlePh"))}" value="${esc(x?x.title:"")}" maxlength="140" required${dis}>
+     <textarea class="field" id="fDesc" placeholder="${esc(t("descPh"))}"${dis}>${esc(x?x.desc:"")}</textarea>
      <div class="two">
-      <label class="lb">القسم<select class="field" id="fD"${dis}>${depts.map(d=>opt(d,d,t?t.dept:(par?par.dept:(myDept()||depts[0])))).join("")}</select></label>
-      <label class="lb">الموقع / رقم الغرفة<input class="field" id="fLoc" placeholder="غرفة 214 · اللوبي · المطبخ" value="${esc(t?t.location:"")}" maxlength="60"${dis}></label>
-      <label class="lb">المسؤول عن التنفيذ<select class="field" id="fA"${dis}>${opt("","غير مُسند",cur)}${asList.map(mid=>opt(mid,nameOf(mid)+(S.profiles[mid]&&S.profiles[mid].dept?" — "+S.profiles[mid].dept:""),cur)).join("")}</select></label>
-      <label class="lb">الأولوية<select class="field" id="fP"${dis}>${Object.entries(PRI).map(([k,v])=>opt(k,v.l,t?t.priority:"normal")).join("")}</select></label>
-      <label class="lb">موعد التسليم<input class="field" type="datetime-local" id="fDue" value="${toLocal(t&&t.due)}"${dis}></label>
-      <label class="lb">الوردية<select class="field" id="fSh"${dis}>${Object.entries(SHIFTS).map(([k,v])=>opt(k,v,t?t.shift:"")).join("")}</select></label>
-      <label class="lb">الوقت المقدّر (ساعات)<input class="field num" type="number" min="0" step="0.25" id="fEst" value="${t&&t.estimate!=null?t.estimate:""}"${dis}></label>
-      <label class="chk" style="align-self:end;padding-bottom:8px"><input type="checkbox" id="fNA"${(!t||t.needsApproval!==false)?" checked":""}${ed?"":" disabled"}> تحتاج موافقة اللي كلّف بيها قبل الإغلاق</label></div>
-     ${ed?`<div class="actions"><button class="btn primary" type="submit" id="saveT">${t?"حفظ التعديلات":"إنشاء المهمة"}</button>${t?"":`<button class="btn" type="button" id="cancelT">إلغاء</button>`}</div>`:`<p class="meta" style="margin:0">تعديل التفاصيل متاح للي كلّف بالمهمة ولمدير النظام.</p>`}
-     ${t?subtasksBox(t):""}
-     ${t?`<div class="box"><h4>التعليقات</h4><div class="comments" id="cmList"><div class="meta">جارٍ التحميل…</div></div>
-       <div style="display:grid;gap:6px"><textarea class="field" id="cmIn" rows="2" placeholder="اكتب تحديث أو ملاحظة للفريق…" style="min-height:60px" maxlength="2000"></textarea><div><button class="btn sm" type="button" id="cmSend">إضافة تعليق</button></div></div></div>`:""}
+      ${isAdmin()&&!x&&!par?`<label class="lb">${esc(t("hotel"))}<select class="field" id="fH" required>${hotelOpts(hotel,t("chooseHotel"))}</select></label>`:(isAdmin()?`<label class="lb">${esc(t("hotel"))}<input class="field" value="${esc(hotelL(hotel))}" disabled></label>`:"")}
+      <label class="lb">${esc(t("dept"))}<select class="field" id="fD"${dis}>${deptOpts(x?x.dept:(par?par.dept:myDept()),"—")}</select></label>
+      <label class="lb">${esc(t("location"))}<input class="field" id="fLoc" placeholder="${esc(t("locationPh"))}" value="${esc(x?x.location:"")}" maxlength="60"${dis}></label>
+      <label class="lb">${esc(t("assignee"))}<select class="field" id="fA"${dis}>${assigneeOptions(hotel,cur,par,!x)}</select></label>
+      <label class="lb">${esc(t("priority"))}<select class="field" id="fP"${dis}>${Object.keys(PRI).map(k=>opt(k,priL(k),x?x.priority:"normal")).join("")}</select></label>
+      <label class="lb">${esc(t("dueAt"))}<input class="field" type="datetime-local" id="fDue" value="${toLocal(x&&x.due)}"${dis}></label>
+      <label class="lb">${esc(t("shift"))}<select class="field" id="fSh"${dis}>${SHIFTS.map(k=>opt(k,t("sh_"+k),x?x.shift:"")).join("")}</select></label>
+      <label class="lb">${esc(t("estimate"))}<input class="field num" type="number" min="0" step="0.25" id="fEst" value="${x&&x.estimate!=null?x.estimate:""}"${dis}></label>
+      <label class="chk" style="align-self:end;padding-bottom:8px"><input type="checkbox" id="fNA"${(!x||x.needsApproval!==false)?" checked":""}${dis}> ${esc(t("needsAppr"))}</label></div>
+     ${ed?`<div class="actions"><button class="btn primary" type="submit" id="saveT">${esc(t(x?"saveChanges":"create"))}</button>${x?"":`<button class="btn" type="button" id="cancelT">${esc(t("cancel"))}</button>`}</div>`:`<p class="meta" style="margin:0">${esc(t("editOnly"))}</p>`}
+     ${x?subtasksBox(x):""}
+     ${x?`<div class="box"><h4>${esc(t("comments"))}</h4><div class="comments" id="cmList"><div class="meta">${esc(t("loading"))}</div></div>
+       <div style="display:grid;gap:6px"><textarea class="field" id="cmIn" rows="2" placeholder="${esc(t("commentPh"))}" style="min-height:60px" maxlength="2000"></textarea><div><button class="btn sm" type="button" id="cmSend">${esc(t("addComment"))}</button></div></div></div>`:""}
     </form><aside class="side" id="sideP"></aside></div></div>`;
   document.body.appendChild(ov); document.body.style.overflow="hidden";
   ov.addEventListener("click",e=>{ if(e.target===ov) closeSheet(); });
   ov.addEventListener("keydown",e=>{ if(e.key==="Escape"&&!document.querySelector(".dlg")) closeSheet(); });
   $("#closeT").onclick=closeSheet; const c=$("#cancelT"); if(c) c.onclick=closeSheet;
-  const dl=$("#delT"); if(dl) dl.onclick=async()=>{ const ok=await ask({title:"حذف المهمة "+keyOf(t)+"؟",text:"المهمة وسجلها وتعليقاتها هيتحذفوا نهائيًا.",noInput:true,okText:"حذف نهائي",danger:true}); if(ok==null) return;
-    const r=await call(S.sb.from("tasks").delete().eq("id",t.id).select("id")).catch(()=>null); if(r&&r.data&&r.data.length){ toast("تم حذف المهمة"); closeSheet(); await loadTasks(); render(); } else if(r) toast(ERR.not_allowed,true); };
+  const fh=$("#fH"); if(fh) fh.onchange=()=>{ $("#fA").innerHTML=assigneeOptions(fh.value,"",null,true); };
+  const dl=$("#delT"); if(dl) dl.onclick=async()=>{ const ok=await ask({title:t("delDlg",{k:keyOf(x)}),text:t("delDlgT"),noInput:true,okText:t("delOk"),danger:true}); if(ok==null) return;
+    const r=await call(S.sb.from("tasks").delete().eq("id",x.id).select("id")).catch(()=>null); if(r&&r.data&&r.data.length){ toast(t("tDeleted")); closeSheet(); await loadTasks(); render(); } else if(r) toast(t("e_not_allowed"),true); };
   $("#tf").addEventListener("submit",saveTask); const cs=$("#cmSend"); if(cs) cs.onclick=addComment;
   const op=$("#openPar"); if(op) op.onclick=()=>openTask(par.id);
-  const dg=$("#delegateBtn"); if(dg) dg.onclick=()=>openTask(null,t.id);
+  const dg=$("#delegateBtn"); if(dg) dg.onclick=()=>openTask(null,x.id);
   ov.querySelectorAll("[data-sub]").forEach(b=>b.onclick=()=>openTask(b.dataset.sub));
-  renderSheetSide(); if(t) loadThread(t.id); else setTimeout(()=>{ const f=$("#fTitle"); if(f) f.focus(); },30); }
-function subtasksBox(t){ const kids=childrenOf(t.id); const canDel=(t.assignee===S.uid||t.reporter===S.uid||isAdmin())&&(isAdmin()||(isManager()&&subordinates().length>0))&&t.status!=="done";
-  if(!kids.length&&!canDel) return "";
-  const d=kids.filter(k=>k.status==="done").length;
-  return `<div class="box"><div class="row" style="justify-content:space-between"><h4>المهام الفرعية ${kids.length?`<span class="num">(${d}/${kids.length} خلصت)</span>`:""}</h4>${canDel?`<button type="button" class="btn sm primary" id="delegateBtn">+ وزّع جزء على فريقك</button>`:""}</div>
-   ${kids.length?`<div class="meter" style="width:100%"><i style="width:${d/kids.length*100}%;background:var(--ok)"></i></div><div style="display:grid;gap:6px">${kids.map(k=>`<button type="button" class="hit" data-sub="${k.id}" style="border:1px solid var(--line);border-radius:8px;padding:8px 10px;display:flex;gap:8px;align-items:center;background:var(--surface);cursor:pointer;width:100%;text-align:right"><span class="mono meta">${esc(keyOf(k))}</span><span style="flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:500">${esc(k.title)}</span>${who(k.assignee)}<span class="chip" style="color:${ST[k.status].c}">${ST[k.status].l}</span></button>`).join("")}</div>`:`<div class="meta">قسّم المهمة على الناس اللي تحتك، وكل واحد هيظهرله الجزء بتاعه وتتابعه من هنا.</div>`}</div>`; }
+  renderSheetSide(); if(x) loadThread(x.id); else setTimeout(()=>{ const f=$("#fTitle"); if(f) f.focus(); },30); }
+function subtasksBox(x){ const kids=childrenOf(x.id);
+  const canDel=(x.assignee===S.uid||x.reporter===S.uid||isAdmin()||(isSup()&&x.hotel===myHotel()))&&x.status!=="done"&&(isAdmin()||isSup()||(isManager()&&subordinates().length>0));
+  if(!kids.length&&!canDel) return ""; const d=kids.filter(k=>k.status==="done").length;
+  return `<div class="box"><div class="row" style="justify-content:space-between"><h4>${esc(t("subtasks"))} ${kids.length?`<span class="num">${esc(t("subDone",{d,n:kids.length}))}</span>`:""}</h4>${canDel?`<button type="button" class="btn sm primary" id="delegateBtn">${esc(t("delegateBtn"))}</button>`:""}</div>
+   ${kids.length?`<div class="meter" style="width:100%"><i style="width:${d/kids.length*100}%;background:var(--ok)"></i></div><div style="display:grid;gap:6px">${kids.map(k=>`<button type="button" class="hit" data-sub="${k.id}"><span class="mono meta">${esc(keyOf(k))}</span><span class="ht">${esc(k.title)}</span>${who(k.assignee)}<span class="chip" style="color:${ST[k.status].c}">${esc(stL(k.status))}</span></button>`).join("")}</div>`:`<div class="meta">${esc(t("subHint"))}</div>`}</div>`; }
 function closeSheet(){ const o=$("#ov"); if(o) o.remove(); document.body.style.overflow=""; S.openId=null; }
-async function saveTask(e){ e.preventDefault(); const t=S.openId?T(S.openId):null; const title=$("#fTitle").value.trim(); if(!title){$("#fTitle").focus();return;}
+async function saveTask(e){ e.preventDefault(); const x=S.openId?T(S.openId):null; const title=$("#fTitle").value.trim(); if(!title){$("#fTitle").focus();return;}
   const dueV=$("#fDue").value, est=$("#fEst").value;
   const p={title,descr:$("#fDesc").value.trim(),dept:$("#fD").value,location:$("#fLoc").value.trim(),assignee:$("#fA").value||"",priority:$("#fP").value,
     due:dueV?new Date(dueV).toISOString():"",shift:$("#fSh").value,estimate:est===""?"":String(Number(est)),needs_approval:$("#fNA").checked};
-  if(!t&&S.newParent) p.parent_id=String(S.newParent);
+  if(!x&&S.newParent) p.parent_id=String(S.newParent);
+  const fh=$("#fH"); if(!x&&fh){ const hv=fh.value||(p.assignee&&S.profiles[p.assignee]?S.profiles[p.assignee].hotel:""); if(!hv){ toast(t("e_hotel_required"),true); return; } p.hotel=hv; }
   const btn=$("#saveT"); if(btn) btn.disabled=true;
-  try{ if(!t){ const parId=S.newParent; const r=await call(S.sb.rpc("create_task",{p})); toast((parId?"تم توزيع المهمة الفرعية ":"تم إنشاء المهمة ")+(S.settings.prefix||"HTL")+"-"+String(r.data).padStart(3,"0")); closeSheet(); if(parId){ await loadTasks(); render(); openTask(parId); return; } }
-    else { await call(S.sb.rpc("update_task",{p_id:t.id,p}),"تم حفظ التعديلات"); loadThread(t.id); }
-    await loadTasks(); render(); }catch(err){} finally{ if(btn) btn.disabled=false; } }
+  try{ if(!x){ const parId=S.newParent; const r=await call(S.sb.rpc("create_task",{p})); const k=(S.settings.prefix||"HTL")+"-"+String(r.data).padStart(3,"0");
+      toast(t(parId?"tDelegated":"tCreated",{k})); closeSheet(); await loadTasks(); render(); if(parId) openTask(parId); return; }
+    await call(S.sb.rpc("update_task",{p_id:x.id,p}),t("tSaved")); loadThread(x.id); await loadTasks(); render(); }catch(err){} finally{ if(btn) btn.disabled=false; } }
 async function addComment(){ const id=S.openId; const inp=$("#cmIn"); const body=inp.value.trim(); if(!id||!body) return; inp.value="";
   try{ await call(S.sb.from("task_comments").insert({task_id:id,author:S.uid,body})); loadThread(id); }catch(e){ inp.value=body; } }
-function renderSheetSide(){ const side=$("#sideP"); if(!side) return; const t=S.openId?T(S.openId):null;
-  if(!t){ if(S.openId){ closeSheet(); toast("المهمة دي اتحذفت"); return; }
-    side.innerHTML=`<div class="box"><h4>مسار المهمة</h4><div class="meta" style="line-height:1.9">جديدة ← قيد التنفيذ ← بانتظار الموافقة ← مكتملة ومعتمدة.<br>لو المشرف رفضها، بترجع للموظف مع السبب عشان يعيد الشغل.<br>وقت البدء والتسليم والاعتماد بيتسجل تلقائيًا من السيرفر.</div></div>`; return; }
-  const st=ST[t.status]; const acts=STATUSES.filter(s=>allowed(t,s.k)); const now=Date.now(); const late=isLate(t);
-  side.innerHTML=`<div class="box"><h4>الحالة</h4><div class="statusline"><span style="width:10px;height:10px;border-radius:50%;background:${st.c}"></span>${st.l}<span class="meta" style="font-weight:400;font-size:12.5px">منذ ${dur(now-(t.statusAt||t.createdAt))}</span></div>
-    ${acts.length?`<div class="actions">${acts.map(s=>`<button class="btn sm ${s.k==="done"?"ok":s.k==="rejected"?"bad":s.k==="review"?"primary":""}" data-to="${s.k}">${esc(actLabel(t,s.k))}</button>`).join("")}</div>`:`<div class="meta">${t.assignee===S.uid||canApprove(t)?"لا توجد إجراءات متاحة في المرحلة دي":"المهمة مسندة لـ "+esc(nameOf(t.assignee))}</div>`}
-    ${t.status==="rejected"&&t.lastReject?`<div class="note bad"><b>سبب الرفض:</b> ${esc(t.lastReject.note)}<div class="meta" style="margin-top:4px">${esc(nameOf(t.lastReject.by))} · ${esc(fmt(t.lastReject.at))}</div></div>`:""}
-    ${t.status==="done"&&t.approval?`<div class="note ok">اعتمدها ${esc(nameOf(t.approval.by))} · ${esc(fmt(t.approval.at))}${t.approval.note?`<div style="margin-top:4px">${esc(t.approval.note)}</div>`:""}</div>`:""}
-    ${late&&t.status!=="done"?`<div class="note bad">متأخرة عن الموعد بـ ${dur(now-t.due)}</div>`:""}</div>
-   <div class="box"><h4>الوقت</h4><dl class="kv"><dt>أنشأها</dt><dd>${who(t.reporter)}</dd><dt>تاريخ الإنشاء</dt><dd>${esc(fmt(t.createdAt))}</dd><dt>بدء العمل</dt><dd>${esc(fmt(t.startedAt))}</dd>
-    <dt>التسليم</dt><dd>${esc(fmt(t.submittedAt))}</dd><dt>الإنجاز</dt><dd>${esc(fmt(t.completedAt))}</dd><dt>الموعد المطلوب</dt><dd style="${late?"color:var(--bad);font-weight:600":""}">${esc(fmt(t.due))}</dd>
-    <dt>زمن البدء</dt><dd>${t.startedAt?dur(t.startedAt-t.createdAt):"—"}</dd><dt>زمن العمل</dt><dd><b>${t.startedAt?dur(workTime(t)):"—"}</b>${t.estimate?` <span class="meta">/ المقدّر ${esc(t.estimate)} س</span>`:""}</dd><dt>مرات الرفض</dt><dd>${t.rejections||0}</dd></dl></div>
-   <div class="box"><h4>سجل النشاط</h4><div class="hist">${S.thread.events.slice().reverse().map(h=>`<div><span class="dt"></span><span><b>${esc(nameOf(h.actor))}</b> ${esc(ACT[h.action]||h.action)}${h.to_status&&h.action!=="create"?" ← "+esc(ST[h.to_status]?ST[h.to_status].l:h.to_status):""}${h.note?`: ${esc(h.note)}`:""}<br><span class="num">${esc(fmt(ms(h.created_at)))}</span></span></div>`).join("")||`<span class="meta">—</span>`}</div></div>`;
-  side.querySelectorAll("[data-to]").forEach(b=>b.onclick=()=>requestTransition(T(t.id),b.dataset.to));
-  const cl=$("#cmList"); if(cl){ const cs=S.thread.comments; cl.innerHTML=cs.map(c=>`<div class="cm">${av(c.author)}<div><div class="h"><b style="color:var(--fg)">${esc(nameOf(c.author))}</b> · <span class="num">${esc(fmt(ms(c.created_at)))}</span></div><div class="b">${esc(c.body)}</div></div></div>`).join("")||`<div class="meta">لا توجد تعليقات بعد</div>`; cl.scrollTop=cl.scrollHeight; } }
+function evText(h){ let s=t("ev_"+h.action)||h.action;
+  if(h.to_status&&h.action!=="create") s+=" → "+stL(h.to_status);
+  if(h.note){ const n=(h.action==="edit"||h.action==="assign")?h.note.split(/[,،]\s*/).map(f=>I18N.en["f_"+f]?t("f_"+f):f).join(", "):h.note; s+=": "+n; }
+  return s; }
+function renderSheetSide(){ const side=$("#sideP"); if(!side) return; const x=S.openId?T(S.openId):null;
+  if(!x){ if(S.openId){ closeSheet(); toast(t("tGone")); return; } side.innerHTML=`<div class="box"><h4>${esc(t("flow"))}</h4><div class="meta" style="line-height:1.9">${t("flowTxt")}</div></div>`; return; }
+  const st=ST[x.status]; const acts=STATUSES.filter(s=>allowed(x,s.k)); const now=Date.now(); const late=isLate(x);
+  side.innerHTML=`<div class="box"><h4>${esc(t("status"))}</h4><div class="statusline"><span style="width:10px;height:10px;border-radius:50%;background:${st.c}"></span>${esc(stL(x.status))}<span class="meta" style="font-weight:400;font-size:12.5px">${esc(t("since"))} ${dur(now-(x.statusAt||x.createdAt))}</span></div>
+    ${acts.length?`<div class="actions">${acts.map(s=>`<button class="btn sm ${s.k==="done"?"ok":s.k==="rejected"?"bad":s.k==="review"?"primary":""}" data-to="${s.k}">${esc(actLabel(x,s.k))}</button>`).join("")}</div>`:`<div class="meta">${esc(x.assignee===S.uid||canApprove(x)?t("noActions"):t("assignedTo",{n:nameOf(x.assignee)}))}</div>`}
+    ${x.status==="rejected"&&x.lastReject?`<div class="note bad"><b>${esc(t("rejReason"))}:</b> ${esc(x.lastReject.note)}<div class="meta" style="margin-top:4px">${esc(nameOf(x.lastReject.by))} · ${esc(fmt(x.lastReject.at))}</div></div>`:""}
+    ${x.status==="done"&&x.approval?`<div class="note ok">${esc(t("approvedBy",{n:nameOf(x.approval.by)}))} · ${esc(fmt(x.approval.at))}${x.approval.note?`<div style="margin-top:4px">${esc(x.approval.note)}</div>`:""}</div>`:""}
+    ${late&&x.status!=="done"?`<div class="note bad">${esc(t("lateBy",{d:dur(now-x.due)}))}</div>`:""}</div>
+   <div class="box"><h4>${esc(t("time"))}</h4><dl class="kv"><dt>${esc(t("createdBy"))}</dt><dd>${who(x.reporter)}</dd><dt>${esc(t("createdAt"))}</dt><dd>${esc(fmt(x.createdAt))}</dd><dt>${esc(t("startedAt"))}</dt><dd>${esc(fmt(x.startedAt))}</dd>
+    <dt>${esc(t("submittedAt"))}</dt><dd>${esc(fmt(x.submittedAt))}</dd><dt>${esc(t("completedAt"))}</dt><dd>${esc(fmt(x.completedAt))}</dd><dt>${esc(t("dueReq"))}</dt><dd style="${late?"color:var(--bad);font-weight:600":""}">${esc(fmt(x.due))}</dd>
+    <dt>${esc(t("startDelay"))}</dt><dd>${x.startedAt?dur(x.startedAt-x.createdAt):"—"}</dd><dt>${esc(t("workT"))}</dt><dd><b>${x.startedAt?dur(workTime(x)):"—"}</b>${x.estimate?` <span class="meta">/ ${esc(t("est",{h:x.estimate}))}</span>`:""}</dd><dt>${esc(t("rejCount"))}</dt><dd>${x.rejections||0}</dd></dl></div>
+   <div class="box"><h4>${esc(t("activity"))}</h4><div class="hist">${S.thread.events.slice().reverse().map(h=>`<div><span class="dt"></span><span><b>${esc(nameOf(h.actor))}</b> ${esc(evText(h))}<br><span class="num">${esc(fmt(ms(h.created_at)))}</span></span></div>`).join("")||`<span class="meta">—</span>`}</div></div>`;
+  side.querySelectorAll("[data-to]").forEach(b=>b.onclick=()=>requestTransition(T(x.id),b.dataset.to));
+  const cl=$("#cmList"); if(cl){ const cs=S.thread.comments; cl.innerHTML=cs.map(c=>`<div class="cm">${av(c.author)}<div><div class="h"><b style="color:var(--fg)">${esc(nameOf(c.author))}</b> · <span class="num">${esc(fmt(ms(c.created_at)))}</span></div><div class="b">${esc(c.body)}</div></div></div>`).join("")||`<div class="meta">${esc(t("noComments"))}</div>`; cl.scrollTop=cl.scrollHeight; } }
 
-/* ---------- boot ---------- */
+/* ================= boot ================= */
 function boot(){
+  applyLangChrome();
   const h=(location.hash||"").slice(1); if(["board","list","approvals","reports","team"].includes(h)) S.view=h;
-  if(!window.supabase||!CFG.SUPABASE_URL||CFG.SUPABASE_URL.includes("YOUR-PROJECT")){
-    $("#main").innerHTML=`<div class="gate"><h2>البرنامج محتاج إعداد</h2><p>افتح ملف index.html وحط رابط مشروع Supabase والمفتاح العام في أول الملف (APP_CONFIG)، زي ما هو مشروح في دليل التشغيل.</p></div>`; return; }
+  if(!window.supabase||!CFG.SUPABASE_URL||CFG.SUPABASE_URL.includes("YOUR-PROJECT")){ $("#main").innerHTML=`<div class="gate"><h2>${esc(t("cfgTitle"))}</h2><p>${esc(t("cfgTxt"))}</p></div>`; return; }
   S.sb=supabase.createClient(CFG.SUPABASE_URL,CFG.SUPABASE_ANON_KEY);
-  S.sb.from("departments").select("name").order("sort").then(r=>{ if(!r.error&&!S.depts.length){ S.depts=r.data.map(x=>x.name); if(!S.session) render(); } });
+  loadMeta().then(()=>{ if(!S.session) render(); });
   S.sb.auth.onAuthStateChange((ev,session)=>{
     if(ev==="PASSWORD_RECOVERY"){ S.authMode="reset"; S.session=null; setTimeout(render,0); return; }
     if(S.authMode==="reset"&&ev!=="SIGNED_OUT") return;
     const prev=S.uid; S.session=session; S.uid=session?session.user.id:null;
     if(!session){ S.ready=false; setTimeout(render,0); return; }
     if(prev!==S.uid||!S.ready) setTimeout(loadAll,0); });
-  setInterval(()=>{ if(S.ready&&isMember()&&S.view!=="team"&&!document.querySelector(".dlg")&&!S.dragId){ renderMain(); renderSheetSide(); } },60000);
+  setInterval(()=>{ if(S.ready&&isMember()&&S.view!=="team"&&S.view!=="reports"&&!document.querySelector(".dlg")&&!S.dragId){ renderMain(); renderSheetSide(); } },60000);
 }
 boot();
 })();
