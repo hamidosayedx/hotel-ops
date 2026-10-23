@@ -122,17 +122,29 @@ td .field{width:auto}
 .kpi b{display:block;font-family:var(--f-display);font-size:24px;font-weight:600;font-variant-numeric:tabular-nums}
 .kpi span{color:var(--muted);font-size:12.5px}
 .kpi.alert b{color:var(--bad)} .kpi.wait b{color:var(--brass)}
-.days{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px}
-.daybox{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:14px;display:grid;gap:10px;align-content:start;border-top:5px solid var(--line)}
-.daybox.open{border-top-color:var(--warn)} .daybox.late{border-top-color:var(--bad)} .daybox.closed{border-top-color:var(--ok)}
-.dayhead{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap} .dayhead h3{margin:0;font-size:16px}
-.dayalert{border-radius:8px;padding:8px 10px;font-size:13px;font-weight:600}
-.dayalert.open{background:var(--warn-soft);color:var(--warn)} .dayalert.late{background:var(--bad-soft);color:var(--bad)} .dayalert.closed{background:var(--ok-soft);color:var(--ok)} .dayalert.empty{background:var(--surface-2);color:var(--muted);font-weight:500}
-.daynums{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;text-align:center}
-.daynums div{background:var(--surface-2);border-radius:8px;padding:6px 2px} .daynums b{display:block;font-size:20px;font-variant-numeric:tabular-nums} .daynums span{font-size:11.5px;color:var(--muted)}
-.dayrow{display:flex;align-items:center;gap:8px;width:100%;text-align:start;background:none;border:0;border-top:1px solid var(--line);padding:7px 2px;cursor:pointer;color:inherit;font:inherit}
-.dayrow:hover{background:var(--surface-2)} .dayrow .ht{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.daybanner{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:12px;border-radius:10px;padding:10px 14px;background:var(--bad-soft);color:var(--bad);font-weight:600}
+.days{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:12px;align-items:start}
+.daybox{min-width:0;background:var(--surface);border:1px solid var(--line);border-inline-start:4px solid var(--line);border-radius:10px;padding:12px;display:grid;grid-template-columns:minmax(0,1fr);gap:9px;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+.daybox>*{min-width:0}
+.daybox.open{border-inline-start-color:var(--warn)} .daybox.late{border-inline-start-color:var(--bad)} .daybox.closed{border-inline-start-color:var(--ok)}
+.dayhead{display:flex;align-items:center;justify-content:space-between;gap:6px}
+.dayhead h3{margin:0;font-size:14.5px;font-weight:700;display:flex;align-items:center;gap:6px;min-width:0;white-space:nowrap}
+.dayhead h3 .chip{font-size:11px;padding:1px 7px}
+.daypill{font-size:11.5px;font-weight:700;border-radius:999px;padding:2px 9px;white-space:nowrap}
+.daypill.open{background:var(--warn-soft);color:var(--warn)} .daypill.late{background:var(--bad-soft);color:var(--bad)} .daypill.closed{background:var(--ok-soft);color:var(--ok)} .daypill.empty{background:var(--surface-2);color:var(--muted)}
+.dayalert{font-size:12.5px;line-height:1.5;color:var(--muted)} .dayalert.open{color:var(--warn)} .dayalert.late{color:var(--bad)} .dayalert.closed{color:var(--ok)}
+.daynums{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.daynums div{padding:6px 2px;text-align:center;line-height:1.2} .daynums div+div{border-inline-start:1px solid var(--line)}
+.daynums b{display:block;font-size:16px;font-variant-numeric:tabular-nums} .daynums span{font-size:11px;color:var(--muted)}
+.dayprog{display:flex;align-items:center;gap:8px;font-size:11.5px;color:var(--muted)} .dayprog .meter{flex:1;height:6px;min-width:0}
+.daylist{display:grid;border-top:1px solid var(--line)}
+.dayrow{display:grid;gap:3px;min-width:0;width:100%;text-align:start;background:none;border:0;border-bottom:1px solid var(--line);padding:7px 4px;cursor:pointer;color:inherit;font:inherit;font-size:13px;border-radius:6px}
+.dayrow .dm{display:flex;align-items:center;gap:6px;min-width:0;font-size:11.5px;color:var(--muted)} .dayrow .dm .nm{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dayrow:last-child{border-bottom:0} .dayrow:hover{background:var(--surface-2)}
+.dayrow .mono{font-size:11px;flex:none} .dayrow .ht{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.dayrow .av{flex:none;width:18px;height:18px;font-size:9.5px}
+.dayrow .sd{flex:none;font-size:11px;font-weight:600;white-space:nowrap}
+.dayfoot{display:flex;justify-content:space-between;gap:8px;font-size:12.5px}
+.daybanner{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-bottom:12px;border-radius:10px;padding:9px 14px;background:var(--bad-soft);color:var(--bad);font-weight:600;font-size:13.5px}
 .meter{height:8px;border-radius:4px;background:var(--surface-2);overflow:hidden;min-width:60px;display:flex}
 .meter i{display:block;height:100%}
 .grid2{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:16px}
@@ -241,7 +253,7 @@ const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&
 const I18N={
 en:{
  app:"Hotel Operations",tagline:"Tasks, time and approvals for every department",newTask:"+ New task",logout:"Log out",langBtn:"العربية",
- tabBoard:"Board",tabDays:"Days",dyToday:"Today",dyYesterday:"Yesterday",dyTotal:"Total",dyNew:"New",dyPending:"Pending",dyDone:"Done",dyOpen:"⚠ Day still open — {n} task(s) not finished yet",dyLate:"⚠ Past day still open — {n} task(s) not finished!",dyClosed:"✓ Day closed — all tasks are done",dyEmpty:"No tasks yet",dyShowDone:"Show finished ({n})",dyHideDone:"Hide finished",dyOnlyOpen:"Open days only",dyAll:"All days",dyHint:"Every task goes into the box of the day it was created. A day stays open (warning) until all its tasks are finished.",dyBanner:"⚠ {d} past day(s) still open with {n} unfinished task(s)",dyGo:"Open the days",dyNoneOpen:"No open days. Great work!",tabList:"List",tabApprovals:"Approvals",tabReports:"Reports",tabTeam:"Team & access",tabDepts:"Departments",dpTitle:"Departments",dpHint:"Add, rename or remove departments. Changes show up right away for every hotel, in sign-up, task forms, filters and reports.",dpAddTitle:"Add a new department",dpNeedName:"Write the department name (English or Arabic).",dpExists:"A department with this name already exists.",dpPeople:"People",dpOpen:"Open tasks",dpOrder:"Order",dpInUse:"Move the {n} people in this department to another department first.",tDeptSaved:"Department saved",e_use_transfer:"Use “Transfer” to hand a task to someone.",e_dept_in_use:"This department still has people in it. Move them first.",
+ tabBoard:"Board",tabDays:"Days",dyToday:"Today",dyYesterday:"Yesterday",dyTotal:"Total",dyNew:"New",dyPending:"Pending",dyDone:"Done",dyOpen:"{n} task(s) not finished yet.",dyLate:"This day has passed and {n} task(s) are still not finished!",dyClosed:"All tasks of this day are done.",dyEmpty:"No tasks yet",dyShowDone:"Show finished ({n})",dyHideDone:"Hide finished",dyOnlyOpen:"Open days only",dyAll:"All days",dyHint:"Every task goes into the box of the day it was created. A day stays open (warning) until all its tasks are finished.",dyBanner:"⚠ {d} past day(s) still open with {n} unfinished task(s)",dyGo:"Open the days",dyNoneOpen:"No open days. Great work!",dyPillOpen:"Open",dyPillLate:"Overdue",dyPillClosed:"Closed",tabList:"List",tabApprovals:"Approvals",tabReports:"Reports",tabTeam:"Team & access",tabDepts:"Departments",dpTitle:"Departments",dpHint:"Add, rename or remove departments. Changes show up right away for every hotel, in sign-up, task forms, filters and reports.",dpAddTitle:"Add a new department",dpNeedName:"Write the department name (English or Arabic).",dpExists:"A department with this name already exists.",dpPeople:"People",dpOpen:"Open tasks",dpOrder:"Order",dpInUse:"Move the {n} people in this department to another department first.",tDeptSaved:"Department saved",e_use_transfer:"Use “Transfer” to hand a task to someone.",e_dept_in_use:"This department still has people in it. Move them first.",
  search:"Search by title, number or room…",allDepts:"All departments",allPeople:"All people",unassigned:"Unassigned",allPri:"All priorities",allHotels:"All hotels",
  mine:"My tasks only",lateOnly:"Overdue only",loading:"Loading…",
  st_todo:"New",st_progress:"In progress",st_review:"Awaiting approval",st_rejected:"Rejected",st_done:"Done & approved",
@@ -305,7 +317,7 @@ en:{
 },
 ar:{
  app:"لوحة عمليات الفندق",tagline:"متابعة المهام والوقت والاعتماد لكل قسم",newTask:"+ مهمة جديدة",logout:"خروج",langBtn:"English",
- tabBoard:"لوحة المهام",tabDays:"الأيام",dyToday:"النهاردة",dyYesterday:"امبارح",dyTotal:"الكل",dyNew:"جديد",dyPending:"متعلق",dyDone:"خلصان",dyOpen:"⚠ اليوم لسه مفتوح — فيه {n} مهام لم تنتهِ",dyLate:"⚠ يوم فات ولسه مفتوح — فيه {n} مهام لم تنتهِ!",dyClosed:"✓ اليوم مقفول — كل المهام خلصت",dyEmpty:"مافيش مهام لسه",dyShowDone:"اعرض الخلصان ({n})",dyHideDone:"اخفي الخلصان",dyOnlyOpen:"الأيام المفتوحة بس",dyAll:"كل الأيام",dyHint:"كل مهمة بتتحط في بوكس اليوم اللي اتعملت فيه. اليوم بيفضل مفتوح وعليه تحذير لحد ما كل مهامه تخلص.",dyBanner:"⚠ فيه {d} أيام فاتت لسه مفتوحة وفيها {n} مهام لم تنتهِ",dyGo:"افتح الأيام",dyNoneOpen:"مافيش أيام مفتوحة. شغل عظيم!",tabList:"القائمة",tabApprovals:"الموافقات",tabReports:"التقارير والأداء",tabTeam:"الفريق والصلاحيات",tabDepts:"الأقسام",dpTitle:"الأقسام",dpHint:"ضيف أو عدّل أو امسح الأقسام. التغيير بيظهر فورًا لكل الفنادق: في التسجيل، وفورم المهام، والفلاتر، والتقارير.",dpAddTitle:"إضافة قسم جديد",dpNeedName:"اكتب اسم القسم (إنجليزي أو عربي).",dpExists:"في قسم بنفس الاسم ده بالفعل.",dpPeople:"الموظفين",dpOpen:"مهام مفتوحة",dpOrder:"الترتيب",dpInUse:"انقل الـ {n} موظفين اللي في القسم ده لقسم تاني الأول.",tDeptSaved:"تم حفظ القسم",e_use_transfer:"استخدم «تحويل» عشان تدّي المهمة لحد.",e_dept_in_use:"القسم ده لسه فيه موظفين. انقلهم الأول.",
+ tabBoard:"لوحة المهام",tabDays:"الأيام",dyToday:"النهاردة",dyYesterday:"امبارح",dyTotal:"الكل",dyNew:"جديد",dyPending:"متعلق",dyDone:"خلصان",dyOpen:"فيه {n} مهام لسه ماخلصتش.",dyLate:"اليوم ده فات ولسه فيه {n} مهام لم تنتهِ!",dyClosed:"كل مهام اليوم ده خلصت.",dyEmpty:"مافيش مهام لسه",dyShowDone:"اعرض الخلصان ({n})",dyHideDone:"اخفي الخلصان",dyOnlyOpen:"الأيام المفتوحة بس",dyAll:"كل الأيام",dyHint:"كل مهمة بتتحط في بوكس اليوم اللي اتعملت فيه. اليوم بيفضل مفتوح وعليه تحذير لحد ما كل مهامه تخلص.",dyBanner:"⚠ فيه {d} أيام فاتت لسه مفتوحة وفيها {n} مهام لم تنتهِ",dyGo:"افتح الأيام",dyNoneOpen:"مافيش أيام مفتوحة. شغل عظيم!",dyPillOpen:"مفتوح",dyPillLate:"متأخر",dyPillClosed:"مقفول",tabList:"القائمة",tabApprovals:"الموافقات",tabReports:"التقارير والأداء",tabTeam:"الفريق والصلاحيات",tabDepts:"الأقسام",dpTitle:"الأقسام",dpHint:"ضيف أو عدّل أو امسح الأقسام. التغيير بيظهر فورًا لكل الفنادق: في التسجيل، وفورم المهام، والفلاتر، والتقارير.",dpAddTitle:"إضافة قسم جديد",dpNeedName:"اكتب اسم القسم (إنجليزي أو عربي).",dpExists:"في قسم بنفس الاسم ده بالفعل.",dpPeople:"الموظفين",dpOpen:"مهام مفتوحة",dpOrder:"الترتيب",dpInUse:"انقل الـ {n} موظفين اللي في القسم ده لقسم تاني الأول.",tDeptSaved:"تم حفظ القسم",e_use_transfer:"استخدم «تحويل» عشان تدّي المهمة لحد.",e_dept_in_use:"القسم ده لسه فيه موظفين. انقلهم الأول.",
  search:"بحث بالعنوان أو الرقم أو الغرفة…",allDepts:"كل الأقسام",allPeople:"كل الموظفين",unassigned:"غير مُسند",allPri:"كل الأولويات",allHotels:"كل الفنادق",
  mine:"مهامي فقط",lateOnly:"المتأخرة فقط",loading:"جارٍ التحميل…",
  st_todo:"جديدة",st_progress:"قيد التنفيذ",st_review:"بانتظار الموافقة",st_rejected:"مرفوضة",st_done:"مكتملة ومعتمدة",
@@ -548,18 +560,20 @@ function dayBanner(){ const od=dayGroups(S.tasks).filter(g=>g.open&&g.past); if(
 function bindBanner(){ const b=$("#goDays"); if(b) b.onclick=()=>setView("days"); }
 function daysHTML(){ S.dayShow=S.dayShow||{}; let gs=dayGroups(filtered()); if(S.daysOpenOnly) gs=gs.filter(g=>g.open||g.today); gs=gs.slice(0,60);
   const ordered=STATUSES.map(s=>s.k);
-  const row=x=>`<button type="button" class="dayrow" data-id="${x.id}"><span class="mono meta">${esc(keyOf(x))}</span><span class="ht">${esc(x.title)}</span>${who(x.assignee)}<span class="chip" style="color:${ST[x.status].c}">${esc(stL(x.status))}</span></button>`;
-  return `<div class="row" style="justify-content:space-between;align-items:center;margin-bottom:10px"><p class="sub" style="margin:0">${esc(t("dyHint"))}</p>
-    <div class="seg"><button class="btn sm${S.daysOpenOnly?"":" primary"}" data-dmode="all">${esc(t("dyAll"))}</button> <button class="btn sm${S.daysOpenOnly?" primary":""}" data-dmode="open">${esc(t("dyOnlyOpen"))}</button></div></div>
+  const row=x=>`<button type="button" class="dayrow" data-id="${x.id}" title="${esc(x.title)}"><span class="ht">${esc(x.title)}</span><span class="dm"><span class="mono">${esc(keyOf(x))}</span><span class="sd" style="color:${ST[x.status].c}">● ${esc(stL(x.status))}</span>${x.assignee?`<span style="flex:1"></span>${av(x.assignee)}<span class="nm">${esc(nameOf(x.assignee))}</span>`:""}</span></button>`;
+  return `<div class="row" style="justify-content:space-between;align-items:center;margin-bottom:10px;gap:10px"><p class="sub" style="margin:0;flex:1 1 300px">${esc(t("dyHint"))}</p>
+    <div class="row" style="gap:6px"><button class="btn sm${S.daysOpenOnly?"":" primary"}" data-dmode="all">${esc(t("dyAll"))}</button><button class="btn sm${S.daysOpenOnly?" primary":""}" data-dmode="open">${esc(t("dyOnlyOpen"))}</button></div></div>
    ${gs.length?`<div class="days">${gs.map(g=>{ const L=dayLabel(g.k); const cls=!g.total?"empty":!g.open?"closed":g.past?"late":"open";
      const left=g.ts.filter(x=>x.status!=="done").sort((a,b)=>ordered.indexOf(b.status)-ordered.indexOf(a.status)||(PRI[a.priority]||PRI.normal).o-(PRI[b.priority]||PRI.normal).o);
-     const fin=g.ts.filter(x=>x.status==="done"); const show=!!S.dayShow[g.k];
-     return `<section class="daybox ${cls==="empty"?"":cls}"><div class="dayhead"><h3>${esc(L.main)}</h3>${L.tag?`<span class="chip info">${esc(L.tag)}</span>`:""}</div>
+     const fin=g.ts.filter(x=>x.status==="done"); const show=!!S.dayShow[g.k]; const pct=g.total?Math.round(g.done/g.total*100):0;
+     const pill={empty:"—",closed:"✓ "+t("dyPillClosed"),late:"⚠ "+t("dyPillLate"),open:"⚠ "+t("dyPillOpen")}[cls];
+     const lst=show?left.concat(fin):left;
+     return `<section class="daybox ${cls==="empty"?"":cls}"><div class="dayhead"><h3>${esc(L.main)}${L.tag?`<span class="chip info">${esc(L.tag)}</span>`:""}</h3><span class="daypill ${cls}">${esc(pill)}</span></div>
       <div class="dayalert ${cls}">${esc(cls==="empty"?t("dyEmpty"):cls==="closed"?t("dyClosed"):t(cls==="late"?"dyLate":"dyOpen",{n:g.total-g.done}))}</div>
-      <div class="daynums"><div><b>${g.total}</b><span>${esc(t("dyTotal"))}</span></div><div><b style="color:var(--muted)">${g.nw}</b><span>${esc(t("dyNew"))}</span></div><div><b style="color:var(--warn)">${g.pend}</b><span>${esc(t("dyPending"))}</span></div><div><b style="color:var(--ok)">${g.done}</b><span>${esc(t("dyDone"))}</span></div></div>
-      ${g.total?`<div class="meter" style="width:100%"><i style="width:${g.done/g.total*100}%;background:var(--ok)"></i></div>`:""}
-      ${left.length?`<div>${left.map(row).join("")}</div>`:""}
-      ${fin.length?`<button type="button" class="link" data-dshow="${g.k}">${esc(show?t("dyHideDone"):t("dyShowDone",{n:fin.length}))}</button>${show?`<div>${fin.map(row).join("")}</div>`:""}`:""}
+      ${g.total?`<div class="daynums"><div><b>${g.total}</b><span>${esc(t("dyTotal"))}</span></div><div><b style="color:var(--muted)">${g.nw}</b><span>${esc(t("dyNew"))}</span></div><div><b style="color:var(--warn)">${g.pend}</b><span>${esc(t("dyPending"))}</span></div><div><b style="color:var(--ok)">${g.done}</b><span>${esc(t("dyDone"))}</span></div></div>
+      <div class="dayprog"><div class="meter"><i style="width:${pct}%;background:var(--ok)"></i></div><span class="num">${pct}%</span></div>`:""}
+      ${lst.length?`<div class="daylist">${lst.map(row).join("")}</div>`:""}
+      ${fin.length?`<div class="dayfoot"><button type="button" class="link" data-dshow="${g.k}">${esc(show?t("dyHideDone"):t("dyShowDone",{n:fin.length}))}</button></div>`:""}
      </section>`; }).join("")}</div>`:`<div class="empty-col">${esc(t("dyNoneOpen"))}</div>`}`; }
 function bindDays(){ const m=$("#main");
   m.querySelectorAll(".dayrow").forEach(b=>b.onclick=()=>openTask(b.dataset.id));
