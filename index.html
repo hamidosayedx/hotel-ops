@@ -470,7 +470,7 @@ async function loadMeta(){ const [d,h,s]=await Promise.all([S.sb.from("departmen
 async function loadTasks(){ if(!isMember()){S.tasks=[];return;} const {data,error}=await S.sb.from("tasks").select("*").order("created_at",{ascending:false}).limit(2000); if(error) throw error; S.tasks=data.map(normTask); }
 async function loadThread(id){ const [c,e]=await Promise.all([S.sb.from("task_comments").select("*").eq("task_id",id).order("created_at"),S.sb.from("task_events").select("*").eq("task_id",id).order("created_at")]);
   if(S.openId!==id) return; S.thread={comments:c.data||[],events:e.data||[]}; renderSheetSide(); }
-async function loadAll(){ try{ await loadProfiles(); await loadMeta(); await loadTasks(); S.ready=true; render(); subscribe(); }
+async function loadAll(){ try{ await loadProfiles(); await loadMeta(); await loadTasks(); S.ready=true; render(); subscribe(); if(S.pendingOpen&&isMember()){ const id=S.pendingOpen; S.pendingOpen=null; try{history.replaceState(null,"","#"+S.view);}catch(e){} if(T(id)) openTask(id); else toast(t("tGone")); } }
   catch(e){ $("#main").innerHTML=`<div class="gate"><h2>${esc(t("loadErr"))}</h2><p>${esc(errText(e))}</p><div><button class="btn" onclick="location.reload()">${esc(t("retry"))}</button></div></div>`; } }
 let chan=null, timers={};
 function later(k,fn){ clearTimeout(timers[k]); timers[k]=setTimeout(fn,350); }
@@ -925,7 +925,7 @@ function renderSheetSide(){ const side=$("#sideP"); if(!side) return; const x=S.
 /* ================= boot ================= */
 function boot(){
   applyLangChrome();
-  const h=(location.hash||"").slice(1); if(["board","days","list","approvals","reports","team","depts"].includes(h)) S.view=h;
+  const h=(location.hash||"").slice(1); if(["board","days","list","approvals","reports","team","depts"].includes(h)) S.view=h; { const mt=/^t=(\d+)$/.exec(h); if(mt) S.pendingOpen=+mt[1]; }
   if(!window.supabase||!CFG.SUPABASE_URL||CFG.SUPABASE_URL.includes("YOUR-PROJECT")){ $("#main").innerHTML=`<div class="gate"><h2>${esc(t("cfgTitle"))}</h2><p>${esc(t("cfgTxt"))}</p></div>`; return; }
   S.sb=supabase.createClient(CFG.SUPABASE_URL,CFG.SUPABASE_ANON_KEY);
   loadMeta().then(()=>{ if(!S.session) render(); });
